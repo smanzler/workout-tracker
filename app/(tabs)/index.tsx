@@ -23,34 +23,25 @@ export default function ProfileScreen() {
   }, [navigation, textOpacity]);
 
   return (
-    <View style={styles.container}>
-      <ScrollView
-        onScroll={Animated.event(
-          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-          { useNativeDriver: false }
-        )}
-        scrollEventThrottle={16}
-      >
-        <View style={styles.pageHeader}>
-          <Text style={styles.headerText}>Profile</Text>
-        </View>
-
-        <View style={styles.content}>
-          <Text style={styles.text}>
-            Scroll down to fade the title into the header...
-          </Text>
-        </View>
-      </ScrollView>
-    </View>
+    <ScrollView
+      style={styles.container}
+      onScroll={Animated.event(
+        [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+        { useNativeDriver: false }
+      )}
+      scrollEventThrottle={16}
+    >
+      <View style={styles.pageHeader}>
+        <Text style={styles.headerText}>Profile</Text>
+      </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1 },
+  container: { flex: 1, padding: 10 },
   pageHeader: {
     height: 100,
   },
   headerText: { fontSize: 30, fontWeight: "bold", color: "black" },
-  content: { height: 1200, padding: 20 },
-  text: { fontSize: 18, textAlign: "center", marginTop: 50, color: "black" },
 });

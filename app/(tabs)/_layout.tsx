@@ -29,7 +29,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          headerTitle: "Profile",
+          title: "Profile",
           headerShown: true,
           tabBarIcon: ({ color }) => (
             <IconSymbol size={28} name="house.fill" color={color} />
@@ -49,6 +49,7 @@ export default function TabLayout() {
         name="start_workout"
         options={{
           title: "Start Workout",
+          headerShown: true,
           tabBarIcon: ({ color }) => (
             <IconSymbol size={28} name="house.fill" color={color} />
           ),
