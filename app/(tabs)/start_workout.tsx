@@ -9,6 +9,8 @@ import {
 } from "react-native";
 import { useNavigation } from "expo-router";
 import WorkoutList from "@/components/WorkoutList";
+import { template } from "@babel/core";
+import { Entypo } from "@expo/vector-icons";
 
 export type Workout = {
   id: number;
@@ -74,7 +76,15 @@ export default function StartWorkoutScreen() {
         <Text style={styles.btnText}>Start Workout</Text>
       </TouchableOpacity>
 
-      <Text style={styles.headerText}>Templates</Text>
+      <View style={styles.templateHeader}>
+        <Text style={styles.headerText}>Templates</Text>
+        <TouchableOpacity style={styles.templateBtn}>
+          <View style={{ flexDirection: "row" }}>
+            <Text style={styles.templateBtnText}>Template</Text>
+            <Entypo name="plus" size={16} />
+          </View>
+        </TouchableOpacity>
+      </View>
 
       <WorkoutList data={data} />
     </ScrollView>
@@ -83,12 +93,30 @@ export default function StartWorkoutScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 10 },
-  headerText: { fontSize: 30, fontWeight: "bold", color: "black", height: 70 },
+  headerText: {
+    fontSize: 30,
+    fontWeight: "bold",
+    color: "black",
+    marginBottom: 40,
+  },
+  templateHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+  },
+  templateBtn: {
+    backgroundColor: "#b7d4eb",
+    padding: 10,
+    borderRadius: 8,
+  },
+  templateBtnText: {
+    fontWeight: "bold",
+  },
   btn: {
     padding: 10,
     borderRadius: 10,
     backgroundColor: "#2ba0d6",
-    marginBottom: 30,
+    marginBottom: 50,
   },
   btnText: {
     textAlign: "center",
