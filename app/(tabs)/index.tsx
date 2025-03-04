@@ -1,10 +1,13 @@
 import React, { useRef, useEffect } from "react";
 import { View, Text, StyleSheet, ScrollView, Animated } from "react-native";
 import { useNavigation } from "expo-router";
+import { useAuth } from "@/providers/AuthProvider";
+import LoginScreen from "../(auth)/login";
 
 export default function ProfileScreen() {
   const navigation = useNavigation();
   const scrollY = useRef(new Animated.Value(0)).current;
+  const { user } = useAuth();
 
   const textOpacity = scrollY.interpolate({
     inputRange: [0, 100],
@@ -22,6 +25,8 @@ export default function ProfileScreen() {
     });
   }, [navigation, textOpacity]);
 
+  if (!user) return <LoginScreen />;
+
   return (
     <ScrollView
       style={styles.container}
@@ -31,9 +36,7 @@ export default function ProfileScreen() {
       )}
       scrollEventThrottle={16}
     >
-      <View style={styles.pageHeader}>
-        <Text style={styles.headerText}>Profile</Text>
-      </View>
+      <Text style={styles.user}>Logged in as {user.email}</Text>
     </ScrollView>
   );
 }
@@ -44,4 +47,8 @@ const styles = StyleSheet.create({
     height: 100,
   },
   headerText: { fontSize: 30, fontWeight: "bold", color: "black" },
+  user: {
+    fontSize: 18,
+    textAlign: "center",
+  },
 });
