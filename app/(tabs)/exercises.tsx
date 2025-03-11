@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   SectionList,
   TextInput,
@@ -6,7 +6,10 @@ import {
   View,
   SafeAreaView,
   TouchableOpacity,
+  Button,
+  Alert,
 } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 interface Item {
   id: string;
@@ -17,15 +20,6 @@ interface Section {
   title: string;
   data: Item[];
 }
-
-const rawData: Item[] = [
-  { id: "1", name: "Apple" },
-  { id: "2", name: "Avocado" },
-  { id: "3", name: "Banana" },
-  { id: "4", name: "Blueberry" },
-  { id: "5", name: "Cherry" },
-  { id: "6", name: "Date" },
-];
 
 const groupData = (data: Item[], recentItems: Item[]): Section[] => {
   const sorted = data.sort((a, b) => a.name.localeCompare(b.name));
@@ -51,8 +45,37 @@ const groupData = (data: Item[], recentItems: Item[]): Section[] => {
 export default function Exercises() {
   const [searchQuery, setSearchQuery] = useState("");
   const [recent, setRecent] = useState<Item[]>([]);
+  const [items, setItems] = useState<Item[]>([]);
 
-  const filteredData = rawData.filter((item) =>
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const storedItems = await AsyncStorage.getItem("items");
+        const storedRecent = await AsyncStorage.getItem("recent");
+        if (storedItems) setItems(JSON.parse(storedItems));
+        if (storedRecent) setRecent(JSON.parse(storedRecent));
+      } catch (error) {
+        console.error("Failed to load data:", error);
+      }
+    };
+
+    loadData();
+  }, []);
+
+  useEffect(() => {
+    const saveData = async () => {
+      try {
+        await AsyncStorage.setItem("items", JSON.stringify(items));
+        await AsyncStorage.setItem("recent", JSON.stringify(recent));
+      } catch (error) {
+        console.error("Failed to save data:", error);
+      }
+    };
+
+    saveData();
+  }, [items, recent]);
+
+  const filteredData = items.filter((item) =>
     item.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
@@ -62,6 +85,18 @@ export default function Exercises() {
     setRecent((prev) => {
       const updatedRecent = prev.filter((i) => i.id !== item.id);
       return [item, ...updatedRecent].slice(0, 5);
+    });
+  };
+
+  const handleAddItem = () => {
+    Alert.prompt("Add Item", "Enter the name of the new item:", (name) => {
+      if (name.trim()) {
+        const newItem: Item = {
+          id: Date.now().toString(),
+          name: name.trim(),
+        };
+        setItems((prev) => [...prev, newItem]);
+      }
     });
   };
 
@@ -81,6 +116,7 @@ export default function Exercises() {
           value={searchQuery}
           onChangeText={setSearchQuery}
         />
+        <Button title="Add Item" onPress={handleAddItem} />
         <SectionList
           sections={sections}
           keyExtractor={(item) => item.id}
