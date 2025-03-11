@@ -10,6 +10,7 @@ import {
 import { router, useNavigation } from "expo-router";
 import WorkoutList from "@/components/WorkoutList";
 import { Entypo } from "@expo/vector-icons";
+import { useWorkout } from "@/providers/WorkoutProvider";
 
 export type Workout = {
   id: number;
@@ -42,7 +43,13 @@ const data: Workout[] = [
 
 export default function StartWorkoutScreen() {
   const navigation = useNavigation();
+  const { startWorkout } = useWorkout();
   const scrollY = useRef(new Animated.Value(0)).current;
+
+  const start = () => {
+    router.push("/(modals)/workout");
+    startWorkout();
+  };
 
   const textOpacity = scrollY.interpolate({
     inputRange: [0, 100],
@@ -71,10 +78,7 @@ export default function StartWorkoutScreen() {
     >
       <Text style={styles.headerText}>Start Workout</Text>
 
-      <TouchableOpacity
-        style={styles.btn}
-        onPress={() => router.push("/(modals)/workout")}
-      >
+      <TouchableOpacity style={styles.btn} onPress={start}>
         <Text style={styles.btnText}>Start Workout</Text>
       </TouchableOpacity>
 
