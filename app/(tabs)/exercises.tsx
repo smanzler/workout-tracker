@@ -5,11 +5,17 @@ import {
   Text,
   View,
   SafeAreaView,
-  TouchableOpacity,
   Button,
   Alert,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Gesture, GestureDetector } from "react-native-gesture-handler";
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+  runOnJS,
+} from "react-native-reanimated";
 
 interface Item {
   id: string;
@@ -47,6 +53,7 @@ export default function Exercises() {
   const [recent, setRecent] = useState<Item[]>([]);
   const [items, setItems] = useState<Item[]>([]);
 
+  // Load data from AsyncStorage
   useEffect(() => {
     const loadData = async () => {
       try {
@@ -100,6 +107,54 @@ export default function Exercises() {
     });
   };
 
+  const handleDelete = (id: string) => {
+    Alert.alert("Delete Item", "Are you sure you want to delete this item?", [
+      {
+        text: "Cancel",
+        style: "cancel",
+      },
+      {
+        text: "Delete",
+        style: "destructive",
+        onPress: () => {
+          setItems((prev) => prev.filter((item) => item.id !== id));
+          setRecent((prev) => prev.filter((item) => item.id !== id));
+        },
+      },
+    ]);
+  };
+
+  const renderItem = ({ item }: { item: Item }) => {
+    const translateX = useSharedValue(0);
+
+    const panGesture = Gesture.Pan()
+      .onUpdate((event) => {
+        translateX.value = Math.max(-100, event.translationX);
+      })
+      .onEnd(() => {
+        if (translateX.value < -50) {
+          runOnJS(handleDelete)(item.id);
+        }
+
+        translateX.value = withTiming(0);
+      });
+
+    const animatedStyle = useAnimatedStyle(() => ({
+      transform: [{ translateX: translateX.value }],
+      opacity: withTiming(translateX.value < -50 ? 0 : 1),
+    }));
+
+    return (
+      <GestureDetector gesture={panGesture}>
+        <Animated.View
+          style={[{ padding: 10, backgroundColor: "#fff" }, animatedStyle]}
+        >
+          <Text onPress={() => handleItemPress(item)}>{item.name}</Text>
+        </Animated.View>
+      </GestureDetector>
+    );
+  };
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <View style={{ flex: 1, padding: 20 }}>
@@ -120,13 +175,7 @@ export default function Exercises() {
         <SectionList
           sections={sections}
           keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
-            <TouchableOpacity onPress={() => handleItemPress(item)}>
-              <View style={{ padding: 10 }}>
-                <Text>{item.name}</Text>
-              </View>
-            </TouchableOpacity>
-          )}
+          renderItem={renderItem}
           renderSectionHeader={({ section: { title } }) => (
             <View style={{ backgroundColor: "#eee", padding: 5 }}>
               <Text style={{ fontWeight: "bold" }}>{title}</Text>
