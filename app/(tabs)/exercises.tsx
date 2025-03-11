@@ -1,5 +1,12 @@
 import React, { useState } from "react";
-import { SectionList, TextInput, Text, View } from "react-native";
+import {
+  SectionList,
+  TextInput,
+  Text,
+  View,
+  SafeAreaView,
+  TouchableOpacity,
+} from "react-native";
 
 interface Item {
   id: string;
@@ -20,7 +27,7 @@ const rawData: Item[] = [
   { id: "6", name: "Date" },
 ];
 
-const groupData = (data: Item[]): Section[] => {
+const groupData = (data: Item[], recentItems: Item[]): Section[] => {
   const sorted = data.sort((a, b) => a.name.localeCompare(b.name));
   const sections: Record<string, Section> = {};
 
@@ -32,46 +39,65 @@ const groupData = (data: Item[]): Section[] => {
     sections[firstLetter].data.push(item);
   });
 
-  return Object.values(sections);
+  const groupedSections = Object.values(sections);
+
+  if (recentItems.length > 0) {
+    groupedSections.unshift({ title: "Recent", data: recentItems });
+  }
+
+  return groupedSections;
 };
 
 export default function Exercises() {
   const [searchQuery, setSearchQuery] = useState("");
+  const [recent, setRecent] = useState<Item[]>([]);
 
   const filteredData = rawData.filter((item) =>
     item.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const sections: Section[] = groupData(filteredData);
+  const sections: Section[] = groupData(filteredData, recent);
+
+  const handleItemPress = (item: Item) => {
+    setRecent((prev) => {
+      const updatedRecent = prev.filter((i) => i.id !== item.id);
+      return [item, ...updatedRecent].slice(0, 5);
+    });
+  };
 
   return (
-    <View style={{ flex: 1, padding: 20 }}>
-      <TextInput
-        style={{
-          height: 40,
-          borderColor: "gray",
-          borderWidth: 1,
-          marginBottom: 10,
-          paddingHorizontal: 10,
-        }}
-        placeholder="Search..."
-        value={searchQuery}
-        onChangeText={setSearchQuery}
-      />
-      <SectionList
-        sections={sections}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <View style={{ padding: 10 }}>
-            <Text>{item.name}</Text>
-          </View>
-        )}
-        renderSectionHeader={({ section: { title } }) => (
-          <View style={{ backgroundColor: "#eee", padding: 5 }}>
-            <Text style={{ fontWeight: "bold" }}>{title}</Text>
-          </View>
-        )}
-      />
-    </View>
+    <SafeAreaView style={{ flex: 1 }}>
+      <View style={{ flex: 1, padding: 20 }}>
+        <TextInput
+          style={{
+            height: 40,
+            borderColor: "gray",
+            borderWidth: 1,
+            marginBottom: 10,
+            paddingHorizontal: 10,
+            borderRadius: 5,
+          }}
+          placeholder="Search..."
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+        />
+        <SectionList
+          sections={sections}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => (
+            <TouchableOpacity onPress={() => handleItemPress(item)}>
+              <View style={{ padding: 10 }}>
+                <Text>{item.name}</Text>
+              </View>
+            </TouchableOpacity>
+          )}
+          renderSectionHeader={({ section: { title } }) => (
+            <View style={{ backgroundColor: "#eee", padding: 5 }}>
+              <Text style={{ fontWeight: "bold" }}>{title}</Text>
+            </View>
+          )}
+        />
+      </View>
+    </SafeAreaView>
   );
 }
