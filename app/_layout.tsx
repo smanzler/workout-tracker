@@ -14,6 +14,7 @@ import { useColorScheme } from "@/hooks/useColorScheme";
 import AuthProvider from "@/providers/AuthProvider";
 import { SyncProvider } from "@/providers/SyncProvider";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { WorkoutProvider } from "@/providers/WorkoutProvider";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -37,16 +38,22 @@ export default function RootLayout() {
   return (
     <GestureHandlerRootView>
       <AuthProvider>
-        <ThemeProvider
-          value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
-        >
-          <SyncProvider>
-            <Stack>
-              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            </Stack>
-            <StatusBar style="auto" />
-          </SyncProvider>
-        </ThemeProvider>
+        <WorkoutProvider>
+          <ThemeProvider
+            value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
+          >
+            <SyncProvider>
+              <Stack>
+                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                <Stack.Screen
+                  name="(modals)/workout"
+                  options={{ presentation: "modal", headerShown: false }}
+                />
+              </Stack>
+              <StatusBar style="auto" />
+            </SyncProvider>
+          </ThemeProvider>
+        </WorkoutProvider>
       </AuthProvider>
     </GestureHandlerRootView>
   );

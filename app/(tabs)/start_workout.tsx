@@ -7,9 +7,8 @@ import {
   Animated,
   TouchableOpacity,
 } from "react-native";
-import { useNavigation } from "expo-router";
+import { router, useNavigation } from "expo-router";
 import WorkoutList from "@/components/WorkoutList";
-import { template } from "@babel/core";
 import { Entypo } from "@expo/vector-icons";
 
 export type Workout = {
@@ -72,7 +71,10 @@ export default function StartWorkoutScreen() {
     >
       <Text style={styles.headerText}>Start Workout</Text>
 
-      <TouchableOpacity style={styles.btn}>
+      <TouchableOpacity
+        style={styles.btn}
+        onPress={() => router.push("/(modals)/workout")}
+      >
         <Text style={styles.btnText}>Start Workout</Text>
       </TouchableOpacity>
 
