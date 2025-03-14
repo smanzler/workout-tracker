@@ -87,7 +87,7 @@ export default function StartWorkoutScreen() {
         <TouchableOpacity style={styles.templateBtn}>
           <View style={{ flexDirection: "row" }}>
             <Text style={styles.templateBtnText}>Template</Text>
-            <Entypo name="plus" size={16} />
+            <Entypo name="plus" size={16} color="white" />
           </View>
         </TouchableOpacity>
       </View>
@@ -111,12 +111,13 @@ const styles = StyleSheet.create({
     alignItems: "flex-start",
   },
   templateBtn: {
-    backgroundColor: "#b7d4eb",
+    backgroundColor: "#2ba0d6",
     padding: 10,
     borderRadius: 8,
   },
   templateBtnText: {
     fontWeight: "bold",
+    color: "white",
   },
   btn: {
     padding: 10,

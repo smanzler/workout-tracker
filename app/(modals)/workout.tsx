@@ -1,6 +1,7 @@
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import React from "react";
 import { useWorkout } from "@/providers/WorkoutProvider";
+import { router } from "expo-router";
 
 const Workout = () => {
   const { seconds, startWorkout, stopWorkout } = useWorkout();
@@ -51,7 +52,12 @@ const Workout = () => {
       </View>
 
       <Text>Exercises</Text>
-      <TouchableOpacity style={styles.addBtn}>
+      <TouchableOpacity
+        style={styles.addBtn}
+        onPress={() => {
+          router.push("/(modals)/add_exercise");
+        }}
+      >
         <Text style={{ color: "white" }}>Add Exercises</Text>
       </TouchableOpacity>
     </View>
@@ -72,10 +78,11 @@ const styles = StyleSheet.create({
   },
   btn: { backgroundColor: "#bf787d", padding: 5, borderRadius: 5 },
   addBtn: {
-    backgroundColor: "blue",
+    backgroundColor: "#2ba0d6",
     width: 120,
     alignItems: "center",
     padding: 5,
     display: "flex",
+    borderRadius: 5,
   },
 });

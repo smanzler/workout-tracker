@@ -4,7 +4,7 @@ import {
   ThemeProvider,
 } from "@react-navigation/native";
 import { useFonts } from "expo-font";
-import { Stack } from "expo-router";
+import { router, Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
@@ -15,6 +15,8 @@ import AuthProvider from "@/providers/AuthProvider";
 import { SyncProvider } from "@/providers/SyncProvider";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { WorkoutProvider } from "@/providers/WorkoutProvider";
+import { TouchableOpacity } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -48,6 +50,18 @@ export default function RootLayout() {
                 <Stack.Screen
                   name="(modals)/workout"
                   options={{ presentation: "modal", headerShown: false }}
+                />
+                <Stack.Screen
+                  name="(modals)/add_exercise"
+                  options={{
+                    title: "Add Exercises",
+                    presentation: "fullScreenModal",
+                    headerLeft: () => (
+                      <TouchableOpacity onPress={() => router.back()}>
+                        <Ionicons name="chevron-back" size={24} />
+                      </TouchableOpacity>
+                    ),
+                  }}
                 />
               </Stack>
               <StatusBar style="auto" />

@@ -1,29 +1,18 @@
-import React, { useState, useEffect } from "react";
 import {
-  SectionList,
-  TextInput,
-  Text,
-  View,
-  SafeAreaView,
-  Button,
   Alert,
+  Animated,
+  Button,
+  SafeAreaView,
+  SectionList,
   StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
+import React, { useEffect, useState } from "react";
+import { Exercise } from "../(tabs)/exercises";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Gesture, GestureDetector } from "react-native-gesture-handler";
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
-  runOnJS,
-} from "react-native-reanimated";
-
-export interface Exercise {
-  id: string;
-  name: string;
-  area?: string;
-  category?: string;
-}
 
 interface Section {
   title: string;
@@ -51,7 +40,7 @@ const groupData = (data: Exercise[], recentItems: Exercise[]): Section[] => {
   return groupedSections;
 };
 
-export default function Exercises() {
+export default function Add_Exercise() {
   const [searchQuery, setSearchQuery] = useState("");
   const [recent, setRecent] = useState<Exercise[]>([]);
   const [items, setItems] = useState<Exercise[]>([]);
@@ -109,58 +98,9 @@ export default function Exercises() {
     });
   };
 
-  const handleDelete = (id: string) => {
-    Alert.alert("Delete Item", "Are you sure you want to delete this item?", [
-      {
-        text: "Cancel",
-        style: "cancel",
-      },
-      {
-        text: "Delete",
-        style: "destructive",
-        onPress: () => {
-          setItems((prev) => prev.filter((item) => item.id !== id));
-          setRecent((prev) => prev.filter((item) => item.id !== id));
-        },
-      },
-    ]);
-  };
-
-  const renderItem = ({ item }: { item: Exercise }) => {
-    const translateX = useSharedValue(0);
-
-    const panGesture = Gesture.Pan()
-      .onUpdate((event) => {
-        translateX.value = Math.max(-100, event.translationX);
-      })
-      .onEnd(() => {
-        if (translateX.value < -50) {
-          runOnJS(handleDelete)(item.id);
-        }
-
-        translateX.value = withTiming(0);
-      });
-
-    const animatedStyle = useAnimatedStyle(() => ({
-      transform: [{ translateX: translateX.value }],
-      opacity: withTiming(translateX.value < -50 ? 0 : 1),
-    }));
-
-    return (
-      <GestureDetector gesture={panGesture}>
-        <Animated.View
-          style={[{ padding: 10, backgroundColor: "#fff" }, animatedStyle]}
-        >
-          <Text onPress={() => handleItemPress(item)}>{item.name}</Text>
-        </Animated.View>
-      </GestureDetector>
-    );
-  };
-
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <View style={{ flex: 1, padding: 20 }}>
-        <Text style={styles.headerText}>Exercises</Text>
         <TextInput
           style={{
             height: 40,
@@ -178,7 +118,13 @@ export default function Exercises() {
         <SectionList
           sections={sections}
           keyExtractor={(item) => item.id}
-          renderItem={renderItem}
+          renderItem={({ item }) => (
+            <TouchableOpacity onPress={() => handleItemPress(item)}>
+              <View style={{ padding: 10 }}>
+                <Text>{item.name}</Text>
+              </View>
+            </TouchableOpacity>
+          )}
           renderSectionHeader={({ section: { title } }) => (
             <View style={{ backgroundColor: "#eee", padding: 5 }}>
               <Text style={{ fontWeight: "bold" }}>{title}</Text>
@@ -189,12 +135,3 @@ export default function Exercises() {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  headerText: {
-    fontSize: 30,
-    fontWeight: "bold",
-    color: "black",
-    marginBottom: 40,
-  },
-});
