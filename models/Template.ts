@@ -6,6 +6,8 @@ export class Template extends Model {
 
   @field("name") name!: string;
 
+  @field("user_id") userId!: string | undefined;
+
   @date("created_at") createdAt!: number;
   @date("updated_at") updatedAt!: number;
 }

@@ -9,9 +9,11 @@ export class WorkoutExercise extends Model {
 
   @relation("workouts", "workout_id") workout!: Workout;
   @relation("exercises", "exercise_id") exercise!: Exercise;
-  @relation("supersets", "superset_id") superset!: Superset | null;
+  @relation("supersets", "superset_id") superset!: Superset | undefined;
 
   @field("order") order!: number;
+
+  @field("user_id") userId!: string | undefined;
 
   @date("created_at") createdAt!: number;
   @date("updated_at") updatedAt!: number;
