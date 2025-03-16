@@ -10,8 +10,10 @@ import {
   View,
 } from "react-native";
 import React, { useEffect, useState } from "react";
-import { Exercise } from "../(tabs)/exercises";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Exercise } from "@/models/Exercise";
+import { withObservables } from "@nozbe/watermelondb/react";
+import database, { exercisesCollection } from "@/db";
 
 interface Section {
   title: string;
@@ -19,11 +21,11 @@ interface Section {
 }
 
 const groupData = (data: Exercise[], recentItems: Exercise[]): Section[] => {
-  const sorted = data.sort((a, b) => a.name.localeCompare(b.name));
+  const sorted = data.sort((a, b) => a.title.localeCompare(b.title));
   const sections: Record<string, Section> = {};
 
   sorted.forEach((item) => {
-    const firstLetter = item.name[0].toUpperCase();
+    const firstLetter = item.title[0].toUpperCase();
     if (!sections[firstLetter]) {
       sections[firstLetter] = { title: firstLetter, data: [] };
     }
@@ -39,42 +41,13 @@ const groupData = (data: Exercise[], recentItems: Exercise[]): Section[] => {
   return groupedSections;
 };
 
-export default function Add_Exercise() {
+function Add_Exercise({ exercises }: { exercises: Exercise[] }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [recent, setRecent] = useState<Exercise[]>([]);
-  const [items, setItems] = useState<Exercise[]>([]);
   const [selectedItems, setSelectedItems] = useState<Exercise[]>([]);
 
-  useEffect(() => {
-    const loadData = async () => {
-      try {
-        const storedItems = await AsyncStorage.getItem("items");
-        const storedRecent = await AsyncStorage.getItem("recent");
-        if (storedItems) setItems(JSON.parse(storedItems));
-        if (storedRecent) setRecent(JSON.parse(storedRecent));
-      } catch (error) {
-        console.error("Failed to load data:", error);
-      }
-    };
-
-    loadData();
-  }, []);
-
-  useEffect(() => {
-    const saveData = async () => {
-      try {
-        await AsyncStorage.setItem("items", JSON.stringify(items));
-        await AsyncStorage.setItem("recent", JSON.stringify(recent));
-      } catch (error) {
-        console.error("Failed to save data:", error);
-      }
-    };
-
-    saveData();
-  }, [items, recent]);
-
-  const filteredData = items.filter((item) =>
-    item.name.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredData = exercises.filter((item) =>
+    item.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const sections: Section[] = groupData(filteredData, recent);
@@ -104,15 +77,23 @@ export default function Add_Exercise() {
   };
 
   const handleAddItem = () => {
-    Alert.prompt("Add Item", "Enter the name of the new item:", (name) => {
-      if (name.trim()) {
-        const newExercise: Exercise = {
-          id: Date.now().toString(),
-          name: name.trim(),
-        };
-        setItems((prev) => [...prev, newExercise]);
+    Alert.prompt(
+      "Add Exercise",
+      "Enter the name of the new exercise:",
+      async (name) => {
+        if (name) {
+          try {
+            await database.write(async () => {
+              await exercisesCollection.create((exercise) => {
+                exercise.title = name;
+              });
+            });
+          } catch (error) {
+            console.error("Failed to add exercise:", error);
+          }
+        }
       }
-    });
+    );
   };
 
   return (
@@ -155,7 +136,7 @@ export default function Add_Exercise() {
                     styles.selectedItem,
                 ]}
               >
-                <Text>{item.name}</Text>
+                <Text>{item.title}</Text>
               </View>
             </TouchableOpacity>
           )}
@@ -169,6 +150,12 @@ export default function Add_Exercise() {
     </SafeAreaView>
   );
 }
+
+const enhance = withObservables([], () => ({
+  exercises: exercisesCollection.query(),
+}));
+
+export default enhance(Add_Exercise);
 
 const styles = StyleSheet.create({
   topBar: {

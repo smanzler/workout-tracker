@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { Alert, Button, StyleSheet, TextInput, View } from "react-native";
 import { router } from "expo-router";
 import { supabase } from "@/lib/supabase";
-import { ThemedView } from "@/components/ThemedView";
 
 export default function LoginScreen() {
   const [email, setEmail] = useState("");
