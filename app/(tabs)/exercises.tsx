@@ -9,7 +9,6 @@ import {
   Alert,
   StyleSheet,
 } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, {
   useAnimatedStyle,
@@ -17,13 +16,8 @@ import Animated, {
   withTiming,
   runOnJS,
 } from "react-native-reanimated";
-
-export interface Exercise {
-  id: string;
-  name: string;
-  area?: string;
-  category?: string;
-}
+import { Exercise } from "@/models/Exercise";
+import database from "@/db";
 
 interface Section {
   title: string;
@@ -31,11 +25,11 @@ interface Section {
 }
 
 const groupData = (data: Exercise[], recentItems: Exercise[]): Section[] => {
-  const sorted = data.sort((a, b) => a.name.localeCompare(b.name));
+  const sorted = data.sort((a, b) => a.title.localeCompare(b.title));
   const sections: Record<string, Section> = {};
 
   sorted.forEach((item) => {
-    const firstLetter = item.name[0].toUpperCase();
+    const firstLetter = item.title[0].toUpperCase();
     if (!sections[firstLetter]) {
       sections[firstLetter] = { title: firstLetter, data: [] };
     }
@@ -59,10 +53,11 @@ export default function Exercises() {
   useEffect(() => {
     const loadData = async () => {
       try {
-        const storedItems = await AsyncStorage.getItem("items");
-        const storedRecent = await AsyncStorage.getItem("recent");
-        if (storedItems) setItems(JSON.parse(storedItems));
-        if (storedRecent) setRecent(JSON.parse(storedRecent));
+        const exercises = await database
+          .get<Exercise>("exercises")
+          .query()
+          .fetch();
+        setItems(exercises);
       } catch (error) {
         console.error("Failed to load data:", error);
       }
@@ -71,24 +66,34 @@ export default function Exercises() {
     loadData();
   }, []);
 
-  useEffect(() => {
-    const saveData = async () => {
-      try {
-        await AsyncStorage.setItem("items", JSON.stringify(items));
-        await AsyncStorage.setItem("recent", JSON.stringify(recent));
-      } catch (error) {
-        console.error("Failed to save data:", error);
-      }
-    };
-
-    saveData();
-  }, [items, recent]);
-
   const filteredData = items.filter((item) =>
-    item.name.toLowerCase().includes(searchQuery.toLowerCase())
+    item.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const sections: Section[] = groupData(filteredData, recent);
+
+  const handleAddItem = () => {
+    Alert.prompt(
+      "Add Exercise",
+      "Enter the name of the new exercise:",
+      async (name) => {
+        if (name) {
+          try {
+            await database.write(async () => {
+              const newExercise = await database
+                .get<Exercise>("exercises")
+                .create((exercise: { title: string }) => {
+                  exercise.title = name;
+                });
+              setItems((prev) => [...prev, newExercise]);
+            });
+          } catch (error) {
+            console.error("Failed to add exercise:", error);
+          }
+        }
+      }
+    );
+  };
 
   const handleItemPress = (item: Exercise) => {
     setRecent((prev) => {
@@ -97,33 +102,32 @@ export default function Exercises() {
     });
   };
 
-  const handleAddItem = () => {
-    Alert.prompt("Add Item", "Enter the name of the new item:", (name) => {
-      if (name.trim()) {
-        const newExercise: Exercise = {
-          id: Date.now().toString(),
-          name: name.trim(),
-        };
-        setItems((prev) => [...prev, newExercise]);
-      }
-    });
-  };
-
   const handleDelete = (id: string) => {
-    Alert.alert("Delete Item", "Are you sure you want to delete this item?", [
-      {
-        text: "Cancel",
-        style: "cancel",
-      },
-      {
-        text: "Delete",
-        style: "destructive",
-        onPress: () => {
-          setItems((prev) => prev.filter((item) => item.id !== id));
-          setRecent((prev) => prev.filter((item) => item.id !== id));
+    Alert.alert(
+      "Delete Exercise",
+      "Are you sure you want to delete this exercise?",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              await database.write(async () => {
+                const exercise = await database
+                  .get<Exercise>("exercises")
+                  .find(id);
+                await exercise.markAsDeleted(); // Soft delete
+                setItems((prev) => prev.filter((item) => item.id !== id));
+                setRecent((prev) => prev.filter((item) => item.id !== id));
+              });
+            } catch (error) {
+              console.error("Failed to delete exercise:", error);
+            }
+          },
         },
-      },
-    ]);
+      ]
+    );
   };
 
   const renderItem = ({ item }: { item: Exercise }) => {
@@ -137,7 +141,6 @@ export default function Exercises() {
         if (translateX.value < -50) {
           runOnJS(handleDelete)(item.id);
         }
-
         translateX.value = withTiming(0);
       });
 
@@ -148,10 +151,8 @@ export default function Exercises() {
 
     return (
       <GestureDetector gesture={panGesture}>
-        <Animated.View
-          style={[{ padding: 10, backgroundColor: "#fff" }, animatedStyle]}
-        >
-          <Text onPress={() => handleItemPress(item)}>{item.name}</Text>
+        <Animated.View style={[styles.itemContainer, animatedStyle]}>
+          <Text onPress={() => handleItemPress(item)}>{item.title}</Text>
         </Animated.View>
       </GestureDetector>
     );
@@ -162,26 +163,19 @@ export default function Exercises() {
       <View style={{ flex: 1, padding: 20 }}>
         <Text style={styles.headerText}>Exercises</Text>
         <TextInput
-          style={{
-            height: 40,
-            borderColor: "gray",
-            borderWidth: 1,
-            marginBottom: 10,
-            paddingHorizontal: 10,
-            borderRadius: 5,
-          }}
+          style={styles.input}
           placeholder="Search..."
           value={searchQuery}
           onChangeText={setSearchQuery}
         />
-        <Button title="Add Item" onPress={handleAddItem} />
+        <Button title="Add Exercise" onPress={handleAddItem} />
         <SectionList
           sections={sections}
           keyExtractor={(item) => item.id}
           renderItem={renderItem}
           renderSectionHeader={({ section: { title } }) => (
-            <View style={{ backgroundColor: "#eee", padding: 5 }}>
-              <Text style={{ fontWeight: "bold" }}>{title}</Text>
+            <View style={styles.sectionHeader}>
+              <Text style={styles.sectionHeaderText}>{title}</Text>
             </View>
           )}
         />
@@ -196,5 +190,24 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "black",
     marginBottom: 40,
+  },
+  input: {
+    height: 40,
+    borderColor: "gray",
+    borderWidth: 1,
+    marginBottom: 10,
+    paddingHorizontal: 10,
+    borderRadius: 5,
+  },
+  sectionHeader: {
+    backgroundColor: "#eee",
+    padding: 5,
+  },
+  sectionHeaderText: {
+    fontWeight: "bold",
+  },
+  itemContainer: {
+    padding: 10,
+    backgroundColor: "#fff",
   },
 });
