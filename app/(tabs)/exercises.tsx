@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   SectionList,
   TextInput,
@@ -16,8 +16,11 @@ import Animated, {
   withTiming,
   runOnJS,
 } from "react-native-reanimated";
+import { withObservables } from "@nozbe/watermelondb/react";
 import { Exercise } from "@/models/Exercise";
 import database from "@/db";
+
+export const exercisesCollection = database.get<Exercise>("exercises");
 
 interface Section {
   title: string;
@@ -45,28 +48,11 @@ const groupData = (data: Exercise[], recentItems: Exercise[]): Section[] => {
   return groupedSections;
 };
 
-export default function Exercises() {
+function Exercises({ exercises }: { exercises: Exercise[] }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [recent, setRecent] = useState<Exercise[]>([]);
-  const [items, setItems] = useState<Exercise[]>([]);
 
-  useEffect(() => {
-    const loadData = async () => {
-      try {
-        const exercises = await database
-          .get<Exercise>("exercises")
-          .query()
-          .fetch();
-        setItems(exercises);
-      } catch (error) {
-        console.error("Failed to load data:", error);
-      }
-    };
-
-    loadData();
-  }, []);
-
-  const filteredData = items.filter((item) =>
+  const filteredData = exercises.filter((item) =>
     item.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
@@ -80,12 +66,9 @@ export default function Exercises() {
         if (name) {
           try {
             await database.write(async () => {
-              const newExercise = await database
-                .get<Exercise>("exercises")
-                .create((exercise: { title: string }) => {
-                  exercise.title = name;
-                });
-              setItems((prev) => [...prev, newExercise]);
+              await exercisesCollection.create((exercise) => {
+                exercise.title = name;
+              });
             });
           } catch (error) {
             console.error("Failed to add exercise:", error);
@@ -114,13 +97,10 @@ export default function Exercises() {
           onPress: async () => {
             try {
               await database.write(async () => {
-                const exercise = await database
-                  .get<Exercise>("exercises")
-                  .find(id);
-                await exercise.markAsDeleted(); // Soft delete
-                setItems((prev) => prev.filter((item) => item.id !== id));
-                setRecent((prev) => prev.filter((item) => item.id !== id));
+                const exercise = await exercisesCollection.find(id);
+                await exercise.markAsDeleted();
               });
+              setRecent((prev) => prev.filter((item) => item.id !== id));
             } catch (error) {
               console.error("Failed to delete exercise:", error);
             }
@@ -183,6 +163,12 @@ export default function Exercises() {
     </SafeAreaView>
   );
 }
+
+const enhance = withObservables([], () => ({
+  exercises: exercisesCollection.query(),
+}));
+
+export default enhance(Exercises);
 
 const styles = StyleSheet.create({
   headerText: {
