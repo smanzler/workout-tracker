@@ -5,7 +5,8 @@ export class Workout extends Model {
   static table = "workouts";
 
   @field("name") name!: string;
-  @field("date") date!: number;
+  @date("startTime") startTime!: number;
+  @date("endTime") endTime!: number | undefined;
 
   @field("user_id") userId!: string | undefined;
 

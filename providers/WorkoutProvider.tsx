@@ -8,11 +8,13 @@ import React, {
 import { AppState, AppStateStatus } from "react-native";
 import BackgroundTimer from "react-native-background-timer";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import database from "@/db";
+import { Workout } from "@/models/Workout";
 
 interface WorkoutContextType {
   seconds: number;
-  startWorkout: () => void;
-  stopWorkout: () => void;
+  startWorkout: () => Promise<void>;
+  stopWorkout: () => Promise<void>;
 }
 
 const WorkoutContext = createContext<WorkoutContextType | undefined>(undefined);
@@ -24,32 +26,10 @@ export const WorkoutProvider = ({
 }) => {
   const [seconds, setSeconds] = useState(0);
   const timerRef = useRef<number | null>(null);
+  const [activeWorkoutId, setActiveWorkoutId] = useState<string | undefined>(
+    undefined
+  );
   const appState = useRef(AppState.currentState);
-
-  const saveStartTime = async () => {
-    try {
-      await AsyncStorage.setItem(
-        "workoutStartTime",
-        JSON.stringify(Date.now())
-      );
-    } catch (error) {
-      console.error("Failed to save workout start time", error);
-    }
-  };
-
-  const loadStartTime = async () => {
-    try {
-      const startTime = await AsyncStorage.getItem("workoutStartTime");
-      if (startTime) {
-        const startTimestamp = JSON.parse(startTime);
-        const elapsed = Math.floor((Date.now() - startTimestamp) / 1000);
-        setSeconds(elapsed);
-        startTimer();
-      }
-    } catch (error) {
-      console.error("Failed to load workout start time", error);
-    }
-  };
 
   const startTimer = () => {
     if (!timerRef.current) {
@@ -64,10 +44,23 @@ export const WorkoutProvider = ({
       BackgroundTimer.clearInterval(timerRef.current);
       timerRef.current = null;
     }
+  };
+
+  const loadStartTime = async () => {
     try {
-      await AsyncStorage.removeItem("workoutStartTime");
+      const activeWorkoutId = await AsyncStorage.getItem("activeWorkoutId");
+      if (activeWorkoutId) {
+        const workout = await database
+          .get<Workout>("workouts")
+          .find(activeWorkoutId);
+        if (workout && workout.startTime) {
+          const elapsed = Math.floor((Date.now() - workout.startTime) / 1000);
+          setSeconds(elapsed);
+          startTimer();
+        }
+      }
     } catch (error) {
-      console.error("Failed to clear workout start time", error);
+      console.error("Failed to load workout start time", error);
     }
   };
 
@@ -93,13 +86,44 @@ export const WorkoutProvider = ({
   }, []);
 
   const startWorkout = async () => {
-    setSeconds(0);
-    startTimer();
-    await saveStartTime();
+    try {
+      const newWorkout = await database.write(async () => {
+        const workout = await database
+          .get<Workout>("workouts")
+          .create((workout) => {
+            workout.startTime = Date.now();
+          });
+        return workout;
+      });
+
+      await AsyncStorage.setItem("activeWorkoutId", newWorkout.id);
+      setSeconds(0);
+      startTimer();
+    } catch (error) {
+      console.error("Failed to start workout", error);
+    }
   };
 
   const stopWorkout = async () => {
-    await stopTimer();
+    try {
+      const activeWorkoutId = await AsyncStorage.getItem("activeWorkoutId");
+      if (activeWorkoutId) {
+        await database.write(async () => {
+          const workout = await database
+            .get<Workout>("workouts")
+            .find(activeWorkoutId);
+          if (workout) {
+            workout.endTime = Date.now();
+          }
+        });
+        await AsyncStorage.removeItem("activeWorkoutId");
+      }
+
+      stopTimer();
+      setSeconds(0);
+    } catch (error) {
+      console.error("Failed to stop workout", error);
+    }
   };
 
   return (

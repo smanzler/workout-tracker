@@ -47,8 +47,8 @@ export default function StartWorkoutScreen() {
   const scrollY = useRef(new Animated.Value(0)).current;
 
   const start = () => {
-    router.push("/(modals)/workout");
     startWorkout();
+    router.push("/(modals)/workout");
   };
 
   const textOpacity = scrollY.interpolate({

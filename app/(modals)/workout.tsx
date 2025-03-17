@@ -4,7 +4,7 @@ import { useWorkout } from "@/providers/WorkoutProvider";
 import { router } from "expo-router";
 
 const Workout = () => {
-  const { seconds, startWorkout, stopWorkout } = useWorkout();
+  const { seconds, stopWorkout } = useWorkout();
 
   const formatTime = (totalSeconds: number): string => {
     const hours = Math.floor(totalSeconds / 3600);

@@ -20,7 +20,8 @@ export default appSchema({
       name: "workouts",
       columns: [
         { name: "name", type: "string" },
-        { name: "date", type: "number" },
+        { name: "startTime", type: "number" },
+        { name: "endTime", type: "number", isOptional: true },
         { name: "user_id", type: "string", isOptional: true },
         { name: "created_at", type: "number" },
         { name: "updated_at", type: "number" },
