@@ -60,6 +60,7 @@ export default appSchema({
         { name: "workout_exercise_id", type: "string", isIndexed: true },
         { name: "reps", type: "number" },
         { name: "weight", type: "number" },
+        { name: "order", type: "number" },
         { name: "user_id", type: "string", isOptional: true },
         { name: "created_at", type: "number" },
         { name: "updated_at", type: "number" },

@@ -19,6 +19,7 @@ export class Set extends Model {
 
   @field("reps") reps!: number;
   @field("weight") weight!: number;
+  @field("order") order!: number;
 
   @field("user_id") userId?: string;
 
