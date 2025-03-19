@@ -8,7 +8,7 @@ export default appSchema({
       columns: [
         { name: "title", type: "string" },
         { name: "description", type: "string" },
-        { name: "category", type: "string" },
+        { name: "category", type: "string", isOptional: true },
         { name: "image", type: "string", isOptional: true },
         { name: "user_id", type: "string", isOptional: true },
         { name: "muscle_group", type: "string", isOptional: true },

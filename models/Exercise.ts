@@ -11,12 +11,12 @@ export class Exercise extends Model {
   static table = "exercises";
 
   @text("title") title!: string;
-  @text("description") description!: string | undefined;
-  @text("category") category!: string;
-  @text("muscle_group") muscle_group!: string | undefined;
-  @text("image") image!: string | undefined;
+  @text("description") description?: string;
+  @text("category") category?: string;
+  @text("muscle_group") muscle_group?: string;
+  @text("image") image?: string;
 
-  @field("user_id") userId!: string | undefined;
+  @field("user_id") userId?: string;
 
   @readonly @date("created_at") createdAt!: number;
   @readonly @date("updated_at") updatedAt!: number;
