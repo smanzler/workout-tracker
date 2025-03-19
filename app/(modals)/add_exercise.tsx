@@ -14,6 +14,9 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Exercise } from "@/models/Exercise";
 import { withObservables } from "@nozbe/watermelondb/react";
 import database, { exercisesCollection } from "@/db";
+import { router } from "expo-router";
+import { useWorkout } from "@/providers/WorkoutProvider";
+import { WorkoutExercise } from "@/models/WorkoutExercise";
 
 interface Section {
   title: string;
@@ -45,6 +48,7 @@ function Add_Exercise({ exercises }: { exercises: Exercise[] }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [recent, setRecent] = useState<Exercise[]>([]);
   const [selectedItems, setSelectedItems] = useState<Exercise[]>([]);
+  const { activeWorkoutId } = useWorkout();
 
   const filteredData = exercises.filter((item) =>
     item.title.toLowerCase().includes(searchQuery.toLowerCase())
@@ -62,8 +66,29 @@ function Add_Exercise({ exercises }: { exercises: Exercise[] }) {
     });
   };
 
-  const handleAddToWorkout = () => {
-    if (selectedItems.length === 0) return;
+  const handleAddToWorkout = async () => {
+    if (selectedItems.length === 0 || !activeWorkoutId) return;
+    console.log("hey");
+
+    await database.write(async () => {
+      const workout = await database.get("workouts").find(activeWorkoutId);
+
+      await Promise.all(
+        selectedItems.map(async (exercise, index) => {
+          return database
+            .get<WorkoutExercise>("workout_exercises")
+            .create((workoutExercise) => {
+              // @ts-ignore
+              workoutExercise.exercise.set(exercise);
+              // @ts-ignore
+              workoutExercise.workout.set(workout);
+              workoutExercise.order = index + 1;
+            });
+        })
+      );
+    });
+
+    router.back();
 
     setRecent((prev) => {
       const updatedRecent = [
