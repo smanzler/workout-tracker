@@ -109,20 +109,22 @@ export const WorkoutProvider = ({
   };
 
   const stopWorkout = async () => {
+    if (!activeWorkoutId) {
+      console.log("No active workout to stop");
+      return;
+    }
+
     try {
-      const activeWorkoutId = await AsyncStorage.getItem("activeWorkoutId");
-      if (activeWorkoutId) {
-        await database.write(async () => {
-          const workout = await database
-            .get<Workout>("workouts")
-            .find(activeWorkoutId);
-          if (workout) {
-            workout.endTime = Date.now();
-          }
-        });
-        await AsyncStorage.removeItem("activeWorkoutId");
-        setActiveWorkoutId(undefined);
-      }
+      await database.write(async () => {
+        const workout = await database
+          .get<Workout>("workouts")
+          .find(activeWorkoutId);
+        if (workout) {
+          workout.endTime = Date.now();
+        }
+      });
+      await AsyncStorage.removeItem("activeWorkoutId");
+      setActiveWorkoutId(undefined);
 
       stopTimer();
       setSeconds(0);

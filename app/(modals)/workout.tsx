@@ -42,6 +42,11 @@ const Workout = () => {
     }
   };
 
+  const finish = async () => {
+    await stopWorkout();
+    router.push("/(tabs)/history");
+  };
+
   return (
     <View style={styles.container}>
       <View
@@ -65,8 +70,8 @@ const Workout = () => {
           {formatTime(seconds)}
         </Text>
 
-        <TouchableOpacity style={styles.btn} onPress={stopWorkout}>
-          <Text style={{ color: "white" }}>stop</Text>
+        <TouchableOpacity style={styles.btn} onPress={finish}>
+          <Text style={{ color: "white", fontWeight: "bold" }}>Finish</Text>
         </TouchableOpacity>
       </View>
 
@@ -96,7 +101,12 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "bold",
   },
-  btn: { backgroundColor: "#bf787d", padding: 5, borderRadius: 5 },
+  btn: {
+    backgroundColor: "#89ba7f",
+    padding: 5,
+    borderRadius: 5,
+    paddingHorizontal: 10,
+  },
   addBtn: {
     backgroundColor: "#2ba0d6",
     width: 120,
