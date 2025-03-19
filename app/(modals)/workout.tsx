@@ -49,6 +49,7 @@ const Workout = () => {
           flexDirection: "row",
           justifyContent: "space-between",
           alignItems: "center",
+          marginBottom: 40,
         }}
       >
         <Text style={styles.header}>Workout</Text>
