@@ -120,7 +120,9 @@ export const WorkoutProvider = ({
           .get<Workout>("workouts")
           .find(activeWorkoutId);
         if (workout) {
-          workout.endTime = Date.now();
+          workout.update((w) => {
+            w.endTime = Date.now();
+          });
         }
       });
       await AsyncStorage.removeItem("activeWorkoutId");

@@ -44,7 +44,7 @@ const Workout = () => {
 
   const finish = async () => {
     await stopWorkout();
-    router.push("/(tabs)/history");
+    router.replace("/(tabs)/history");
   };
 
   return (
