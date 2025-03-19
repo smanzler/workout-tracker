@@ -8,38 +8,8 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { router, useNavigation } from "expo-router";
-import WorkoutList from "@/components/WorkoutList";
 import { Entypo } from "@expo/vector-icons";
 import { useWorkout } from "@/providers/WorkoutProvider";
-
-export type Workout = {
-  id: number;
-  title: string;
-  workouts: string[];
-};
-
-const data: Workout[] = [
-  {
-    id: 1,
-    title: "Legs",
-    workouts: ["Squat", "Calf Raises", "Leg Extensions"],
-  },
-  {
-    id: 2,
-    title: "Chest and Triceps",
-    workouts: ["Bench", "Chest Press", "Arm Pulldowns"],
-  },
-  {
-    id: 3,
-    title: "Back and Biceps",
-    workouts: ["Deadlift", "Curls"],
-  },
-  {
-    id: 4,
-    title: "Abs",
-    workouts: ["Crunches", "Planks"],
-  },
-];
 
 export default function StartWorkoutScreen() {
   const navigation = useNavigation();
@@ -91,8 +61,6 @@ export default function StartWorkoutScreen() {
           </View>
         </TouchableOpacity>
       </View>
-
-      <WorkoutList data={data} />
     </ScrollView>
   );
 }
