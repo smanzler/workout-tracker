@@ -1,11 +1,19 @@
 import { Button, StyleSheet, View } from "react-native";
 import React from "react";
 import { router } from "expo-router";
+import { useWorkout } from "@/providers/WorkoutProvider";
 
 const ResumeWorkoutButton = () => {
+  const { activeWorkoutId } = useWorkout();
+
+  if (!activeWorkoutId) {
+    return null;
+  }
+
   const openWorkout = () => {
     router.push("/(modals)/workout");
   };
+
   return (
     <View style={styles.container}>
       <Button title="Resume workout" onPress={openWorkout} />
