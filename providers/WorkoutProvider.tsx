@@ -13,6 +13,7 @@ import { Workout } from "@/models/Workout";
 
 interface WorkoutContextType {
   seconds: number;
+  activeWorkoutId: string | undefined;
   startWorkout: () => Promise<void>;
   stopWorkout: () => Promise<void>;
 }
@@ -48,11 +49,13 @@ export const WorkoutProvider = ({
 
   const loadStartTime = async () => {
     try {
-      const activeWorkoutId = await AsyncStorage.getItem("activeWorkoutId");
-      if (activeWorkoutId) {
+      const storedWorkoutId = await AsyncStorage.getItem("activeWorkoutId");
+      if (storedWorkoutId) {
+        setActiveWorkoutId(storedWorkoutId);
+
         const workout = await database
           .get<Workout>("workouts")
-          .find(activeWorkoutId);
+          .find(storedWorkoutId);
         if (workout && workout.startTime) {
           const elapsed = Math.floor((Date.now() - workout.startTime) / 1000);
           setSeconds(elapsed);
@@ -97,6 +100,7 @@ export const WorkoutProvider = ({
       });
 
       await AsyncStorage.setItem("activeWorkoutId", newWorkout.id);
+      setActiveWorkoutId(newWorkout.id);
       setSeconds(0);
       startTimer();
     } catch (error) {
@@ -117,6 +121,7 @@ export const WorkoutProvider = ({
           }
         });
         await AsyncStorage.removeItem("activeWorkoutId");
+        setActiveWorkoutId(undefined);
       }
 
       stopTimer();
@@ -127,7 +132,9 @@ export const WorkoutProvider = ({
   };
 
   return (
-    <WorkoutContext.Provider value={{ seconds, startWorkout, stopWorkout }}>
+    <WorkoutContext.Provider
+      value={{ seconds, activeWorkoutId, startWorkout, stopWorkout }}
+    >
       {children}
     </WorkoutContext.Provider>
   );

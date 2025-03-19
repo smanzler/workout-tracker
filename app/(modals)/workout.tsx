@@ -1,10 +1,28 @@
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useWorkout } from "@/providers/WorkoutProvider";
 import { router } from "expo-router";
+import database from "@/db";
+import { Workout as WorkoutModel } from "@/models/Workout";
+import WorkoutExerciseList from "@/components/WorkoutExerciseList";
 
 const Workout = () => {
-  const { seconds, stopWorkout } = useWorkout();
+  const { seconds, activeWorkoutId, stopWorkout } = useWorkout();
+  const [workout, setWorkout] = useState<WorkoutModel | undefined>(undefined);
+
+  useEffect(() => {
+    async function fetchWorkout() {
+      if (activeWorkoutId) {
+        const workout = await database
+          .get<WorkoutModel>("workouts")
+          .find(activeWorkoutId);
+
+        setWorkout(workout);
+      }
+    }
+
+    fetchWorkout();
+  }, [activeWorkoutId]);
 
   const formatTime = (totalSeconds: number): string => {
     const hours = Math.floor(totalSeconds / 3600);
@@ -51,7 +69,8 @@ const Workout = () => {
         </TouchableOpacity>
       </View>
 
-      <Text>Exercises</Text>
+      {workout && <WorkoutExerciseList workout={workout} />}
+
       <TouchableOpacity
         style={styles.addBtn}
         onPress={() => {
