@@ -15,8 +15,9 @@ import AuthProvider from "@/providers/AuthProvider";
 import { SyncProvider } from "@/providers/SyncProvider";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { WorkoutProvider } from "@/providers/WorkoutProvider";
-import { TouchableOpacity } from "react-native";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import ResumeWorkoutButton from "@/components/ResumeWorkoutButton";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -45,26 +46,33 @@ export default function RootLayout() {
             value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
           >
             <SyncProvider>
-              <Stack>
-                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-                <Stack.Screen
-                  name="(modals)/workout"
-                  options={{ presentation: "modal", headerShown: false }}
-                />
-                <Stack.Screen
-                  name="(modals)/add_exercise"
-                  options={{
-                    title: "Add Exercises",
-                    presentation: "fullScreenModal",
-                    headerLeft: () => (
-                      <TouchableOpacity onPress={() => router.back()}>
-                        <Ionicons name="chevron-back" size={24} />
-                      </TouchableOpacity>
-                    ),
-                  }}
-                />
-              </Stack>
-              <StatusBar style="auto" />
+              <View style={{ flex: 1 }}>
+                <Stack>
+                  <Stack.Screen
+                    name="(tabs)"
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name="(modals)/workout"
+                    options={{ presentation: "modal", headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name="(modals)/add_exercise"
+                    options={{
+                      title: "Add Exercises",
+                      presentation: "fullScreenModal",
+                      headerLeft: () => (
+                        <TouchableOpacity onPress={() => router.back()}>
+                          <Ionicons name="chevron-back" size={24} />
+                        </TouchableOpacity>
+                      ),
+                    }}
+                  />
+                </Stack>
+
+                <ResumeWorkoutButton />
+                <StatusBar style="auto" />
+              </View>
             </SyncProvider>
           </ThemeProvider>
         </WorkoutProvider>
