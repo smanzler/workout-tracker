@@ -39,3 +39,4 @@ setGenerator(() => Crypto.randomUUID());
 export default database;
 
 export const exercisesCollection = database.get<Exercise>("exercises");
+export const workoutsCollection = database.get<Workout>("workouts");
