@@ -16,21 +16,6 @@ const WorkoutExerciseList = ({
   workout: Workout;
   workoutExercises: WorkoutExercise[];
 }) => {
-  useEffect(() => {
-    console.log(workout.id);
-  }, [workout]);
-
-  useEffect(() => {
-    console.log(workoutExercises.map((we) => we.id));
-  }, [workoutExercises]);
-
-  const seeWorkouts = async () => {
-    const workouts = await database.get("workouts").query().fetch();
-
-    console.log(workouts.map((w) => w.id));
-    console.log(workoutExercises.map((we) => we.id));
-  };
-
   return (
     <View>
       {workoutExercises.map((workoutExercise) => (

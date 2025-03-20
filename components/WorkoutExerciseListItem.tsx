@@ -4,6 +4,8 @@ import { withObservables } from "@nozbe/watermelondb/react";
 import { WorkoutExercise } from "@/models/WorkoutExercise";
 import { Exercise } from "@/models/Exercise";
 import { Set } from "@/models/Set";
+import SetListItem from "./SetListItem";
+import { Entypo, FontAwesome5 } from "@expo/vector-icons";
 
 const WorkoutExerciseListItem = ({
   workoutExercise,
@@ -15,8 +17,44 @@ const WorkoutExerciseListItem = ({
   sets: Set[];
 }) => {
   return (
-    <View>
-      <Text>WorkoutExerciseListItem</Text>
+    <View style={styles.container}>
+      <Text style={styles.headerText}>{exercise.title}</Text>
+      <View style={styles.setsHeader}>
+        <Text
+          style={[
+            styles.setHeaderText,
+            {
+              width: 30,
+              textAlign: "center",
+            },
+          ]}
+        >
+          Set
+        </Text>
+        <Text
+          style={[styles.setHeaderText, { width: 80, textAlign: "center" }]}
+        >
+          Previous
+        </Text>
+        <View style={styles.rightContainer}>
+          <Text
+            style={[styles.setHeaderText, { width: 40, textAlign: "center" }]}
+          >
+            lbs
+          </Text>
+          <Text
+            style={[styles.setHeaderText, { width: 40, textAlign: "center" }]}
+          >
+            Reps
+          </Text>
+          <View style={{ width: 30, alignItems: "center" }}>
+            <FontAwesome5 name="check" size={16} color="black" />
+          </View>
+        </View>
+      </View>
+      {sets.map((set) => (
+        <SetListItem set={set} />
+      ))}
     </View>
   );
 };
@@ -29,4 +67,28 @@ const enhance = withObservables(["workoutExercise"], ({ workoutExercise }) => ({
 
 export default enhance(WorkoutExerciseListItem);
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  container: {
+    backgroundColor: "#d6d6d6",
+    padding: 10,
+    marginBottom: 10,
+    borderRadius: 10,
+  },
+  headerText: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 5,
+  },
+  setsHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  rightContainer: {
+    flexDirection: "row",
+    gap: 10,
+  },
+  setHeaderText: {
+    fontWeight: 500,
+    fontSize: 16,
+  },
+});
