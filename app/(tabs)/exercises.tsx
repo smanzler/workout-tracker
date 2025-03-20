@@ -112,14 +112,17 @@ function Exercises({ exercises }: { exercises: Exercise[] }) {
 
   const renderItem = ({ item }: { item: Exercise }) => {
     const translateX = useSharedValue(0);
+    const id = item.id;
 
     const panGesture = Gesture.Pan()
+      .failOffsetY([-5, 5])
+      .activeOffsetX([-10, 10])
       .onUpdate((event) => {
         translateX.value = Math.max(-100, event.translationX);
       })
       .onEnd(() => {
         if (translateX.value < -50) {
-          runOnJS(handleDelete)(item.id);
+          runOnJS(handleDelete)(id);
         }
         translateX.value = withTiming(0);
       });
@@ -158,6 +161,8 @@ function Exercises({ exercises }: { exercises: Exercise[] }) {
               <Text style={styles.sectionHeaderText}>{title}</Text>
             </View>
           )}
+          ListFooterComponent={<View style={{ height: 150 }} />}
+          keyboardShouldPersistTaps="handled"
         />
       </View>
     </SafeAreaView>
