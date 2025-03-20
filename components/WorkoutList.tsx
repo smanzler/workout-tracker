@@ -1,4 +1,4 @@
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { ScrollView, StyleSheet, View } from "react-native";
 import React from "react";
 import { withObservables } from "@nozbe/watermelondb/react";
 import { workoutsCollection } from "@/db";
@@ -12,6 +12,7 @@ const WorkoutList = ({ workouts }: { workouts: Workout[] }) => {
         workouts.map((workout) => (
           <WorkoutListItem key={workout.id} workout={workout} />
         ))}
+      <View style={{ height: 200 }} />
     </ScrollView>
   );
 };
