@@ -53,7 +53,7 @@ const WorkoutExerciseListItem = ({
         </View>
       </View>
       {sets.map((set) => (
-        <SetListItem set={set} />
+        <SetListItem key={set.id} set={set} />
       ))}
     </View>
   );
@@ -82,6 +82,7 @@ const styles = StyleSheet.create({
   setsHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
+    margin: 5,
   },
   rightContainer: {
     flexDirection: "row",

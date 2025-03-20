@@ -17,6 +17,7 @@ import database, { exercisesCollection } from "@/db";
 import { router } from "expo-router";
 import { useWorkout } from "@/providers/WorkoutProvider";
 import { WorkoutExercise } from "@/models/WorkoutExercise";
+import { Set } from "@/models/Set";
 
 interface Section {
   title: string;
@@ -72,19 +73,31 @@ function Add_Exercise({ exercises }: { exercises: Exercise[] }) {
     await database.write(async () => {
       const workout = await database.get("workouts").find(activeWorkoutId);
 
-      await Promise.all(
-        selectedItems.map(async (exercise, index) => {
-          return database
-            .get<WorkoutExercise>("workout_exercises")
-            .create((workoutExercise) => {
-              // @ts-ignore
-              workoutExercise.exercise.set(exercise);
-              // @ts-ignore
-              workoutExercise.workout.set(workout);
-              workoutExercise.order = index + 1;
-            });
-        })
-      );
+      const batchOps = selectedItems.flatMap((exercise, index) => {
+        const workoutExercise = database
+          .get<WorkoutExercise>("workout_exercises")
+          .prepareCreate((workoutExercise) => {
+            // @ts-ignore
+            workoutExercise.exercise.set(exercise);
+            // @ts-ignore
+            workoutExercise.workout.set(workout);
+            workoutExercise.order = index + 1;
+          });
+
+        const sets = [0, 1, 2].map((setIndex) =>
+          database.get<Set>("sets").prepareCreate((set) => {
+            // @ts-ignore
+            set.workoutExercise.set(workoutExercise);
+            set.order = setIndex + 1;
+            set.reps = undefined;
+            set.weight = undefined;
+          })
+        );
+
+        return [workoutExercise, ...sets];
+      });
+
+      await database.batch(...batchOps);
     });
 
     router.back();
