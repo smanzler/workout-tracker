@@ -68,7 +68,6 @@ function Add_Exercise({ exercises }: { exercises: Exercise[] }) {
 
   const handleAddToWorkout = async () => {
     if (selectedItems.length === 0 || !activeWorkoutId) return;
-    console.log("hey");
 
     await database.write(async () => {
       const workout = await database.get("workouts").find(activeWorkoutId);
