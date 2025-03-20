@@ -58,9 +58,10 @@ export default appSchema({
       name: "sets",
       columns: [
         { name: "workout_exercise_id", type: "string", isIndexed: true },
-        { name: "reps", type: "number" },
-        { name: "weight", type: "number" },
+        { name: "reps", type: "number", isOptional: true },
+        { name: "weight", type: "number", isOptional: true },
         { name: "order", type: "number" },
+        { name: "completed", type: "boolean" },
         { name: "user_id", type: "string", isOptional: true },
         { name: "created_at", type: "number" },
         { name: "updated_at", type: "number" },
