@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import {
+  Keyboard,
   StyleSheet,
   Text,
   TextInput,
@@ -43,6 +44,8 @@ const SetListItem = ({
 
   const toggleCompleted = async () => {
     if (!isCompleteable) return;
+
+    Keyboard.dismiss();
 
     const newCompleted = !completed;
     setCompleted(newCompleted);
@@ -168,7 +171,7 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     justifyContent: "space-between",
-    padding: 5,
+    paddingVertical: 5,
     borderRadius: 5,
   },
   item: {
