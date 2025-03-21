@@ -128,8 +128,10 @@ const SetListItem = ({
               { backgroundColor: completed ? "" : "#e8e8e8" },
             ]}
             value={weight}
-            onChangeText={setWeight}
-            onBlur={() => handleUpdate("weight", weight)}
+            onChangeText={(text) => {
+              setWeight(text);
+              handleUpdate("weight", text);
+            }}
             keyboardType="numeric"
             placeholder="0"
           />
@@ -140,8 +142,10 @@ const SetListItem = ({
               { backgroundColor: completed ? "" : "#e8e8e8" },
             ]}
             value={reps}
-            onChangeText={setReps}
-            onBlur={() => handleUpdate("reps", reps)}
+            onChangeText={(text) => {
+              setReps(text);
+              handleUpdate("reps", text);
+            }}
             keyboardType="numeric"
             placeholder="0"
           />

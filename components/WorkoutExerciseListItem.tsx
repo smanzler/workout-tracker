@@ -1,4 +1,10 @@
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  Keyboard,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import React from "react";
 import { withObservables } from "@nozbe/watermelondb/react";
 import { WorkoutExercise } from "@/models/WorkoutExercise";
@@ -36,6 +42,8 @@ const WorkoutExerciseListItem = ({
   };
 
   const handleAddSet = async () => {
+    Keyboard.dismiss();
+
     await database.write(async () => {
       const nextOrder = sets.length + 1;
 
