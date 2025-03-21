@@ -12,6 +12,7 @@ import { router } from "expo-router";
 import database, { workoutsCollection } from "@/db";
 import { Workout as WorkoutModel } from "@/models/Workout";
 import WorkoutExerciseList from "@/components/WorkoutExerciseList";
+import { Feather } from "@expo/vector-icons";
 
 const Workout = () => {
   const { seconds, activeWorkoutId, stopWorkout } = useWorkout();
@@ -67,7 +68,7 @@ const Workout = () => {
               await database.write(async () => {
                 await workout.markAsDeleted();
               });
-              router.replace("/(tabs)/history");
+              router.replace("/(tabs)/start_workout");
             },
             style: "destructive",
           },
@@ -89,6 +90,59 @@ const Workout = () => {
 
     await stopWorkout();
     router.replace("/(tabs)/history");
+  };
+
+  const cancelWorkout = async () => {
+    if (!activeWorkoutId) return;
+
+    try {
+      const workout = await workoutsCollection.find(activeWorkoutId);
+      const workoutExercises = await workout.workoutExercises.fetch();
+
+      database.write(async () => {
+        const setsToDelete = await Promise.all(
+          workoutExercises.map((we) => we.sets.fetch())
+        );
+
+        const workoutExerciseDeletions = await Promise.all(
+          workoutExercises.map((we) => we.markAsDeleted())
+        );
+        const setDeletions = await Promise.all(
+          setsToDelete.flat().map((set) => set.markAsDeleted())
+        );
+        const workoutDeletion = await workout.markAsDeleted();
+
+        const batchOps = [
+          ...workoutExerciseDeletions,
+          ...setDeletions,
+          workoutDeletion,
+        ];
+
+        await database.batch(...batchOps);
+      });
+    } catch (error) {
+      console.error("Failed to delete workout:", error);
+    }
+    await stopWorkout();
+    router.replace("/(tabs)/start_workout");
+  };
+
+  const handleCancel = () => {
+    Alert.alert(
+      "Cancel Workout",
+      "Are you sure you want to cancel this workout?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Yes",
+          onPress: cancelWorkout,
+          style: "destructive",
+        },
+      ]
+    );
   };
 
   return (
@@ -128,7 +182,12 @@ const Workout = () => {
             router.push("/(modals)/add_exercise");
           }}
         >
+          <Feather name="plus" size={16} color="white" />
           <Text style={{ color: "white" }}>Add Exercises</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.deleteBtn} onPress={handleCancel}>
+          <Text style={{ color: "white" }}>Cancel Workout</Text>
         </TouchableOpacity>
       </ScrollView>
     </View>
@@ -155,10 +214,23 @@ const styles = StyleSheet.create({
   },
   addBtn: {
     backgroundColor: "#2ba0d6",
-    width: 120,
-    alignItems: "center",
+    flexDirection: "row",
+    width: "100%",
+    justifyContent: "center",
+    gap: 5,
     padding: 5,
     display: "flex",
     borderRadius: 5,
+  },
+  deleteBtn: {
+    backgroundColor: "#d66d6d",
+    flexDirection: "row",
+    width: "100%",
+    justifyContent: "center",
+    gap: 5,
+    padding: 5,
+    display: "flex",
+    borderRadius: 5,
+    marginTop: 10,
   },
 });
