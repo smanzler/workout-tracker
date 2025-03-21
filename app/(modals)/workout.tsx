@@ -1,4 +1,10 @@
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import React, { useEffect, useState } from "react";
 import { useWorkout } from "@/providers/WorkoutProvider";
 import { router } from "expo-router";
@@ -54,7 +60,7 @@ const Workout = () => {
           flexDirection: "row",
           justifyContent: "space-between",
           alignItems: "center",
-          marginBottom: 40,
+          marginBottom: 20,
         }}
       >
         <Text style={styles.header}>Workout</Text>
@@ -75,16 +81,18 @@ const Workout = () => {
         </TouchableOpacity>
       </View>
 
-      {workout && <WorkoutExerciseList workout={workout} />}
+      <ScrollView style={{ paddingTop: 10 }}>
+        {workout && <WorkoutExerciseList workout={workout} />}
 
-      <TouchableOpacity
-        style={styles.addBtn}
-        onPress={() => {
-          router.push("/(modals)/add_exercise");
-        }}
-      >
-        <Text style={{ color: "white" }}>Add Exercises</Text>
-      </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.addBtn}
+          onPress={() => {
+            router.push("/(modals)/add_exercise");
+          }}
+        >
+          <Text style={{ color: "white" }}>Add Exercises</Text>
+        </TouchableOpacity>
+      </ScrollView>
     </View>
   );
 };
