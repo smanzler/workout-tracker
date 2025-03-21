@@ -28,16 +28,6 @@ export default function TabLayout() {
       }}
     >
       <Tabs.Screen
-        name="index"
-        options={{
-          title: "Profile",
-          headerShown: true,
-          tabBarIcon: ({ color }) => (
-            <Ionicons size={26} name="person" color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
         name="history"
         options={{
           title: "History",
@@ -47,7 +37,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="start_workout"
+        name="index"
         options={{
           title: "Start Workout",
           tabBarIcon: ({ color }) => (

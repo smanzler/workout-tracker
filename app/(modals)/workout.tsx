@@ -68,7 +68,7 @@ const Workout = () => {
               await database.write(async () => {
                 await workout.markAsDeleted();
               });
-              router.replace("/(tabs)/start_workout");
+              router.replace("/(tabs)");
             },
             style: "destructive",
           },
@@ -124,7 +124,7 @@ const Workout = () => {
       console.error("Failed to delete workout:", error);
     }
     await stopWorkout();
-    router.replace("/(tabs)/start_workout");
+    router.replace("/(tabs)");
   };
 
   const handleCancel = () => {
