@@ -40,3 +40,6 @@ export default database;
 
 export const exercisesCollection = database.get<Exercise>("exercises");
 export const workoutsCollection = database.get<Workout>("workouts");
+export const workoutExercisesCollection =
+  database.get<WorkoutExercise>("workout_exercises");
+export const setsCollection = database.get<Set>("sets");
