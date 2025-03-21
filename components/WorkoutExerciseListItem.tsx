@@ -53,7 +53,11 @@ const WorkoutExerciseListItem = ({
         </View>
       </View>
       {sets.map((set) => (
-        <SetListItem key={set.id} set={set} />
+        <SetListItem
+          key={set.id}
+          set={set}
+          workoutExerciseId={workoutExercise.id}
+        />
       ))}
     </View>
   );
