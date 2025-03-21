@@ -1,10 +1,20 @@
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import dayjs from "dayjs";
 import React from "react";
 import { Workout } from "@/models/Workout";
 import { withObservables } from "@nozbe/watermelondb/react";
 import { WorkoutExercise } from "@/models/WorkoutExercise";
 import WorkoutExerciseTitle from "./WorkoutExerciseTitle";
+import {
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuItemIcon,
+  DropdownMenuItemTitle,
+  DropdownMenuRoot,
+  DropdownMenuTrigger,
+} from "@/zeego/drop-down";
+import { Entypo } from "@expo/vector-icons";
+import database from "@/db";
 
 const WorkoutListItem = ({
   workout,
@@ -13,9 +23,52 @@ const WorkoutListItem = ({
   workout: Workout;
   workoutExercises: WorkoutExercise[];
 }) => {
+  const handleDelete = () => {
+    try {
+      database.write(async () => {
+        const setsToDelete = await Promise.all(
+          workoutExercises.map((we) => we.sets.fetch())
+        );
+
+        const workoutExerciseDeletions = await Promise.all(
+          workoutExercises.map((we) => we.markAsDeleted())
+        );
+        const setDeletions = await Promise.all(
+          setsToDelete.flat().map((set) => set.markAsDeleted())
+        );
+        const workoutDeletion = await workout.markAsDeleted();
+
+        const batchOps = [
+          ...workoutExerciseDeletions,
+          ...setDeletions,
+          workoutDeletion,
+        ];
+
+        await database.batch(...batchOps);
+      });
+    } catch (error) {
+      console.error("Failed to delete workout:", error);
+    }
+  };
+
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Workout</Text>
+      <View style={styles.headerContainer}>
+        <Text style={styles.header}>Workout</Text>
+        <DropdownMenuRoot>
+          <DropdownMenuTrigger>
+            <TouchableOpacity style={styles.btn}>
+              <Entypo name="dots-three-horizontal" size={24} color="black" />
+            </TouchableOpacity>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuItem destructive key="delete" onSelect={handleDelete}>
+              <DropdownMenuItemTitle>Delete Workout</DropdownMenuItemTitle>
+              <DropdownMenuItemIcon ios={{ name: "trash" }} />
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenuRoot>
+      </View>
       <Text style={styles.dateText}>
         {dayjs(workout.startTime).format("dddd, MMM D")}
       </Text>
@@ -48,10 +101,19 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginBottom: 10,
   },
+  headerContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
   header: {
     fontSize: 22,
     fontWeight: "bold",
     marginBottom: 2,
+  },
+  btn: {
+    paddingHorizontal: 5,
+    backgroundColor: "#e8e8e8",
+    borderRadius: 10,
   },
   dateText: {
     fontSize: 16,
