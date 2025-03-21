@@ -6,6 +6,15 @@ import { Exercise } from "@/models/Exercise";
 import { Set } from "@/models/Set";
 import SetListItem from "./SetListItem";
 import { Entypo, FontAwesome5 } from "@expo/vector-icons";
+import {
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuItemIcon,
+  DropdownMenuItemTitle,
+  DropdownMenuRoot,
+  DropdownMenuTrigger,
+} from "@/zeego/drop-down";
+import database from "@/db";
 
 const WorkoutExerciseListItem = ({
   workoutExercise,
@@ -16,13 +25,33 @@ const WorkoutExerciseListItem = ({
   exercise: Exercise;
   sets: Set[];
 }) => {
+  const handleDelete = () => {
+    database.write(async () => {
+      for (const set of sets) {
+        await set.markAsDeleted();
+      }
+
+      await workoutExercise.markAsDeleted();
+    });
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.headerContainer}>
         <Text style={styles.headerText}>{exercise.title}</Text>
-        <TouchableOpacity style={styles.btn} onPress={() => {}}>
-          <Entypo name="dots-three-horizontal" size={24} color="black" />
-        </TouchableOpacity>
+        <DropdownMenuRoot>
+          <DropdownMenuTrigger>
+            <TouchableOpacity style={styles.btn} onPress={() => {}}>
+              <Entypo name="dots-three-horizontal" size={24} color="black" />
+            </TouchableOpacity>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuItem destructive key="delete" onSelect={handleDelete}>
+              <DropdownMenuItemTitle>Delete Exercise</DropdownMenuItemTitle>
+              <DropdownMenuItemIcon ios={{ name: "trash" }} />
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenuRoot>
       </View>
       <View style={styles.setsHeader}>
         <Text
