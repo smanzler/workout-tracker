@@ -18,9 +18,7 @@ import Animated, {
 } from "react-native-reanimated";
 import { withObservables } from "@nozbe/watermelondb/react";
 import { Exercise } from "@/models/Exercise";
-import database from "@/db";
-
-export const exercisesCollection = database.get<Exercise>("exercises");
+import database, { exercisesCollection } from "@/db";
 
 interface Section {
   title: string;
