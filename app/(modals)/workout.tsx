@@ -1,4 +1,5 @@
 import {
+  Alert,
   ScrollView,
   StyleSheet,
   Text,
@@ -8,7 +9,7 @@ import {
 import React, { useEffect, useState } from "react";
 import { useWorkout } from "@/providers/WorkoutProvider";
 import { router } from "expo-router";
-import database from "@/db";
+import database, { workoutsCollection } from "@/db";
 import { Workout as WorkoutModel } from "@/models/Workout";
 import WorkoutExerciseList from "@/components/WorkoutExerciseList";
 
@@ -19,9 +20,7 @@ const Workout = () => {
   useEffect(() => {
     async function fetchWorkout() {
       if (activeWorkoutId) {
-        const workout = await database
-          .get<WorkoutModel>("workouts")
-          .find(activeWorkoutId);
+        const workout = await workoutsCollection.find(activeWorkoutId);
 
         setWorkout(workout);
       }
@@ -49,6 +48,45 @@ const Workout = () => {
   };
 
   const finish = async () => {
+    if (!workout) return;
+
+    const workoutExercises = await workout.workoutExercises.fetch();
+    if (workoutExercises.length === 0) {
+      Alert.alert(
+        "Empty Workout",
+        "This workout is empty. Would you like to delete it?",
+        [
+          {
+            text: "Cancel",
+            style: "cancel",
+          },
+          {
+            text: "Delete",
+            onPress: async () => {
+              await stopWorkout();
+              await database.write(async () => {
+                await workout.markAsDeleted();
+              });
+              router.replace("/(tabs)/history");
+            },
+            style: "destructive",
+          },
+        ]
+      );
+      return;
+    }
+    const allSetsComplete = await Promise.all(
+      workoutExercises.map(async (we) => {
+        const sets = await we.sets.fetch();
+        return sets.every((set) => set.completed);
+      })
+    );
+
+    if (!allSetsComplete.every((complete) => complete)) {
+      alert("Please complete all sets before finishing the workout.");
+      return;
+    }
+
     await stopWorkout();
     router.replace("/(tabs)/history");
   };
