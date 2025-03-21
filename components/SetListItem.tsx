@@ -107,11 +107,23 @@ const SetListItem = ({
           animatedStyle,
         ]}
       >
-        <Text style={[styles.item, styles.order]}>{set.order}</Text>
+        <Text
+          style={[
+            styles.item,
+            styles.order,
+            { backgroundColor: completed ? "" : "#e8e8e8" },
+          ]}
+        >
+          {set.order}
+        </Text>
         <Text>-</Text>
         <View style={styles.rightContainer}>
           <TextInput
-            style={[styles.item, styles.weight]}
+            style={[
+              styles.item,
+              styles.weight,
+              { backgroundColor: completed ? "" : "#e8e8e8" },
+            ]}
             value={weight}
             onChangeText={setWeight}
             onBlur={() => handleUpdate("weight", weight)}
@@ -119,7 +131,11 @@ const SetListItem = ({
             placeholder="0"
           />
           <TextInput
-            style={[styles.item, styles.reps]}
+            style={[
+              styles.item,
+              styles.reps,
+              { backgroundColor: completed ? "" : "#e8e8e8" },
+            ]}
             value={reps}
             onChangeText={setReps}
             onBlur={() => handleUpdate("reps", reps)}
@@ -132,8 +148,13 @@ const SetListItem = ({
               completed ? styles.completedButton : styles.incompleteButton,
             ]}
             onPress={toggleCompleted}
+            disabled={!isCompleteable}
           >
-            <FontAwesome5 name="check" size={16} color="black" />
+            <FontAwesome5
+              name="check"
+              size={16}
+              color={completed ? "white" : isCompleteable ? "black" : "gray"}
+            />
           </TouchableOpacity>
         </View>
       </Animated.View>
@@ -177,10 +198,11 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   completedRow: {
-    backgroundColor: "#d4edda",
+    backgroundColor: "#9FF59F",
+    opacity: 0.5,
   },
   completedButton: {
-    backgroundColor: "#28a745",
+    backgroundColor: "#59b559",
   },
   incompleteButton: {
     backgroundColor: "#e8e8e8",
