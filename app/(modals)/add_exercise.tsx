@@ -13,7 +13,12 @@ import React, { useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Exercise } from "@/models/Exercise";
 import { withObservables } from "@nozbe/watermelondb/react";
-import database, { exercisesCollection } from "@/db";
+import database, {
+  exercisesCollection,
+  setsCollection,
+  workoutExercisesCollection,
+  workoutsCollection,
+} from "@/db";
 import { router } from "expo-router";
 import { useWorkout } from "@/providers/WorkoutProvider";
 import { WorkoutExercise } from "@/models/WorkoutExercise";
@@ -69,32 +74,33 @@ function Add_Exercise({ exercises }: { exercises: Exercise[] }) {
 
   const handleAddToWorkout = async () => {
     if (selectedItems.length === 0 || !activeWorkoutId) return;
-
     await database.write(async () => {
-      const workout = await database.get("workouts").find(activeWorkoutId);
+      const workout = await workoutsCollection.find(activeWorkoutId);
 
-      const batchOps = selectedItems.flatMap((exercise, index) => {
-        const workoutExercise = database
-          .get<WorkoutExercise>("workout_exercises")
-          .prepareCreate((workoutExercise) => {
+      const existingWorkoutExercises = await workout.workoutExercises.fetch();
+
+      let nextOrder = existingWorkoutExercises.length + 1;
+
+      const batchOps = selectedItems.flatMap((exercise) => {
+        const workoutExercise = workoutExercisesCollection.prepareCreate(
+          (workoutExercise) => {
             // @ts-ignore
             workoutExercise.exercise.set(exercise);
             // @ts-ignore
             workoutExercise.workout.set(workout);
-            workoutExercise.order = index + 1;
-          });
-
-        const sets = [0, 1, 2].map((setIndex) =>
-          database.get<Set>("sets").prepareCreate((set) => {
-            // @ts-ignore
-            set.workoutExercise.set(workoutExercise);
-            set.order = setIndex + 1;
-            set.reps = undefined;
-            set.weight = undefined;
-          })
+            workoutExercise.order = nextOrder++;
+          }
         );
 
-        return [workoutExercise, ...sets];
+        const set = setsCollection.prepareCreate((set) => {
+          // @ts-ignore
+          set.workoutExercise.set(workoutExercise);
+          set.order = 1;
+          set.reps = undefined;
+          set.weight = undefined;
+        });
+
+        return [workoutExercise, set];
       });
 
       await database.batch(...batchOps);
