@@ -4,6 +4,7 @@ import { withObservables } from "@nozbe/watermelondb/react";
 import { workoutsCollection } from "@/db";
 import { Workout } from "@/models/Workout";
 import WorkoutListItem from "./WorkoutListItem";
+import { Q } from "@nozbe/watermelondb";
 
 const WorkoutList = ({ workouts }: { workouts: Workout[] }) => {
   return (
@@ -18,7 +19,9 @@ const WorkoutList = ({ workouts }: { workouts: Workout[] }) => {
 };
 
 const enhance = withObservables([], () => ({
-  workouts: workoutsCollection.query(),
+  workouts: workoutsCollection
+    .query(Q.where("endTime", Q.notEq(null)), Q.sortBy("startTime", Q.desc))
+    .observeWithColumns(["startTime"]),
 }));
 
 export default enhance(WorkoutList);
