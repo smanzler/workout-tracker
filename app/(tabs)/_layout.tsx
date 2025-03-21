@@ -50,7 +50,6 @@ export default function TabLayout() {
         name="start_workout"
         options={{
           title: "Start Workout",
-          headerShown: true,
           tabBarIcon: ({ color }) => (
             <Ionicons size={26} name="create" color={color} />
           ),

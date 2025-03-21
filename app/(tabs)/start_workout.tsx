@@ -1,22 +1,20 @@
-import React, { useRef, useEffect } from "react";
+import React from "react";
 import {
   View,
   Text,
   StyleSheet,
   ScrollView,
-  Animated,
   TouchableOpacity,
   Alert,
+  SafeAreaView,
 } from "react-native";
-import { router, useNavigation } from "expo-router";
+import { router } from "expo-router";
 import { Entypo } from "@expo/vector-icons";
 import { useWorkout } from "@/providers/WorkoutProvider";
 import database, { workoutsCollection } from "@/db";
 
 export default function StartWorkoutScreen() {
-  const navigation = useNavigation();
   const { activeWorkoutId, startWorkout } = useWorkout();
-  const scrollY = useRef(new Animated.Value(0)).current;
 
   const handleDelete = async () => {
     if (!activeWorkoutId) return;
@@ -86,52 +84,31 @@ export default function StartWorkoutScreen() {
     }
   };
 
-  const textOpacity = scrollY.interpolate({
-    inputRange: [0, 100],
-    outputRange: [0, 1],
-    extrapolate: "clamp",
-  });
-
-  useEffect(() => {
-    navigation.setOptions({
-      headerTitle: "Start Workout",
-      headerStyle: { backgroundColor: "white", shadowOpacity: textOpacity },
-      headerTitleStyle: {
-        opacity: textOpacity,
-      },
-    });
-  }, [navigation, textOpacity]);
-
   return (
-    <ScrollView
-      style={styles.container}
-      onScroll={Animated.event(
-        [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-        { useNativeDriver: false }
-      )}
-      scrollEventThrottle={16}
-    >
-      <Text style={styles.headerText}>Start Workout</Text>
+    <SafeAreaView style={{ flex: 1 }}>
+      <ScrollView style={styles.container}>
+        <Text style={styles.headerText}>Start Workout</Text>
 
-      <TouchableOpacity style={styles.btn} onPress={start}>
-        <Text style={styles.btnText}>Start Workout</Text>
-      </TouchableOpacity>
-
-      <View style={styles.templateHeader}>
-        <Text style={styles.headerText}>Templates</Text>
-        <TouchableOpacity style={styles.templateBtn}>
-          <View style={{ flexDirection: "row" }}>
-            <Text style={styles.templateBtnText}>Template</Text>
-            <Entypo name="plus" size={16} color="white" />
-          </View>
+        <TouchableOpacity style={styles.btn} onPress={start}>
+          <Text style={styles.btnText}>Start Workout</Text>
         </TouchableOpacity>
-      </View>
-    </ScrollView>
+
+        <View style={styles.templateHeader}>
+          <Text style={styles.headerText}>Templates</Text>
+          <TouchableOpacity style={styles.templateBtn}>
+            <View style={{ flexDirection: "row" }}>
+              <Text style={styles.templateBtnText}>Template</Text>
+              <Entypo name="plus" size={16} color="white" />
+            </View>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 10 },
+  container: { flex: 1, padding: 20 },
   headerText: {
     fontSize: 30,
     fontWeight: "bold",
