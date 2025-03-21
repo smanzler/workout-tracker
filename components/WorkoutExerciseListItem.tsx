@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import React from "react";
 import { withObservables } from "@nozbe/watermelondb/react";
 import { WorkoutExercise } from "@/models/WorkoutExercise";
@@ -18,7 +18,12 @@ const WorkoutExerciseListItem = ({
 }) => {
   return (
     <View style={styles.container}>
-      <Text style={styles.headerText}>{exercise.title}</Text>
+      <View style={styles.headerContainer}>
+        <Text style={styles.headerText}>{exercise.title}</Text>
+        <TouchableOpacity style={styles.btn} onPress={() => {}}>
+          <Entypo name="dots-three-horizontal" size={24} color="black" />
+        </TouchableOpacity>
+      </View>
       <View style={styles.setsHeader}>
         <Text
           style={[
@@ -76,6 +81,17 @@ const styles = StyleSheet.create({
     backgroundColor: "#d6d6d6",
     padding: 10,
     marginBottom: 10,
+    borderRadius: 10,
+  },
+  headerContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 10,
+  },
+  btn: {
+    paddingHorizontal: 5,
+    backgroundColor: "#e8e8e8",
     borderRadius: 10,
   },
   headerText: {
