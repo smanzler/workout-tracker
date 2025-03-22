@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "workout-tracker",
+    "name": "Rep - Workout Tracker",
     "slug": "workout-tracker",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -10,7 +10,8 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.sigh10.workouttracker"
+      "bundleIdentifier": "com.sigh10.workouttracker",
+      "displayName": "Rep"
     },
     "android": {
       "adaptiveIcon": {
@@ -41,10 +42,7 @@
             "extraPods": [
               {
                 "name": "simdjson",
-                "configurations": [
-                  "Debug",
-                  "Release"
-                ],
+                "configurations": ["Debug", "Release"],
                 "path": "../node_modules/@nozbe/simdjson",
                 "modular_headers": true
               }
