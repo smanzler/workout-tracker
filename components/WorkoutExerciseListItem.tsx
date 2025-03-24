@@ -162,7 +162,7 @@ export default enhance(WorkoutExerciseListItem);
 
 const styles = StyleSheet.create({
   container: {
-    padding: 10,
+    paddingVertical: 10,
     marginBottom: 10,
     borderRadius: 10,
   },
@@ -171,6 +171,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 10,
+    marginHorizontal: 10,
   },
   btn: {
     paddingHorizontal: 5,
@@ -186,6 +187,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     marginVertical: 5,
+    marginHorizontal: 10,
   },
   rightContainer: {
     flexDirection: "row",
@@ -202,6 +204,7 @@ const styles = StyleSheet.create({
     gap: 5,
     fontWeight: 500,
     padding: 5,
+    marginHorizontal: 10,
     borderRadius: 8,
     marginTop: 10,
   },
