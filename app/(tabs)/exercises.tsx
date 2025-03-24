@@ -20,13 +20,14 @@ import { withObservables } from "@nozbe/watermelondb/react";
 import { Exercise } from "@/models/Exercise";
 import database, { exercisesCollection } from "@/db";
 import { useTheme } from "@react-navigation/native";
+import ExercisesList from "@/components/ExercisesList";
 
 interface Section {
   title: string;
   data: Exercise[];
 }
 
-const groupData = (data: Exercise[], recentItems: Exercise[]): Section[] => {
+const groupData = (data: Exercise[]): Section[] => {
   const sorted = data.sort((a, b) => a.title.localeCompare(b.title));
   const sections: Record<string, Section> = {};
 
@@ -40,23 +41,18 @@ const groupData = (data: Exercise[], recentItems: Exercise[]): Section[] => {
 
   const groupedSections = Object.values(sections);
 
-  if (recentItems.length > 0) {
-    groupedSections.unshift({ title: "Recent", data: recentItems });
-  }
-
   return groupedSections;
 };
 
 function Exercises({ exercises }: { exercises: Exercise[] }) {
   const [searchQuery, setSearchQuery] = useState("");
-  const [recent, setRecent] = useState<Exercise[]>([]);
   const theme = useTheme();
 
   const filteredData = exercises.filter((item) =>
     item.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const sections: Section[] = groupData(filteredData, recent);
+  const sections: Section[] = groupData(filteredData);
 
   const handleAddItem = () => {
     Alert.prompt(
@@ -78,12 +74,7 @@ function Exercises({ exercises }: { exercises: Exercise[] }) {
     );
   };
 
-  const handleItemPress = (item: Exercise) => {
-    setRecent((prev) => {
-      const updatedRecent = prev.filter((i) => i.id !== item.id);
-      return [item, ...updatedRecent].slice(0, 5);
-    });
-  };
+  const handleItemPress = (item: Exercise) => {};
 
   const handleDelete = (id: string) => {
     Alert.alert(
@@ -100,7 +91,6 @@ function Exercises({ exercises }: { exercises: Exercise[] }) {
                 const exercise = await exercisesCollection.find(id);
                 await exercise.markAsDeleted();
               });
-              setRecent((prev) => prev.filter((item) => item.id !== id));
             } catch (error) {
               console.error("Failed to delete exercise:", error);
             }
@@ -157,7 +147,7 @@ function Exercises({ exercises }: { exercises: Exercise[] }) {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <View style={{ flex: 1, padding: 20 }}>
+      <View style={{ padding: 20 }}>
         <Text style={[styles.headerText, { color: theme.colors.text }]}>
           Exercises
         </Text>
@@ -168,28 +158,8 @@ function Exercises({ exercises }: { exercises: Exercise[] }) {
           onChangeText={setSearchQuery}
         />
         <Button title="Add Exercise" onPress={handleAddItem} />
-        <SectionList
-          sections={sections}
-          keyExtractor={(item) => item.id}
-          renderItem={renderItem}
-          renderSectionHeader={({ section: { title } }) => (
-            <View
-              style={[
-                styles.sectionHeader,
-                { backgroundColor: theme.colors.card },
-              ]}
-            >
-              <Text
-                style={[styles.sectionHeaderText, { color: theme.colors.text }]}
-              >
-                {title}
-              </Text>
-            </View>
-          )}
-          ListFooterComponent={<View style={{ height: 150 }} />}
-          keyboardShouldPersistTaps="handled"
-        />
       </View>
+      <ExercisesList sections={sections} renderItem={renderItem} />
     </SafeAreaView>
   );
 }
@@ -212,14 +182,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     borderRadius: 10,
   },
-  sectionHeader: {
-    padding: 5,
-  },
-  sectionHeaderText: {
-    fontWeight: "bold",
-  },
   itemContainer: {
     padding: 10,
+    paddingLeft: 20,
     borderBottomWidth: 1,
   },
 });

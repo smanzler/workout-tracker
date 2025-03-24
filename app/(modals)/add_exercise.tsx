@@ -24,6 +24,7 @@ import { useWorkout } from "@/providers/WorkoutProvider";
 import { WorkoutExercise } from "@/models/WorkoutExercise";
 import { Set } from "@/models/Set";
 import { useTheme } from "@react-navigation/native";
+import ExercisesList from "@/components/ExercisesList";
 
 interface Section {
   title: string;
@@ -159,7 +160,7 @@ function Add_Exercise({ exercises }: { exercises: Exercise[] }) {
         </TouchableOpacity>
       </View>
 
-      <View style={{ flex: 1, padding: 20 }}>
+      <View style={{ padding: 20 }}>
         <TextInput
           style={[styles.input, { backgroundColor: theme.colors.card }]}
           placeholder="Search..."
@@ -168,41 +169,28 @@ function Add_Exercise({ exercises }: { exercises: Exercise[] }) {
         />
 
         <Button title="Add Item" onPress={handleAddItem} />
+      </View>
 
-        <SectionList
-          sections={sections}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
-            <TouchableOpacity onPress={() => handleItemPress(item)}>
-              <View
-                style={[
-                  styles.item,
-                  selectedItems.some((i) => i.id === item.id) && {
-                    backgroundColor: theme.colors.primary
-                      .replace("rgb", "rgba")
-                      .replace(")", ", 0.2)"),
-                  },
-                  { borderBottomColor: theme.colors.border },
-                ]}
-              >
-                <Text style={{ color: theme.colors.text }}>{item.title}</Text>
-              </View>
-            </TouchableOpacity>
-          )}
-          renderSectionHeader={({ section: { title } }) => (
+      <ExercisesList
+        sections={sections}
+        renderItem={({ item }: { item: Exercise }) => (
+          <TouchableOpacity onPress={() => handleItemPress(item)}>
             <View
               style={[
-                styles.sectionHeader,
-                { backgroundColor: theme.colors.card },
+                styles.item,
+                selectedItems.some((i) => i.id === item.id) && {
+                  backgroundColor: theme.colors.primary
+                    .replace("rgb", "rgba")
+                    .replace(")", ", 0.2)"),
+                },
+                { borderBottomColor: theme.colors.border },
               ]}
             >
-              <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
-                {title}
-              </Text>
+              <Text style={{ color: theme.colors.text }}>{item.title}</Text>
             </View>
-          )}
-        />
-      </View>
+          </TouchableOpacity>
+        )}
+      />
     </SafeAreaView>
   );
 }
@@ -232,13 +220,8 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   item: {
-    padding: 12,
+    padding: 10,
+    paddingLeft: 20,
     borderBottomWidth: 1,
-  },
-  sectionHeader: {
-    padding: 5,
-  },
-  sectionTitle: {
-    fontWeight: "bold",
   },
 });

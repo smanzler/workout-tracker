@@ -38,13 +38,13 @@ export default function ProfileScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <View style={{ flex: 1, padding: 20 }}>
-        <Text style={[styles.headerText, { color: theme.colors.text }]}>
-          Exercises
-        </Text>
-      </View>
+      <Text style={[styles.headerText, { color: theme.colors.text }]}>
+        Profile
+      </Text>
       <ScrollView>
-        <Text style={styles.user}>Logged in as {user.email}</Text>
+        <Text style={[styles.user, { color: theme.colors.text }]}>
+          Logged in as {user.email}
+        </Text>
       </ScrollView>
     </SafeAreaView>
   );
@@ -55,7 +55,11 @@ const styles = StyleSheet.create({
   pageHeader: {
     height: 100,
   },
-  headerText: { fontSize: 30, fontWeight: "bold", color: "black" },
+  headerText: {
+    fontSize: 30,
+    fontWeight: "bold",
+    margin: 20,
+  },
   user: {
     fontSize: 18,
     textAlign: "center",
