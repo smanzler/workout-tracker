@@ -12,9 +12,11 @@ import { router } from "expo-router";
 import { Entypo } from "@expo/vector-icons";
 import { useWorkout } from "@/providers/WorkoutProvider";
 import database, { workoutsCollection } from "@/db";
+import { useTheme } from "@react-navigation/native";
 
 export default function StartWorkoutScreen() {
   const { activeWorkoutId, startWorkout } = useWorkout();
+  const theme = useTheme();
 
   const handleDelete = async () => {
     if (!activeWorkoutId) return;
@@ -87,18 +89,30 @@ export default function StartWorkoutScreen() {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <ScrollView style={styles.container}>
-        <Text style={styles.headerText}>Start Workout</Text>
+        <Text style={[styles.headerText, { color: theme.colors.text }]}>
+          Start Workout
+        </Text>
 
-        <TouchableOpacity style={styles.btn} onPress={start}>
-          <Text style={styles.btnText}>Start Workout</Text>
+        <TouchableOpacity
+          style={[styles.btn, { backgroundColor: theme.colors.primary }]}
+          onPress={start}
+        >
+          <Text style={[styles.btnText]}>Start Workout</Text>
         </TouchableOpacity>
 
         <View style={styles.templateHeader}>
-          <Text style={styles.headerText}>Templates</Text>
-          <TouchableOpacity style={styles.templateBtn}>
+          <Text style={[styles.headerText, { color: theme.colors.text }]}>
+            Templates
+          </Text>
+          <TouchableOpacity
+            style={[
+              styles.templateBtn,
+              { backgroundColor: theme.colors.primary },
+            ]}
+          >
             <View style={{ flexDirection: "row" }}>
-              <Text style={styles.templateBtnText}>Template</Text>
-              <Entypo name="plus" size={16} color="white" />
+              <Text style={[styles.templateBtnText]}>Template</Text>
+              <Entypo name="plus" size={16} color={"#e5e5e7"} />
             </View>
           </TouchableOpacity>
         </View>
@@ -112,7 +126,6 @@ const styles = StyleSheet.create({
   headerText: {
     fontSize: 30,
     fontWeight: "bold",
-    color: "black",
     marginBottom: 40,
   },
   templateHeader: {
@@ -121,24 +134,22 @@ const styles = StyleSheet.create({
     alignItems: "flex-start",
   },
   templateBtn: {
-    backgroundColor: "#2ba0d6",
     padding: 10,
     borderRadius: 8,
   },
   templateBtnText: {
     fontWeight: "bold",
-    color: "white",
+    color: "#e5e5e7",
   },
   btn: {
     padding: 10,
     borderRadius: 10,
-    backgroundColor: "#2ba0d6",
     marginBottom: 50,
   },
   btnText: {
     textAlign: "center",
-    color: "white",
     fontSize: 20,
     fontWeight: "bold",
+    color: "#e5e5e7",
   },
 });

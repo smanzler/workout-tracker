@@ -15,6 +15,7 @@ import {
 } from "@/zeego/drop-down";
 import { Entypo } from "@expo/vector-icons";
 import database from "@/db";
+import { useTheme } from "@react-navigation/native";
 
 const WorkoutListItem = ({
   workout,
@@ -23,6 +24,8 @@ const WorkoutListItem = ({
   workout: Workout;
   workoutExercises: WorkoutExercise[];
 }) => {
+  const theme = useTheme();
+
   const handleDelete = () => {
     try {
       database.write(async () => {
@@ -52,13 +55,21 @@ const WorkoutListItem = ({
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: theme.colors.card }]}>
       <View style={styles.headerContainer}>
-        <Text style={styles.header}>Workout</Text>
+        <Text style={[styles.header, { color: theme.colors.text }]}>
+          Workout
+        </Text>
         <DropdownMenuRoot>
           <DropdownMenuTrigger>
-            <TouchableOpacity style={styles.btn}>
-              <Entypo name="dots-three-horizontal" size={24} color="black" />
+            <TouchableOpacity
+              style={[styles.btn, { backgroundColor: theme.colors.background }]}
+            >
+              <Entypo
+                name="dots-three-horizontal"
+                size={24}
+                color={theme.colors.text}
+              />
             </TouchableOpacity>
           </DropdownMenuTrigger>
           <DropdownMenuContent>
@@ -69,12 +80,14 @@ const WorkoutListItem = ({
           </DropdownMenuContent>
         </DropdownMenuRoot>
       </View>
-      <Text style={styles.dateText}>
+      <Text style={[styles.dateText, { color: theme.colors.text }]}>
         {dayjs(workout.startTime).format("dddd, MMM D")}
       </Text>
       {workoutExercises.length !== 0 && (
         <>
-          <Text style={styles.header2}>Exercises</Text>
+          <Text style={[styles.header2, { color: theme.colors.text }]}>
+            Exercises
+          </Text>
           {workoutExercises.map((workoutExercise) => (
             <WorkoutExerciseTitle
               key={workoutExercise.id}
@@ -96,7 +109,6 @@ export default enhance(WorkoutListItem);
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#d6d6d6",
     padding: 10,
     borderRadius: 10,
     marginBottom: 10,
@@ -112,13 +124,12 @@ const styles = StyleSheet.create({
   },
   btn: {
     paddingHorizontal: 5,
-    backgroundColor: "#e8e8e8",
     borderRadius: 10,
   },
   dateText: {
     fontSize: 16,
     fontWeight: 500,
-    color: "#4f4f4f",
+    opacity: 0.6,
     marginBottom: 7,
   },
   header2: {

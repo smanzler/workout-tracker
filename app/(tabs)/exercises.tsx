@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   SectionList,
   TextInput,
@@ -19,6 +19,7 @@ import Animated, {
 import { withObservables } from "@nozbe/watermelondb/react";
 import { Exercise } from "@/models/Exercise";
 import database, { exercisesCollection } from "@/db";
+import { useTheme } from "@react-navigation/native";
 
 interface Section {
   title: string;
@@ -49,6 +50,7 @@ const groupData = (data: Exercise[], recentItems: Exercise[]): Section[] => {
 function Exercises({ exercises }: { exercises: Exercise[] }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [recent, setRecent] = useState<Exercise[]>([]);
+  const theme = useTheme();
 
   const filteredData = exercises.filter((item) =>
     item.title.toLowerCase().includes(searchQuery.toLowerCase())
@@ -132,8 +134,22 @@ function Exercises({ exercises }: { exercises: Exercise[] }) {
 
     return (
       <GestureDetector gesture={panGesture}>
-        <Animated.View style={[styles.itemContainer, animatedStyle]}>
-          <Text onPress={() => handleItemPress(item)}>{item.title}</Text>
+        <Animated.View
+          style={[
+            styles.itemContainer,
+            animatedStyle,
+            {
+              backgroundColor: theme.colors.background,
+              borderColor: theme.colors.border,
+            },
+          ]}
+        >
+          <Text
+            style={{ color: theme.colors.text }}
+            onPress={() => handleItemPress(item)}
+          >
+            {item.title}
+          </Text>
         </Animated.View>
       </GestureDetector>
     );
@@ -142,9 +158,11 @@ function Exercises({ exercises }: { exercises: Exercise[] }) {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <View style={{ flex: 1, padding: 20 }}>
-        <Text style={styles.headerText}>Exercises</Text>
+        <Text style={[styles.headerText, { color: theme.colors.text }]}>
+          Exercises
+        </Text>
         <TextInput
-          style={styles.input}
+          style={[styles.input, { backgroundColor: theme.colors.card }]}
           placeholder="Search..."
           value={searchQuery}
           onChangeText={setSearchQuery}
@@ -155,8 +173,17 @@ function Exercises({ exercises }: { exercises: Exercise[] }) {
           keyExtractor={(item) => item.id}
           renderItem={renderItem}
           renderSectionHeader={({ section: { title } }) => (
-            <View style={styles.sectionHeader}>
-              <Text style={styles.sectionHeaderText}>{title}</Text>
+            <View
+              style={[
+                styles.sectionHeader,
+                { backgroundColor: theme.colors.card },
+              ]}
+            >
+              <Text
+                style={[styles.sectionHeaderText, { color: theme.colors.text }]}
+              >
+                {title}
+              </Text>
             </View>
           )}
           ListFooterComponent={<View style={{ height: 150 }} />}
@@ -177,19 +204,15 @@ const styles = StyleSheet.create({
   headerText: {
     fontSize: 30,
     fontWeight: "bold",
-    color: "black",
     marginBottom: 40,
   },
   input: {
     height: 40,
-    borderColor: "gray",
-    borderWidth: 1,
     marginBottom: 10,
     paddingHorizontal: 10,
-    borderRadius: 5,
+    borderRadius: 10,
   },
   sectionHeader: {
-    backgroundColor: "#eee",
     padding: 5,
   },
   sectionHeaderText: {
@@ -197,6 +220,6 @@ const styles = StyleSheet.create({
   },
   itemContainer: {
     padding: 10,
-    backgroundColor: "#fff",
+    borderBottomWidth: 1,
   },
 });

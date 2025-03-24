@@ -1,13 +1,22 @@
 import React, { useRef, useEffect } from "react";
-import { View, Text, StyleSheet, ScrollView, Animated } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  Animated,
+  SafeAreaView,
+} from "react-native";
 import { useNavigation } from "expo-router";
 import { useAuth } from "@/providers/AuthProvider";
 import LoginScreen from "../(auth)/login";
+import { useTheme } from "@react-navigation/native";
 
 export default function ProfileScreen() {
   const navigation = useNavigation();
   const scrollY = useRef(new Animated.Value(0)).current;
   const { user } = useAuth();
+  const theme = useTheme();
 
   const textOpacity = scrollY.interpolate({
     inputRange: [0, 100],
@@ -28,16 +37,16 @@ export default function ProfileScreen() {
   if (!user) return <LoginScreen />;
 
   return (
-    <ScrollView
-      style={styles.container}
-      onScroll={Animated.event(
-        [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-        { useNativeDriver: false }
-      )}
-      scrollEventThrottle={16}
-    >
-      <Text style={styles.user}>Logged in as {user.email}</Text>
-    </ScrollView>
+    <SafeAreaView style={{ flex: 1 }}>
+      <View style={{ flex: 1, padding: 20 }}>
+        <Text style={[styles.headerText, { color: theme.colors.text }]}>
+          Exercises
+        </Text>
+      </View>
+      <ScrollView>
+        <Text style={styles.user}>Logged in as {user.email}</Text>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 

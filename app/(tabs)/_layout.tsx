@@ -31,7 +31,6 @@ export default function TabLayout() {
         name="index"
         options={{
           title: "Profile",
-          headerShown: true,
           tabBarIcon: ({ color }) => (
             <Ionicons size={26} name="person" color={color} />
           ),

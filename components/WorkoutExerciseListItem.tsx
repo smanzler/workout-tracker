@@ -21,6 +21,7 @@ import {
   DropdownMenuTrigger,
 } from "@/zeego/drop-down";
 import database, { setsCollection } from "@/db";
+import { useTheme } from "@react-navigation/native";
 
 const WorkoutExerciseListItem = ({
   workoutExercise,
@@ -31,6 +32,8 @@ const WorkoutExerciseListItem = ({
   exercise: Exercise;
   sets: Set[];
 }) => {
+  const theme = useTheme();
+
   const handleDelete = () => {
     database.write(async () => {
       for (const set of sets) {
@@ -60,13 +63,21 @@ const WorkoutExerciseListItem = ({
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: theme.colors.card }]}>
       <View style={styles.headerContainer}>
-        <Text style={styles.headerText}>{exercise.title}</Text>
+        <Text style={[styles.headerText, { color: theme.colors.text }]}>
+          {exercise.title}
+        </Text>
         <DropdownMenuRoot>
           <DropdownMenuTrigger>
-            <TouchableOpacity style={styles.btn}>
-              <Entypo name="dots-three-horizontal" size={24} color="black" />
+            <TouchableOpacity
+              style={[styles.btn, { backgroundColor: theme.colors.background }]}
+            >
+              <Entypo
+                name="dots-three-horizontal"
+                size={24}
+                color={theme.colors.text}
+              />
             </TouchableOpacity>
           </DropdownMenuTrigger>
           <DropdownMenuContent>
@@ -84,29 +95,39 @@ const WorkoutExerciseListItem = ({
             {
               width: 30,
               textAlign: "center",
+              color: theme.colors.text,
             },
           ]}
         >
           Set
         </Text>
         <Text
-          style={[styles.setHeaderText, { width: 80, textAlign: "center" }]}
+          style={[
+            styles.setHeaderText,
+            { width: 80, textAlign: "center", color: theme.colors.text },
+          ]}
         >
           Previous
         </Text>
         <View style={styles.rightContainer}>
           <Text
-            style={[styles.setHeaderText, { width: 40, textAlign: "center" }]}
+            style={[
+              styles.setHeaderText,
+              { width: 40, textAlign: "center", color: theme.colors.text },
+            ]}
           >
             lbs
           </Text>
           <Text
-            style={[styles.setHeaderText, { width: 40, textAlign: "center" }]}
+            style={[
+              styles.setHeaderText,
+              { width: 40, textAlign: "center", color: theme.colors.text },
+            ]}
           >
             Reps
           </Text>
           <View style={{ width: 30, alignItems: "center" }}>
-            <FontAwesome5 name="check" size={16} color="black" />
+            <FontAwesome5 name="check" size={16} color={theme.colors.text} />
           </View>
         </View>
       </View>
@@ -118,9 +139,14 @@ const WorkoutExerciseListItem = ({
         />
       ))}
 
-      <TouchableOpacity style={styles.addBtn} onPress={handleAddSet}>
-        <Feather name="plus" size={16} color="black" />
-        <Text style={styles.addBtnText}>Add Set</Text>
+      <TouchableOpacity
+        style={[styles.addBtn, { backgroundColor: theme.colors.background }]}
+        onPress={handleAddSet}
+      >
+        <Feather name="plus" size={16} color={theme.colors.text} />
+        <Text style={[styles.addBtnText, { color: theme.colors.text }]}>
+          Add Set
+        </Text>
       </TouchableOpacity>
     </View>
   );
@@ -136,7 +162,6 @@ export default enhance(WorkoutExerciseListItem);
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#d6d6d6",
     padding: 10,
     marginBottom: 10,
     borderRadius: 10,
@@ -175,7 +200,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     gap: 5,
-    backgroundColor: "#f0f0f0",
+    fontWeight: 500,
     padding: 5,
     borderRadius: 8,
     marginTop: 10,

@@ -13,10 +13,12 @@ import database, { workoutsCollection } from "@/db";
 import { Workout as WorkoutModel } from "@/models/Workout";
 import WorkoutExerciseList from "@/components/WorkoutExerciseList";
 import { Feather } from "@expo/vector-icons";
+import { useTheme } from "@react-navigation/native";
 
 const Workout = () => {
   const { seconds, activeWorkoutId, stopWorkout } = useWorkout();
   const [workout, setWorkout] = useState<WorkoutModel | undefined>(undefined);
+  const theme = useTheme();
 
   useEffect(() => {
     async function fetchWorkout() {
@@ -155,7 +157,9 @@ const Workout = () => {
           marginBottom: 20,
         }}
       >
-        <Text style={styles.header}>Workout</Text>
+        <Text style={[styles.header, { color: theme.colors.text }]}>
+          Workout
+        </Text>
 
         <Text
           style={{
@@ -163,13 +167,15 @@ const Workout = () => {
             position: "absolute",
             left: 0,
             right: 0,
+            fontWeight: "bold",
+            color: theme.colors.text,
           }}
         >
           {formatTime(seconds)}
         </Text>
 
         <TouchableOpacity style={styles.btn} onPress={finish}>
-          <Text style={{ color: "white", fontWeight: "bold" }}>Finish</Text>
+          <Text style={{ color: "#e5e5e7", fontWeight: "bold" }}>Finish</Text>
         </TouchableOpacity>
       </View>
 
@@ -177,17 +183,33 @@ const Workout = () => {
         {workout && <WorkoutExerciseList workout={workout} />}
 
         <TouchableOpacity
-          style={styles.addBtn}
+          style={[styles.addBtn, { backgroundColor: theme.colors.primary }]}
           onPress={() => {
             router.push("/(modals)/add_exercise");
           }}
         >
-          <Feather name="plus" size={16} color="white" />
-          <Text style={{ color: "white" }}>Add Exercises</Text>
+          <Feather name="plus" size={24} color={"#e5e5e7"} />
+          <Text
+            style={{
+              color: "#e5e5e7",
+              fontSize: 20,
+              fontWeight: "bold",
+            }}
+          >
+            Add Exercises
+          </Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.deleteBtn} onPress={handleCancel}>
-          <Text style={{ color: "white" }}>Cancel Workout</Text>
+          <Text
+            style={{
+              color: "#e5e5e7",
+              fontSize: 20,
+              fontWeight: "bold",
+            }}
+          >
+            Cancel Workout
+          </Text>
         </TouchableOpacity>
       </ScrollView>
     </View>
@@ -218,9 +240,9 @@ const styles = StyleSheet.create({
     width: "100%",
     justifyContent: "center",
     gap: 5,
-    padding: 5,
     display: "flex",
-    borderRadius: 5,
+    padding: 10,
+    borderRadius: 10,
   },
   deleteBtn: {
     backgroundColor: "#d66d6d",
@@ -228,9 +250,9 @@ const styles = StyleSheet.create({
     width: "100%",
     justifyContent: "center",
     gap: 5,
-    padding: 5,
     display: "flex",
-    borderRadius: 5,
+    padding: 10,
+    borderRadius: 10,
     marginTop: 10,
   },
 });

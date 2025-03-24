@@ -23,6 +23,7 @@ import { router } from "expo-router";
 import { useWorkout } from "@/providers/WorkoutProvider";
 import { WorkoutExercise } from "@/models/WorkoutExercise";
 import { Set } from "@/models/Set";
+import { useTheme } from "@react-navigation/native";
 
 interface Section {
   title: string;
@@ -55,6 +56,7 @@ function Add_Exercise({ exercises }: { exercises: Exercise[] }) {
   const [recent, setRecent] = useState<Exercise[]>([]);
   const [selectedItems, setSelectedItems] = useState<Exercise[]>([]);
   const { activeWorkoutId } = useWorkout();
+  const theme = useTheme();
 
   const filteredData = exercises.filter((item) =>
     item.title.toLowerCase().includes(searchQuery.toLowerCase())
@@ -159,7 +161,7 @@ function Add_Exercise({ exercises }: { exercises: Exercise[] }) {
 
       <View style={{ flex: 1, padding: 20 }}>
         <TextInput
-          style={styles.input}
+          style={[styles.input, { backgroundColor: theme.colors.card }]}
           placeholder="Search..."
           value={searchQuery}
           onChangeText={setSearchQuery}
@@ -175,17 +177,28 @@ function Add_Exercise({ exercises }: { exercises: Exercise[] }) {
               <View
                 style={[
                   styles.item,
-                  selectedItems.some((i) => i.id === item.id) &&
-                    styles.selectedItem,
+                  selectedItems.some((i) => i.id === item.id) && {
+                    backgroundColor: theme.colors.primary
+                      .replace("rgb", "rgba")
+                      .replace(")", ", 0.2)"),
+                  },
+                  { borderBottomColor: theme.colors.border },
                 ]}
               >
-                <Text>{item.title}</Text>
+                <Text style={{ color: theme.colors.text }}>{item.title}</Text>
               </View>
             </TouchableOpacity>
           )}
           renderSectionHeader={({ section: { title } }) => (
-            <View style={styles.sectionHeader}>
-              <Text style={styles.sectionTitle}>{title}</Text>
+            <View
+              style={[
+                styles.sectionHeader,
+                { backgroundColor: theme.colors.card },
+              ]}
+            >
+              <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
+                {title}
+              </Text>
             </View>
           )}
         />
@@ -203,9 +216,6 @@ export default enhance(Add_Exercise);
 const styles = StyleSheet.create({
   topBar: {
     padding: 15,
-    backgroundColor: "#f8f8f8",
-    borderBottomWidth: 1,
-    borderColor: "#ddd",
   },
   addButton: {
     fontSize: 16,
@@ -217,24 +227,16 @@ const styles = StyleSheet.create({
   },
   input: {
     height: 40,
-    borderColor: "gray",
-    borderWidth: 1,
     marginBottom: 10,
     paddingHorizontal: 10,
-    borderRadius: 5,
+    borderRadius: 10,
   },
   item: {
     padding: 12,
-    backgroundColor: "#fff",
     borderBottomWidth: 1,
-    borderColor: "#eee",
-  },
-  selectedItem: {
-    backgroundColor: "#d4edda",
   },
   sectionHeader: {
     padding: 5,
-    backgroundColor: "#eee",
   },
   sectionTitle: {
     fontWeight: "bold",

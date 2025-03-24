@@ -2,6 +2,7 @@ import {
   DarkTheme,
   DefaultTheme,
   ThemeProvider,
+  useTheme,
 } from "@react-navigation/native";
 import { useFonts } from "expo-font";
 import { router, Stack } from "expo-router";
@@ -24,6 +25,7 @@ SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
+  const theme = useTheme();
   const [loaded] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
   });
@@ -63,7 +65,11 @@ export default function RootLayout() {
                       presentation: "fullScreenModal",
                       headerLeft: () => (
                         <TouchableOpacity onPress={() => router.back()}>
-                          <Ionicons name="chevron-back" size={24} />
+                          <Ionicons
+                            name="chevron-back"
+                            size={24}
+                            color={theme.colors.primary}
+                          />
                         </TouchableOpacity>
                       ),
                     }}

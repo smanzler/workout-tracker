@@ -18,6 +18,7 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 import { Q } from "@nozbe/watermelondb";
+import { useTheme } from "@react-navigation/native";
 
 const SetListItem = ({
   set,
@@ -29,6 +30,7 @@ const SetListItem = ({
   const [weight, setWeight] = useState(set.weight?.toString() || "");
   const [reps, setReps] = useState(set.reps?.toString() || "");
   const [completed, setCompleted] = useState(set.completed || false);
+  const theme = useTheme();
 
   const isCompleteable = weight !== "" && reps !== "";
 
@@ -114,18 +116,24 @@ const SetListItem = ({
           style={[
             styles.item,
             styles.order,
-            { backgroundColor: completed ? "" : "#e8e8e8" },
+            {
+              backgroundColor: completed ? "" : theme.colors.background,
+              color: theme.colors.text,
+            },
           ]}
         >
           {set.order}
         </Text>
-        <Text>-</Text>
+        <Text style={{ color: theme.colors.text }}>-</Text>
         <View style={styles.rightContainer}>
           <TextInput
             style={[
               styles.item,
               styles.weight,
-              { backgroundColor: completed ? "" : "#e8e8e8" },
+              {
+                backgroundColor: completed ? "" : theme.colors.background,
+                color: theme.colors.text,
+              },
             ]}
             value={weight}
             onChangeText={(text) => {
@@ -139,7 +147,10 @@ const SetListItem = ({
             style={[
               styles.item,
               styles.reps,
-              { backgroundColor: completed ? "" : "#e8e8e8" },
+              {
+                backgroundColor: completed ? "" : theme.colors.background,
+                color: theme.colors.text,
+              },
             ]}
             value={reps}
             onChangeText={(text) => {
@@ -152,7 +163,9 @@ const SetListItem = ({
           <TouchableOpacity
             style={[
               styles.button,
-              completed ? styles.completedButton : styles.incompleteButton,
+              completed
+                ? styles.completedButton
+                : { backgroundColor: theme.colors.background },
             ]}
             onPress={toggleCompleted}
             disabled={!isCompleteable}
@@ -160,7 +173,13 @@ const SetListItem = ({
             <FontAwesome5
               name="check"
               size={16}
-              color={completed ? "white" : isCompleteable ? "black" : "gray"}
+              color={
+                completed
+                  ? "white"
+                  : isCompleteable
+                  ? theme.colors.text
+                  : "gray"
+              }
             />
           </TouchableOpacity>
         </View>
@@ -205,13 +224,9 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   completedRow: {
-    backgroundColor: "#9FF59F",
-    opacity: 0.5,
+    backgroundColor: "rgba(89, 181, 89, 0.2)",
   },
   completedButton: {
     backgroundColor: "#59b559",
-  },
-  incompleteButton: {
-    backgroundColor: "#e8e8e8",
   },
 });

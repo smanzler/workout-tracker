@@ -2,9 +2,11 @@ import { Button, StyleSheet, View } from "react-native";
 import React from "react";
 import { router } from "expo-router";
 import { useWorkout } from "@/providers/WorkoutProvider";
+import { useTheme } from "@react-navigation/native";
 
 const ResumeWorkoutButton = () => {
   const { activeWorkoutId } = useWorkout();
+  const theme = useTheme();
 
   if (!activeWorkoutId) {
     return null;
@@ -15,7 +17,7 @@ const ResumeWorkoutButton = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: theme.colors.card }]}>
       <Button title="Resume workout" onPress={openWorkout} />
     </View>
   );
@@ -33,6 +35,5 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     borderRadius: 10,
-    backgroundColor: "#d6d6d6",
   },
 });
