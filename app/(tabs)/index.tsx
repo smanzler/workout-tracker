@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from "react";
+import React from "react";
 import {
   View,
   Text,
@@ -7,32 +7,13 @@ import {
   Animated,
   SafeAreaView,
 } from "react-native";
-import { useNavigation } from "expo-router";
 import { useAuth } from "@/providers/AuthProvider";
 import LoginScreen from "../(auth)/login";
 import { useTheme } from "@react-navigation/native";
 
 export default function ProfileScreen() {
-  const navigation = useNavigation();
-  const scrollY = useRef(new Animated.Value(0)).current;
   const { user } = useAuth();
   const theme = useTheme();
-
-  const textOpacity = scrollY.interpolate({
-    inputRange: [0, 100],
-    outputRange: [0, 1],
-    extrapolate: "clamp",
-  });
-
-  useEffect(() => {
-    navigation.setOptions({
-      headerTitle: "Profile",
-      headerStyle: { backgroundColor: "white", shadowOpacity: textOpacity },
-      headerTitleStyle: {
-        opacity: textOpacity,
-      },
-    });
-  }, [navigation, textOpacity]);
 
   if (!user) return <LoginScreen />;
 
