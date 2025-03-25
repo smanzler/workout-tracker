@@ -57,7 +57,10 @@ export default function LoginScreen() {
         </Text>
         <View>
           <TextInput
-            style={[styles.input, { backgroundColor: theme.colors.card }]}
+            style={[
+              styles.input,
+              { backgroundColor: theme.colors.card, color: theme.colors.text },
+            ]}
             onChangeText={(text) => setEmail(text)}
             value={email}
             placeholder="email@address.com"
@@ -66,7 +69,10 @@ export default function LoginScreen() {
         </View>
         <View style={styles.verticallySpaced}>
           <TextInput
-            style={[styles.input, { backgroundColor: theme.colors.card }]}
+            style={[
+              styles.input,
+              { backgroundColor: theme.colors.card, color: theme.colors.text },
+            ]}
             onChangeText={(text) => setPassword(text)}
             value={password}
             secureTextEntry={true}

@@ -21,6 +21,7 @@ import { Exercise } from "@/models/Exercise";
 import database, { exercisesCollection } from "@/db";
 import { useTheme } from "@react-navigation/native";
 import ExercisesList from "@/components/ExercisesList";
+import { useAuth } from "@/providers/AuthProvider";
 
 interface Section {
   title: string;
@@ -47,6 +48,7 @@ const groupData = (data: Exercise[]): Section[] => {
 function Exercises({ exercises }: { exercises: Exercise[] }) {
   const [searchQuery, setSearchQuery] = useState("");
   const theme = useTheme();
+  const { user } = useAuth();
 
   const filteredData = exercises.filter((item) =>
     item.title.toLowerCase().includes(searchQuery.toLowerCase())
@@ -64,6 +66,7 @@ function Exercises({ exercises }: { exercises: Exercise[] }) {
             await database.write(async () => {
               await exercisesCollection.create((exercise) => {
                 exercise.title = name;
+                user && (exercise.userId = user.id);
               });
             });
           } catch (error) {
@@ -152,7 +155,10 @@ function Exercises({ exercises }: { exercises: Exercise[] }) {
           Exercises
         </Text>
         <TextInput
-          style={[styles.input, { backgroundColor: theme.colors.card }]}
+          style={[
+            styles.input,
+            { backgroundColor: theme.colors.card, color: theme.colors.text },
+          ]}
           placeholder="Search..."
           value={searchQuery}
           onChangeText={setSearchQuery}
