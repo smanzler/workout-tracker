@@ -22,6 +22,7 @@ import {
 } from "@/zeego/drop-down";
 import database, { setsCollection } from "@/db";
 import { useTheme } from "@react-navigation/native";
+import { useAuth } from "@/providers/AuthProvider";
 
 const WorkoutExerciseListItem = ({
   workoutExercise,
@@ -33,6 +34,7 @@ const WorkoutExerciseListItem = ({
   sets: Set[];
 }) => {
   const theme = useTheme();
+  const { user } = useAuth();
 
   const handleDelete = () => {
     database.write(async () => {
@@ -58,6 +60,7 @@ const WorkoutExerciseListItem = ({
         set.order = nextOrder;
         set.weight = previousSet ? previousSet.weight : undefined;
         set.reps = previousSet ? previousSet.reps : undefined;
+        user && (set.userId = user.id);
       });
     });
   };

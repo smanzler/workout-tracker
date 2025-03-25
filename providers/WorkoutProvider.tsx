@@ -10,6 +10,7 @@ import BackgroundTimer from "react-native-background-timer";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import database from "@/db";
 import { Workout } from "@/models/Workout";
+import { useAuth } from "./AuthProvider";
 
 interface WorkoutContextType {
   seconds: number;
@@ -31,6 +32,7 @@ export const WorkoutProvider = ({
     undefined
   );
   const appState = useRef(AppState.currentState);
+  const { user } = useAuth();
 
   const startTimer = () => {
     if (!timerRef.current) {
@@ -95,6 +97,7 @@ export const WorkoutProvider = ({
           .get<Workout>("workouts")
           .create((workout) => {
             workout.startTime = Date.now();
+            user && (workout.userId = user.id);
           });
         return workout;
       });

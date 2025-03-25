@@ -94,6 +94,7 @@ function Add_Exercise({ exercises }: { exercises: Exercise[] }) {
             // @ts-ignore
             workoutExercise.workout.set(workout);
             workoutExercise.order = nextOrder++;
+            user && (workoutExercise.userId = user.id);
           }
         );
 
@@ -103,6 +104,7 @@ function Add_Exercise({ exercises }: { exercises: Exercise[] }) {
           set.order = 1;
           set.reps = undefined;
           set.weight = undefined;
+          user && (set.userId = user.id);
         });
 
         return [workoutExercise, set];
