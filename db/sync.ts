@@ -20,25 +20,56 @@ export async function mySync(
     sendCreatedAsUpdated: true,
     pullChanges: async ({ lastPulledAt, schemaVersion, migration }) => {
       console.log(lastPulledAt);
-      const { data, error } = await supabase.rpc("pull", {
-        last_pulled_at: lastPulledAt,
-        schemaversion: schemaVersion,
-        migration,
-      });
 
-      console.log("pull", JSON.stringify(data));
-      if (error) console.log(error);
+      try {
+        const { data, error } = await supabase.rpc("pull", {
+          last_pulled_at: lastPulledAt,
+          schemaversion: schemaVersion,
+          migration,
+        });
 
-      await updateLastSync(data.timestamp);
+        if (error) {
+          console.log("Pull error:", error);
 
-      return { changes: data.changes, timestamp: data.timestamp };
+          return {
+            changes: {},
+            timestamp: lastPulledAt || 0,
+          };
+        }
+
+        console.log("pull", JSON.stringify(data));
+
+        await updateLastSync(data.timestamp);
+
+        return {
+          changes: data.changes,
+          timestamp: data.timestamp,
+        };
+      } catch (err) {
+        console.error("Unexpected pull error:", err);
+
+        return {
+          changes: {},
+          timestamp: lastPulledAt || 0,
+        };
+      }
     },
     pushChanges: async ({ changes }) => {
       console.log("pushing changes:", JSON.stringify(changes));
 
-      const { error } = await supabase.rpc("push", { changes });
+      try {
+        const { error } = await supabase.rpc("push", { changes });
 
-      if (error) console.log(error);
+        if (error) {
+          console.log("Push error:", error);
+          throw new Error(`Push failed: ${error.message}`);
+        }
+
+        console.log("Push successful");
+      } catch (err) {
+        console.error("Unexpected push error:", err);
+        throw err;
+      }
     },
   });
 
