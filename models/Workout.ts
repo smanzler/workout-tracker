@@ -10,8 +10,8 @@ export class Workout extends Model {
   };
 
   @field("name") name!: string;
-  @date("startTime") startTime!: number;
-  @date("endTime") endTime?: number;
+  @date("start_time") startTime!: number;
+  @date("end_time") endTime?: number;
 
   @children("workout_exercises") workoutExercises!: Query<WorkoutExercise>;
 
