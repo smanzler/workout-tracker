@@ -253,6 +253,6 @@ const styles = StyleSheet.create({
     display: "flex",
     padding: 10,
     borderRadius: 10,
-    marginTop: 10,
+    marginTop: 20,
   },
 });

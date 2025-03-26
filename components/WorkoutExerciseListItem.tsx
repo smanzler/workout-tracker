@@ -68,7 +68,11 @@ const WorkoutExerciseListItem = ({
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.card }]}>
       <View style={styles.headerContainer}>
-        <Text style={[styles.headerText, { color: theme.colors.text }]}>
+        <Text
+          style={[styles.headerText, { color: theme.colors.text }]}
+          numberOfLines={1}
+          ellipsizeMode="tail"
+        >
           {exercise.title}
         </Text>
         <DropdownMenuRoot>
@@ -165,8 +169,8 @@ export default enhance(WorkoutExerciseListItem);
 
 const styles = StyleSheet.create({
   container: {
-    paddingVertical: 10,
-    marginBottom: 10,
+    paddingVertical: 20,
+    marginBottom: 20,
     borderRadius: 10,
   },
   headerContainer: {
@@ -174,7 +178,8 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 10,
-    marginHorizontal: 10,
+    marginHorizontal: 20,
+    gap: 10,
   },
   btn: {
     paddingHorizontal: 5,
@@ -185,12 +190,13 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     marginBottom: 5,
+    flexShrink: 1,
   },
   setsHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
     marginVertical: 5,
-    marginHorizontal: 10,
+    marginHorizontal: 20,
   },
   rightContainer: {
     flexDirection: "row",
@@ -207,7 +213,7 @@ const styles = StyleSheet.create({
     gap: 5,
     fontWeight: 500,
     padding: 5,
-    marginHorizontal: 10,
+    marginHorizontal: 20,
     borderRadius: 8,
     marginTop: 10,
   },
