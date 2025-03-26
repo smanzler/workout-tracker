@@ -109,8 +109,8 @@ export default enhance(WorkoutListItem);
 
 const styles = StyleSheet.create({
   container: {
-    padding: 10,
-    borderRadius: 10,
+    padding: 20,
+    borderRadius: 20,
     marginBottom: 10,
   },
   headerContainer: {
