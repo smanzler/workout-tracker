@@ -9,7 +9,7 @@ const History = () => {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <View style={{ flex: 1, padding: 20 }}>
+      <View style={{ flex: 1 }}>
         <Text style={[styles.headerText, { color: theme.colors.text }]}>
           History
         </Text>
@@ -25,6 +25,7 @@ const styles = StyleSheet.create({
   headerText: {
     fontSize: 30,
     fontWeight: "bold",
-    marginBottom: 40,
+    marginBottom: 20,
+    padding: 20,
   },
 });

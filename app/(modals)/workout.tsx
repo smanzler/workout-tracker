@@ -155,6 +155,7 @@ const Workout = () => {
           justifyContent: "space-between",
           alignItems: "center",
           marginBottom: 20,
+          padding: 20,
         }}
       >
         <Text style={[styles.header, { color: theme.colors.text }]}>
@@ -179,7 +180,7 @@ const Workout = () => {
         </TouchableOpacity>
       </View>
 
-      <ScrollView style={{ paddingTop: 10 }}>
+      <ScrollView style={{ padding: 20 }}>
         {workout && <WorkoutExerciseList workout={workout} />}
 
         <TouchableOpacity
@@ -221,7 +222,6 @@ export default Workout;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
   },
   header: {
     flex: 1,

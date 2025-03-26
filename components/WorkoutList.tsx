@@ -8,7 +8,7 @@ import { Q } from "@nozbe/watermelondb";
 
 const WorkoutList = ({ workouts }: { workouts: Workout[] }) => {
   return (
-    <ScrollView>
+    <ScrollView style={{ flex: 1, padding: 20 }}>
       {workouts &&
         workouts.map((workout) => (
           <WorkoutListItem key={workout.id} workout={workout} />
