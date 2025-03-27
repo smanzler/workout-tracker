@@ -1,9 +1,4 @@
-import {
-  DarkTheme,
-  DefaultTheme,
-  ThemeProvider,
-  useTheme,
-} from "@react-navigation/native";
+import { ThemeProvider, useTheme } from "@react-navigation/native";
 import { useFonts } from "expo-font";
 import { router, Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
@@ -19,6 +14,7 @@ import { WorkoutProvider } from "@/providers/WorkoutProvider";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import ResumeWorkoutButton from "@/components/ResumeWorkoutButton";
+import { DarkTheme, DefaultTheme } from "@/constants/Colors";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
