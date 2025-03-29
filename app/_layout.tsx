@@ -70,6 +70,13 @@ export default function RootLayout() {
                       ),
                     }}
                   />
+                  <Stack.Screen
+                    name="(modals)/summary"
+                    options={{
+                      presentation: "fullScreenModal",
+                      headerShown: false,
+                    }}
+                  />
                 </Stack>
 
                 <ResumeWorkoutButton />

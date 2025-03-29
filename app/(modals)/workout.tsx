@@ -91,7 +91,10 @@ const Workout = () => {
     }
 
     await stopWorkout();
-    router.replace("/(tabs)/history");
+    router.push({
+      pathname: "/(modals)/summary",
+      params: { workoutId: workout.id },
+    });
   };
 
   const cancelWorkout = async () => {
