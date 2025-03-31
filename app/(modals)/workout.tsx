@@ -91,7 +91,7 @@ const Workout = () => {
     }
 
     await stopWorkout();
-    router.push({
+    router.replace({
       pathname: "/(modals)/summary",
       params: { workoutId: workout.id },
     });

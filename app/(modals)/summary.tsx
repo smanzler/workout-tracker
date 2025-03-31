@@ -32,7 +32,7 @@ const Summary = () => {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <View style={styles.container}>
-        <TouchableOpacity onPress={() => router.replace("/(tabs)/history")}>
+        <TouchableOpacity onPress={() => router.back()}>
           <Ionicons name="close" size={24} color={theme.colors.text} />
         </TouchableOpacity>
         <Text style={[styles.headerText, { color: theme.colors.text }]}>
