@@ -85,9 +85,19 @@ const WorkoutListItem = ({
       </Text>
       {workoutExercises.length !== 0 && (
         <>
-          <Text style={[styles.header2, { color: theme.colors.text }]}>
-            Exercises
-          </Text>
+          <View style={{ flexDirection: "row" }}>
+            <Text
+              style={[
+                styles.header2,
+                { color: theme.colors.text, width: "50%" },
+              ]}
+            >
+              Exercise
+            </Text>
+            <Text style={[styles.header2, { color: theme.colors.text }]}>
+              Best Set
+            </Text>
+          </View>
           {workoutExercises.map((workoutExercise) => (
             <WorkoutExerciseTitle
               key={workoutExercise.id}
@@ -130,11 +140,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 500,
     opacity: 0.6,
-    marginBottom: 7,
+    marginBottom: 9,
   },
   header2: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: "bold",
-    marginBottom: 5,
+    marginBottom: 3,
   },
 });
