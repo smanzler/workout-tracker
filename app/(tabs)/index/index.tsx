@@ -17,6 +17,7 @@ import { Stack } from "expo-router";
 import LoginScreen from "@/app/(auth)/login";
 import { supabase } from "@/lib/supabase";
 import { BodyScrollView } from "@/components/BodyScrollViiew";
+import { ThemedText } from "@/components/ThemedText";
 
 export default function ProfileScreen() {
   const { user } = useAuth();
@@ -35,16 +36,20 @@ export default function ProfileScreen() {
   return (
     <BodyScrollView style={{ paddingHorizontal: 20 }}>
       <Stack.Screen options={{ headerTitle: "Profile" }} />
-      <Text style={[styles.user, { color: theme.colors.text }]}>
+      <ThemedText type="defaultSemiBold" style={styles.user}>
         Logged in as {user.email}
-      </Text>
+      </ThemedText>
       <Button
         style={{ marginBottom: 10 }}
         onPress={() => mySync(user, updateLastSync, () => {})}
       >
         Sync
       </Button>
-      <Button style={{}} onPress={() => supabase.auth.signOut()}>
+      <Button
+        style={{}}
+        onPress={() => supabase.auth.signOut()}
+        variant="outline"
+      >
         Log Out
       </Button>
       {/* <Button title="Reset DB" onPress={resetDatabase} /> */}
@@ -54,8 +59,8 @@ export default function ProfileScreen() {
 
 const styles = StyleSheet.create({
   user: {
-    fontSize: 18,
     textAlign: "center",
-    marginBottom: 10,
+    fontSize: 18,
+    marginBottom: 30,
   },
 });
