@@ -1,19 +1,13 @@
-import {
-  Alert,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Alert, ScrollView, StyleSheet, Text, View } from "react-native";
 import React, { useEffect, useState } from "react";
 import { useWorkout } from "@/providers/WorkoutProvider";
 import { router } from "expo-router";
 import database, { workoutsCollection } from "@/db";
 import { Workout as WorkoutModel } from "@/models/Workout";
 import WorkoutExerciseList from "@/components/WorkoutExerciseList";
-import { Feather } from "@expo/vector-icons";
+import { Entypo, Feather, FontAwesome6 } from "@expo/vector-icons";
 import { useTheme } from "@react-navigation/native";
+import Button from "@/components/Button";
 
 const Workout = () => {
   const { seconds, activeWorkoutId, stopWorkout } = useWorkout();
@@ -178,43 +172,29 @@ const Workout = () => {
           {formatTime(seconds)}
         </Text>
 
-        <TouchableOpacity style={styles.btn} onPress={finish}>
-          <Text style={{ color: "#e5e5e7", fontWeight: "bold" }}>Finish</Text>
-        </TouchableOpacity>
+        <Button size="sm" onPress={finish}>
+          Finish
+        </Button>
       </View>
 
       <ScrollView style={{ padding: 20 }}>
         {workout && <WorkoutExerciseList workout={workout} />}
 
-        <TouchableOpacity
-          style={[styles.addBtn, { backgroundColor: theme.colors.primary }]}
+        <Button
           onPress={() => {
             router.push("/(modals)/add_exercise");
           }}
         >
-          <Feather name="plus" size={24} color={"#e5e5e7"} />
-          <Text
-            style={{
-              color: "#e5e5e7",
-              fontSize: 20,
-              fontWeight: "bold",
-            }}
-          >
-            Add Exercises
-          </Text>
-        </TouchableOpacity>
+          Add Exercises
+        </Button>
 
-        <TouchableOpacity style={styles.deleteBtn} onPress={handleCancel}>
-          <Text
-            style={{
-              color: "#e5e5e7",
-              fontSize: 20,
-              fontWeight: "bold",
-            }}
-          >
-            Cancel Workout
-          </Text>
-        </TouchableOpacity>
+        <Button
+          style={{ marginTop: 10 }}
+          variant="outline"
+          onPress={handleCancel}
+        >
+          Cancel Workout
+        </Button>
       </ScrollView>
     </View>
   );
@@ -236,26 +216,5 @@ const styles = StyleSheet.create({
     padding: 5,
     borderRadius: 5,
     paddingHorizontal: 10,
-  },
-  addBtn: {
-    backgroundColor: "#2ba0d6",
-    flexDirection: "row",
-    width: "100%",
-    justifyContent: "center",
-    gap: 5,
-    display: "flex",
-    padding: 10,
-    borderRadius: 10,
-  },
-  deleteBtn: {
-    backgroundColor: "#d66d6d",
-    flexDirection: "row",
-    width: "100%",
-    justifyContent: "center",
-    gap: 5,
-    display: "flex",
-    padding: 10,
-    borderRadius: 10,
-    marginTop: 20,
   },
 });
