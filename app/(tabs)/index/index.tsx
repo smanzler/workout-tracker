@@ -33,7 +33,7 @@ export default function ProfileScreen() {
   if (!user) return <LoginScreen />;
 
   return (
-    <BodyScrollView>
+    <BodyScrollView style={{ paddingHorizontal: 20 }}>
       <Stack.Screen options={{ headerTitle: "Profile" }} />
       <Text style={[styles.user, { color: theme.colors.text }]}>
         Logged in as {user.email}
@@ -53,15 +53,6 @@ export default function ProfileScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 10 },
-  pageHeader: {
-    height: 100,
-  },
-  headerText: {
-    fontSize: 30,
-    fontWeight: "bold",
-    margin: 20,
-  },
   user: {
     fontSize: 18,
     textAlign: "center",

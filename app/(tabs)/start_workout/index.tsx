@@ -89,7 +89,7 @@ export default function StartWorkoutScreen() {
   };
 
   return (
-    <BodyScrollView>
+    <BodyScrollView style={{ paddingHorizontal: 20 }}>
       <Button onPress={start} size="md">
         Start Workout
       </Button>
