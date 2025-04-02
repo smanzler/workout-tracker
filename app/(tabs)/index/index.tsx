@@ -34,6 +34,7 @@ export default function ProfileScreen() {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <ScrollView style={{ padding: 20 }}>
+        <Stack.Screen options={{ headerTitle: "Profile" }} />
         <Text style={[styles.user, { color: theme.colors.text }]}>
           Logged in as {user.email}
         </Text>
