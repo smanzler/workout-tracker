@@ -6,12 +6,14 @@ import { HapticTab } from "@/components/HapticTab";
 import TabBarBackground from "@/components/ui/TabBarBackground";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "@react-navigation/native";
+import TabBar from "@/components/ui/TabBar";
 
 export default function TabLayout() {
   const theme = useTheme();
 
   return (
     <Tabs
+      tabBar={(props) => <TabBar {...props} />}
       screenOptions={{
         tabBarActiveTintColor: theme.colors.primary,
         tabBarButton: HapticTab,
@@ -40,7 +42,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="start_workout"
         options={{
-          title: "Start Workout",
+          title: "Workout",
           tabBarIcon: ({ color }) => (
             <Ionicons size={26} name="create" color={color} />
           ),

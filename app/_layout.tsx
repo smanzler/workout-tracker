@@ -13,7 +13,6 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { WorkoutProvider } from "@/providers/WorkoutProvider";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import ResumeWorkoutButton from "@/components/ResumeWorkoutButton";
 import { DarkTheme, DefaultTheme } from "@/constants/Colors";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
@@ -79,7 +78,6 @@ export default function RootLayout() {
                   />
                 </Stack>
 
-                <ResumeWorkoutButton />
                 <StatusBar style="auto" />
               </View>
             </SyncProvider>
