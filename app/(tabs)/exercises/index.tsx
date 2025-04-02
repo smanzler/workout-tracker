@@ -14,6 +14,7 @@ import { useTheme } from "@react-navigation/native";
 import ExercisesList from "@/components/ExercisesList";
 import { useAuth } from "@/providers/AuthProvider";
 import { BodyScrollView } from "@/components/BodyScrollViiew";
+import { Stack } from "expo-router";
 
 interface Section {
   title: string;
@@ -141,24 +142,20 @@ function Exercises({ exercises }: { exercises: Exercise[] }) {
   };
 
   return (
-    <BodyScrollView>
-      <View style={{ padding: 20 }}>
-        <Text style={[styles.headerText, { color: theme.colors.text }]}>
-          Exercises
-        </Text>
-        <TextInput
-          style={[
-            styles.input,
-            { backgroundColor: theme.colors.card, color: theme.colors.text },
-          ]}
-          placeholder="Search..."
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-        />
-        <Button title="Add Exercise" onPress={handleAddItem} />
-      </View>
+    <>
+      <Stack.Screen
+        options={{
+          headerSearchBarOptions: {
+            placeholder: "Search",
+            onChangeText: (e) => {
+              setSearchQuery(e.nativeEvent.text);
+            },
+          },
+          headerRight: () => <Button title="New" onPress={handleAddItem} />,
+        }}
+      />
       <ExercisesList sections={sections} renderItem={renderItem} />
-    </BodyScrollView>
+    </>
   );
 }
 

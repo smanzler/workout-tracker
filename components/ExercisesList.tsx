@@ -38,6 +38,11 @@ const ExercisesList = ({
       )}
       ListFooterComponent={<View style={{ height: 150 }} />}
       keyboardShouldPersistTaps="handled"
+      stickySectionHeadersEnabled={true}
+      automaticallyAdjustsScrollIndicatorInsets
+      contentInsetAdjustmentBehavior="automatic"
+      contentInset={{ bottom: 0 }}
+      scrollIndicatorInsets={{ bottom: 0 }}
     />
   );
 };
