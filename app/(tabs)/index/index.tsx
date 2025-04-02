@@ -14,8 +14,8 @@ import { useSync } from "@/providers/SyncProvider";
 import database from "@/db";
 import Button from "@/components/Button";
 import { Stack } from "expo-router";
-import { iosHeaderOptions } from "@/constants/headerOptions";
 import LoginScreen from "@/app/(auth)/login";
+import { supabase } from "@/lib/supabase";
 
 export default function ProfileScreen() {
   const { user } = useAuth();
@@ -43,7 +43,9 @@ export default function ProfileScreen() {
         >
           Sync
         </Button>
-        <Button style={{}}>Log Out</Button>
+        <Button style={{}} onPress={() => supabase.auth.signOut()}>
+          Log Out
+        </Button>
         {/* <Button title="Reset DB" onPress={resetDatabase} /> */}
       </ScrollView>
     </SafeAreaView>

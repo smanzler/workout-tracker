@@ -1,16 +1,10 @@
 import React, { useState } from "react";
-import {
-  Alert,
-  Button,
-  SafeAreaView,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from "react-native";
-import { router } from "expo-router";
+import { Alert, SafeAreaView, StyleSheet, Text, View } from "react-native";
+import { router, Stack } from "expo-router";
 import { supabase } from "@/lib/supabase";
 import { useTheme } from "@react-navigation/native";
+import TextInput from "@/components/TextInput";
+import Button from "@/components/Button";
 
 export default function LoginScreen() {
   const [email, setEmail] = useState("");
@@ -51,49 +45,41 @@ export default function LoginScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
+      <Stack.Screen options={{ headerTitle: "Login" }} />
       <View style={{ flex: 1, padding: 20 }}>
-        <Text style={[styles.headerText, { color: theme.colors.text }]}>
-          Login
-        </Text>
         <View>
           <TextInput
-            style={[
-              styles.input,
-              { backgroundColor: theme.colors.card, color: theme.colors.text },
-            ]}
             onChangeText={(text) => setEmail(text)}
             value={email}
-            placeholder="email@address.com"
+            label="Email"
             autoCapitalize={"none"}
+            variant="filled"
           />
         </View>
         <View style={styles.verticallySpaced}>
           <TextInput
-            style={[
-              styles.input,
-              { backgroundColor: theme.colors.card, color: theme.colors.text },
-            ]}
             onChangeText={(text) => setPassword(text)}
             value={password}
             secureTextEntry={true}
-            placeholder="Password"
+            label="Password"
             autoCapitalize={"none"}
+            variant="filled"
           />
         </View>
-        <View style={[styles.verticallySpaced, styles.mt20]}>
-          <Button
-            title="Sign in"
-            disabled={loading}
-            onPress={() => signInWithEmail()}
-          />
-        </View>
-        <View style={styles.verticallySpaced}>
-          <Button
-            title="Sign up"
-            disabled={loading}
-            onPress={() => signUpWithEmail()}
-          />
-        </View>
+        <Button
+          style={{ marginBottom: 10 }}
+          disabled={loading}
+          onPress={() => signInWithEmail()}
+        >
+          Sign in
+        </Button>
+        <Button
+          disabled={loading}
+          onPress={() => signUpWithEmail()}
+          variant="outline"
+        >
+          Sign up
+        </Button>
       </View>
     </SafeAreaView>
   );
@@ -110,17 +96,7 @@ const styles = StyleSheet.create({
     paddingBottom: 4,
     alignSelf: "stretch",
   },
-  input: {
-    height: 40,
-    marginBottom: 10,
-    paddingHorizontal: 10,
-    borderRadius: 10,
-  },
   mt20: {
     marginTop: 20,
-  },
-  textInput: {
-    padding: 12,
-    borderRadius: 10,
   },
 });
