@@ -14,15 +14,14 @@ export default function TabLayout() {
     <Tabs
       screenOptions={{
         tabBarActiveTintColor: theme.colors.primary,
-        headerShown: false,
         tabBarButton: HapticTab,
         tabBarBackground: TabBarBackground,
+        headerShown: false,
       }}
     >
       <Tabs.Screen
         name="index"
         options={{
-          title: "Profile",
           tabBarIcon: ({ color }) => (
             <Ionicons size={26} name="person" color={color} />
           ),
@@ -31,7 +30,6 @@ export default function TabLayout() {
       <Tabs.Screen
         name="history"
         options={{
-          title: "History",
           tabBarIcon: ({ color }) => (
             <Ionicons size={26} name="time" color={color} />
           ),

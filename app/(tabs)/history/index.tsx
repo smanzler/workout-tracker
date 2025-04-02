@@ -9,12 +9,7 @@ const History = () => {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <View style={{ flex: 1 }}>
-        <Text style={[styles.headerText, { color: theme.colors.text }]}>
-          History
-        </Text>
-        <WorkoutList />
-      </View>
+      <WorkoutList />
     </SafeAreaView>
   );
 };

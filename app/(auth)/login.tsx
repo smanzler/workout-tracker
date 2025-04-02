@@ -29,7 +29,7 @@ export default function LoginScreen() {
     });
 
     if (error) Alert.alert(error.message);
-    if (session) router.navigate("/");
+    if (session) router.navigate("/(tabs)/index");
     setLoading(false);
   }
 
@@ -45,7 +45,7 @@ export default function LoginScreen() {
 
     if (error) Alert.alert(error.message);
 
-    if (session) router.navigate("/");
+    if (session) router.navigate("/(tabs)/index");
     setLoading(false);
   }
 

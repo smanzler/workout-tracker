@@ -13,6 +13,7 @@ import { Entypo } from "@expo/vector-icons";
 import { useWorkout } from "@/providers/WorkoutProvider";
 import database, { workoutsCollection } from "@/db";
 import { useTheme } from "@react-navigation/native";
+import Button from "@/components/Button";
 
 export default function StartWorkoutScreen() {
   const { activeWorkoutId, startWorkout } = useWorkout();
@@ -89,33 +90,9 @@ export default function StartWorkoutScreen() {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <ScrollView style={styles.container}>
-        <Text style={[styles.headerText, { color: theme.colors.text }]}>
+        <Button onPress={start} size="md">
           Start Workout
-        </Text>
-
-        <TouchableOpacity
-          style={[styles.btn, { backgroundColor: theme.colors.primary }]}
-          onPress={start}
-        >
-          <Text style={[styles.btnText]}>Start Workout</Text>
-        </TouchableOpacity>
-
-        <View style={styles.templateHeader}>
-          <Text style={[styles.headerText, { color: theme.colors.text }]}>
-            Templates
-          </Text>
-          <TouchableOpacity
-            style={[
-              styles.templateBtn,
-              { backgroundColor: theme.colors.primary },
-            ]}
-          >
-            <View style={{ flexDirection: "row" }}>
-              <Text style={[styles.templateBtnText]}>Template</Text>
-              <Entypo name="plus" size={16} color={"#e5e5e7"} />
-            </View>
-          </TouchableOpacity>
-        </View>
+        </Button>
       </ScrollView>
     </SafeAreaView>
   );
@@ -127,29 +104,5 @@ const styles = StyleSheet.create({
     fontSize: 30,
     fontWeight: "bold",
     marginBottom: 40,
-  },
-  templateHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-  },
-  templateBtn: {
-    padding: 10,
-    borderRadius: 8,
-  },
-  templateBtnText: {
-    fontWeight: "bold",
-    color: "#e5e5e7",
-  },
-  btn: {
-    padding: 10,
-    borderRadius: 10,
-    marginBottom: 50,
-  },
-  btnText: {
-    textAlign: "center",
-    fontSize: 20,
-    fontWeight: "bold",
-    color: "#e5e5e7",
   },
 });

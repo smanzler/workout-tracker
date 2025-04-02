@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   View,
   Text,
@@ -6,14 +6,16 @@ import {
   ScrollView,
   Animated,
   SafeAreaView,
-  Button,
 } from "react-native";
 import { useAuth } from "@/providers/AuthProvider";
-import LoginScreen from "../(auth)/login";
 import { useTheme } from "@react-navigation/native";
 import { mySync } from "@/db/sync";
 import { useSync } from "@/providers/SyncProvider";
 import database from "@/db";
+import Button from "@/components/Button";
+import { Stack } from "expo-router";
+import { iosHeaderOptions } from "@/constants/headerOptions";
+import LoginScreen from "@/app/(auth)/login";
 
 export default function ProfileScreen() {
   const { user } = useAuth();
@@ -31,17 +33,17 @@ export default function ProfileScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <Text style={[styles.headerText, { color: theme.colors.text }]}>
-        Profile
-      </Text>
-      <ScrollView>
+      <ScrollView style={{ padding: 20 }}>
         <Text style={[styles.user, { color: theme.colors.text }]}>
           Logged in as {user.email}
         </Text>
         <Button
-          title="Sync"
+          style={{ marginBottom: 10 }}
           onPress={() => mySync(user, updateLastSync, () => {})}
-        />
+        >
+          Sync
+        </Button>
+        <Button style={{}}>Log Out</Button>
         {/* <Button title="Reset DB" onPress={resetDatabase} /> */}
       </ScrollView>
     </SafeAreaView>
@@ -61,5 +63,6 @@ const styles = StyleSheet.create({
   user: {
     fontSize: 18,
     textAlign: "center",
+    marginBottom: 10,
   },
 });
