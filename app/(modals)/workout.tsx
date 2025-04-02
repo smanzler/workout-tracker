@@ -151,8 +151,9 @@ const Workout = () => {
           flexDirection: "row",
           justifyContent: "space-between",
           alignItems: "center",
-          marginBottom: 20,
           padding: 20,
+          borderBottomColor: theme.colors.border,
+          borderBottomWidth: 1,
         }}
       >
         <Text style={[styles.header, { color: theme.colors.text }]}>
@@ -177,7 +178,7 @@ const Workout = () => {
         </Button>
       </View>
 
-      <ScrollView style={{ padding: 20 }}>
+      <ScrollView style={{ paddingHorizontal: 20 }}>
         {workout && <WorkoutExerciseList workout={workout} />}
 
         <Button
