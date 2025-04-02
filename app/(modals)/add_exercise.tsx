@@ -2,15 +2,12 @@ import {
   Alert,
   Button,
   SafeAreaView,
-  SectionList,
   StyleSheet,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
-import React, { useEffect, useState } from "react";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import React, { useState } from "react";
 import { Exercise } from "@/models/Exercise";
 import { withObservables } from "@nozbe/watermelondb/react";
 import database, {
@@ -19,10 +16,8 @@ import database, {
   workoutExercisesCollection,
   workoutsCollection,
 } from "@/db";
-import { router } from "expo-router";
+import { router, Stack } from "expo-router";
 import { useWorkout } from "@/providers/WorkoutProvider";
-import { WorkoutExercise } from "@/models/WorkoutExercise";
-import { Set } from "@/models/Set";
 import { useTheme } from "@react-navigation/native";
 import ExercisesList from "@/components/ExercisesList";
 import { useAuth } from "@/providers/AuthProvider";
@@ -149,6 +144,18 @@ function Add_Exercise({ exercises }: { exercises: Exercise[] }) {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
+      <Stack.Screen
+        options={{
+          headerSearchBarOptions: {
+            placeholder: "Search",
+            onChangeText: (e) => {
+              setSearchQuery(e.nativeEvent.text);
+            },
+          },
+          headerRight: () => <Button title="New" onPress={handleAddItem} />,
+        }}
+      />
+
       <View style={styles.topBar}>
         <TouchableOpacity
           onPress={handleAddToWorkout}
@@ -163,20 +170,6 @@ function Add_Exercise({ exercises }: { exercises: Exercise[] }) {
             Add to Workout ({selectedItems.length})
           </Text>
         </TouchableOpacity>
-      </View>
-
-      <View style={{ padding: 20 }}>
-        <TextInput
-          style={[
-            styles.input,
-            { backgroundColor: theme.colors.card, color: theme.colors.text },
-          ]}
-          placeholder="Search..."
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-        />
-
-        <Button title="Add Item" onPress={handleAddItem} />
       </View>
 
       <ExercisesList
