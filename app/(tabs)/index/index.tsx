@@ -16,6 +16,7 @@ import Button from "@/components/Button";
 import { Stack } from "expo-router";
 import LoginScreen from "@/app/(auth)/login";
 import { supabase } from "@/lib/supabase";
+import { BodyScrollView } from "@/components/BodyScrollViiew";
 
 export default function ProfileScreen() {
   const { user } = useAuth();
@@ -32,24 +33,22 @@ export default function ProfileScreen() {
   if (!user) return <LoginScreen />;
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <ScrollView style={{ padding: 20 }}>
-        <Stack.Screen options={{ headerTitle: "Profile" }} />
-        <Text style={[styles.user, { color: theme.colors.text }]}>
-          Logged in as {user.email}
-        </Text>
-        <Button
-          style={{ marginBottom: 10 }}
-          onPress={() => mySync(user, updateLastSync, () => {})}
-        >
-          Sync
-        </Button>
-        <Button style={{}} onPress={() => supabase.auth.signOut()}>
-          Log Out
-        </Button>
-        {/* <Button title="Reset DB" onPress={resetDatabase} /> */}
-      </ScrollView>
-    </SafeAreaView>
+    <BodyScrollView>
+      <Stack.Screen options={{ headerTitle: "Profile" }} />
+      <Text style={[styles.user, { color: theme.colors.text }]}>
+        Logged in as {user.email}
+      </Text>
+      <Button
+        style={{ marginBottom: 10 }}
+        onPress={() => mySync(user, updateLastSync, () => {})}
+      >
+        Sync
+      </Button>
+      <Button style={{}} onPress={() => supabase.auth.signOut()}>
+        Log Out
+      </Button>
+      {/* <Button title="Reset DB" onPress={resetDatabase} /> */}
+    </BodyScrollView>
   );
 }
 

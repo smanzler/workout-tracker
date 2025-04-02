@@ -14,6 +14,7 @@ import { useWorkout } from "@/providers/WorkoutProvider";
 import database, { workoutsCollection } from "@/db";
 import { useTheme } from "@react-navigation/native";
 import Button from "@/components/Button";
+import { BodyScrollView } from "@/components/BodyScrollViiew";
 
 export default function StartWorkoutScreen() {
   const { activeWorkoutId, startWorkout } = useWorkout();
@@ -88,13 +89,11 @@ export default function StartWorkoutScreen() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <ScrollView style={styles.container}>
-        <Button onPress={start} size="md">
-          Start Workout
-        </Button>
-      </ScrollView>
-    </SafeAreaView>
+    <BodyScrollView>
+      <Button onPress={start} size="md">
+        Start Workout
+      </Button>
+    </BodyScrollView>
   );
 }
 

@@ -1,14 +1,5 @@
-import React, { useEffect, useState } from "react";
-import {
-  SectionList,
-  TextInput,
-  Text,
-  View,
-  SafeAreaView,
-  Button,
-  Alert,
-  StyleSheet,
-} from "react-native";
+import React, { useState } from "react";
+import { TextInput, Text, View, Button, Alert, StyleSheet } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, {
   useAnimatedStyle,
@@ -22,6 +13,7 @@ import database, { exercisesCollection } from "@/db";
 import { useTheme } from "@react-navigation/native";
 import ExercisesList from "@/components/ExercisesList";
 import { useAuth } from "@/providers/AuthProvider";
+import { BodyScrollView } from "@/components/BodyScrollViiew";
 
 interface Section {
   title: string;
@@ -149,7 +141,7 @@ function Exercises({ exercises }: { exercises: Exercise[] }) {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <BodyScrollView>
       <View style={{ padding: 20 }}>
         <Text style={[styles.headerText, { color: theme.colors.text }]}>
           Exercises
@@ -166,7 +158,7 @@ function Exercises({ exercises }: { exercises: Exercise[] }) {
         <Button title="Add Exercise" onPress={handleAddItem} />
       </View>
       <ExercisesList sections={sections} renderItem={renderItem} />
-    </SafeAreaView>
+    </BodyScrollView>
   );
 }
 

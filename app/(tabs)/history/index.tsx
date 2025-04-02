@@ -1,16 +1,16 @@
-import { SafeAreaView, StyleSheet, Text, View } from "react-native";
+import { StyleSheet } from "react-native";
 import React from "react";
-import { Workout } from "@/models/Workout";
 import WorkoutList from "@/components/WorkoutList";
 import { useTheme } from "@react-navigation/native";
+import { BodyScrollView } from "@/components/BodyScrollViiew";
 
 const History = () => {
   const theme = useTheme();
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <BodyScrollView>
       <WorkoutList />
-    </SafeAreaView>
+    </BodyScrollView>
   );
 };
 
