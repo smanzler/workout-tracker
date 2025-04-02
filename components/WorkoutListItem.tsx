@@ -1,6 +1,6 @@
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import dayjs from "dayjs";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Workout } from "@/models/Workout";
 import { withObservables } from "@nozbe/watermelondb/react";
 import { WorkoutExercise } from "@/models/WorkoutExercise";
@@ -13,9 +13,14 @@ import {
   DropdownMenuRoot,
   DropdownMenuTrigger,
 } from "@/zeego/drop-down";
-import { Entypo } from "@expo/vector-icons";
+import {
+  Entypo,
+  MaterialCommunityIcons,
+  MaterialIcons,
+} from "@expo/vector-icons";
 import database from "@/db";
 import { useTheme } from "@react-navigation/native";
+import { Set } from "@/models/Set";
 
 const WorkoutListItem = ({
   workout,
@@ -25,6 +30,28 @@ const WorkoutListItem = ({
   workoutExercises: WorkoutExercise[];
 }) => {
   const theme = useTheme();
+  const [totalVolume, setTotalVolume] = useState(0);
+
+  useEffect(() => {
+    const calculateTotalVolume = async () => {
+      let total = 0;
+
+      for (const workoutExercise of workoutExercises) {
+        const sets = await workoutExercise.sets.fetch();
+
+        total += sets.reduce((sum, set) => {
+          if (set.weight != null && set.reps != null) {
+            return sum + set.weight * set.reps;
+          }
+          return sum;
+        }, 0);
+      }
+
+      setTotalVolume(total);
+    };
+
+    calculateTotalVolume();
+  }, [workoutExercises]);
 
   const handleDelete = () => {
     try {
@@ -54,6 +81,28 @@ const WorkoutListItem = ({
     }
   };
 
+  function formatWorkoutDuration(): string {
+    const durationInSeconds = Math.floor(
+      ((workout.endTime ?? workout.startTime) - workout.startTime) / 1000
+    );
+
+    if (durationInSeconds < 60) {
+      return `${durationInSeconds}s`;
+    }
+
+    const minutes = Math.floor(durationInSeconds / 60);
+    const hours = Math.floor(minutes / 60);
+    const remainingMinutes = minutes % 60;
+
+    if (hours > 0) {
+      return remainingMinutes > 0
+        ? `${hours}h ${remainingMinutes}m`
+        : `${hours}h`;
+    }
+
+    return `${minutes}m`;
+  }
+
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.card }]}>
       <View style={styles.headerContainer}>
@@ -80,9 +129,51 @@ const WorkoutListItem = ({
           </DropdownMenuContent>
         </DropdownMenuRoot>
       </View>
+
       <Text style={[styles.dateText, { color: theme.colors.text }]}>
         {dayjs(workout.startTime).format("dddd, MMM D")}
       </Text>
+
+      <View
+        style={{
+          flexDirection: "row",
+          justifyContent: "space-between",
+          marginBottom: 10,
+          opacity: 0.6,
+        }}
+      >
+        <View style={[styles.item]}>
+          <MaterialCommunityIcons
+            name="clock-time-five"
+            color={theme.colors.text}
+            size={18}
+          />
+          <Text style={[styles.itemText, { color: theme.colors.text }]}>
+            {formatWorkoutDuration()}
+          </Text>
+        </View>
+        <View style={[styles.item]}>
+          <MaterialCommunityIcons
+            name="weight"
+            color={theme.colors.text}
+            size={18}
+          />
+          <Text style={[styles.itemText, { color: theme.colors.text }]}>
+            {totalVolume} lb
+          </Text>
+        </View>
+        <View style={[styles.item]}>
+          <MaterialCommunityIcons
+            name="trophy"
+            color={theme.colors.text}
+            size={18}
+          />
+          <Text style={[styles.itemText, { color: theme.colors.text }]}>
+            {0} PRs
+          </Text>
+        </View>
+      </View>
+
       {workoutExercises.length !== 0 && (
         <>
           <View style={{ flexDirection: "row" }}>
@@ -140,7 +231,15 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 500,
     opacity: 0.6,
-    marginBottom: 9,
+    marginBottom: 10,
+  },
+  item: {
+    flexDirection: "row",
+    gap: 5,
+  },
+  itemText: {
+    fontSize: 16,
+    fontWeight: "500",
   },
   header2: {
     fontSize: 18,
