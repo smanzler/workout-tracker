@@ -196,6 +196,8 @@ const Workout = () => {
         >
           Cancel Workout
         </Button>
+
+        <View style={{ height: 50 }} />
       </ScrollView>
     </View>
   );
