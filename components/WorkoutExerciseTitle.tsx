@@ -40,7 +40,7 @@ const WorkoutExerciseTitle = ({
         numberOfLines={1}
         ellipsizeMode="tail"
       >
-        {exercise.title}
+        {sets?.length} × {exercise.title}
       </Text>
       {bestSet ? (
         <Text
