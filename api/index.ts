@@ -23,7 +23,6 @@ export async function pullDefaultExercises() {
       console.error("Error fetching default exercises:", error);
       throw error;
     }
-    console.log(data);
 
     if (!data || !data.exercises || !data.exercises.length) {
       console.log("No default exercises found");
