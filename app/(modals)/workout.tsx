@@ -8,6 +8,7 @@ import WorkoutExerciseList from "@/components/WorkoutExerciseList";
 import { Entypo, Feather, FontAwesome6 } from "@expo/vector-icons";
 import { useTheme } from "@react-navigation/native";
 import Button from "@/components/Button";
+import { checkPRs } from "@/utils/PRs";
 
 const Workout = () => {
   const { seconds, activeWorkoutId, stopWorkout } = useWorkout();
@@ -85,10 +86,13 @@ const Workout = () => {
     }
 
     await stopWorkout();
+
     router.replace({
       pathname: "/(modals)/summary",
       params: { workoutId: workout.id },
     });
+
+    checkPRs(workout, workoutExercises).catch(console.error);
   };
 
   const cancelWorkout = async () => {

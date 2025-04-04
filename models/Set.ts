@@ -17,10 +17,16 @@ export class Set extends Model {
   @relation("workout_exercises", "workout_exercise_id")
   workoutExercise!: WorkoutExercise;
 
+  @date("workout_start_time") workoutStartTime!: number;
+
   @field("reps") reps?: number;
   @field("weight") weight?: number;
   @field("order") order!: number;
   @field("completed") completed!: boolean;
+
+  @field("is_volume_pr") isVolumePr!: boolean;
+  @field("is_1rm_pr") is1RMPr!: boolean;
+  @field("is_weight_pr") isWeightPr!: boolean;
 
   @field("user_id") userId?: string;
 

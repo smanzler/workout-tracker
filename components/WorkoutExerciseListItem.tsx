@@ -57,6 +57,7 @@ const WorkoutExerciseListItem = ({
       await setsCollection.create((set) => {
         // @ts-ignore
         set.workoutExercise.set(workoutExercise);
+        set.workoutStartTime = workoutExercise.workout.startTime;
         set.order = nextOrder;
         set.weight = previousSet ? previousSet.weight : undefined;
         set.reps = previousSet ? previousSet.reps : undefined;

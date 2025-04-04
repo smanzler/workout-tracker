@@ -31,6 +31,7 @@ const WorkoutListItem = ({
 }) => {
   const theme = useTheme();
   const [totalVolume, setTotalVolume] = useState(0);
+  const [totalPRCount, setTotalPRCount] = useState(0);
 
   useEffect(() => {
     const calculateTotalVolume = async () => {
@@ -50,7 +51,28 @@ const WorkoutListItem = ({
       setTotalVolume(total);
     };
 
+    const fetchPRCount = async () => {
+      const count = (
+        await Promise.all(
+          workoutExercises.map(async (workoutExercise) => {
+            const sets = await workoutExercise.sets;
+            return sets.reduce((total, set) => {
+              return (
+                total +
+                (set.isWeightPr ? 1 : 0) +
+                (set.isVolumePr ? 1 : 0) +
+                (set.is1RMPr ? 1 : 0)
+              );
+            }, 0);
+          })
+        )
+      ).reduce((sum, count) => sum + count, 0);
+
+      setTotalPRCount(count);
+    };
+
     calculateTotalVolume();
+    fetchPRCount();
   }, [workoutExercises]);
 
   const handleDelete = () => {
@@ -169,7 +191,7 @@ const WorkoutListItem = ({
             size={18}
           />
           <Text style={[styles.itemText, { color: theme.colors.text }]}>
-            {0} PRs
+            {totalPRCount} PRs
           </Text>
         </View>
       </View>
