@@ -132,6 +132,7 @@ function Add_Exercise({ exercises }: { exercises: Exercise[] }) {
             await database.write(async () => {
               await exercisesCollection.create((exercise) => {
                 exercise.title = name;
+                exercise.isDefault = false;
                 user && (exercise.userId = user.id);
               });
             });

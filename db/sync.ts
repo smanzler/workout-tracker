@@ -55,11 +55,22 @@ export async function mySync(
       }
     },
     pushChanges: async ({ changes }) => {
-      console.log("pushing changes:", JSON.stringify(changes));
+      const filteredChanges = {
+        ...changes,
+        exercises: {
+          created:
+            changes.exercises?.created?.filter(
+              (exercise) => !exercise.is_default
+            ) || [],
+        },
+      };
+
+      console.log("pushing changes:", JSON.stringify(filteredChanges));
 
       try {
-        const { error } = await supabase.rpc("push", { changes });
-
+        const { error } = await supabase.rpc("push", {
+          changes: filteredChanges,
+        });
         if (error) {
           console.log("Push error:", error);
           throw new Error(`Push failed: ${error.message}`);

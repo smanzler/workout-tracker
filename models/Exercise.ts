@@ -13,8 +13,10 @@ export class Exercise extends Model {
   @text("title") title!: string;
   @text("description") description?: string;
   @text("category") category?: string;
-  @text("muscle_group") muscle_group?: string;
+  @text("muscle_group") muscleGroup?: string;
   @text("image") image?: string;
+
+  @field("is_default") isDefault!: boolean;
 
   @field("user_id") userId?: string;
 
