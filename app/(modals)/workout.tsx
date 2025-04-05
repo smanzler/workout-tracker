@@ -104,12 +104,12 @@ const Workout = () => {
 
     await stopWorkout();
 
+    await checkPRs(workout, workoutExercises);
+
     router.replace({
       pathname: "/(modals)/summary",
       params: { workoutId: workout.id },
     });
-
-    checkPRs(workout, workoutExercises).catch(console.error);
   };
 
   const cancelWorkout = async () => {
