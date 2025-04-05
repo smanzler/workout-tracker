@@ -18,12 +18,6 @@ const WorkoutList = ({ workouts }: { workouts: Workout[] }) => {
   );
 };
 
-const enhance = withObservables([], () => ({
-  workouts: workoutsCollection
-    .query(Q.where("end_time", Q.notEq(null)), Q.sortBy("start_time", Q.desc))
-    .observeWithColumns(["start_time"]),
-}));
-
-export default enhance(WorkoutList);
+export default WorkoutList;
 
 const styles = StyleSheet.create({});
