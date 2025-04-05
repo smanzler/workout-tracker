@@ -195,12 +195,6 @@ const enhance = withObservables(
       .query(Q.on("workout_exercises", "workout_id", workout.id))
       .observe();
 
-    const sets = setsCollection
-      .query(Q.on("workout_exercises", "workout_id", workout.id))
-      .then((sets) => console.log(sets));
-
-    console.log(allSets, "allSets for workout:", workout.id);
-
     const totalVolume = allSets.pipe(
       map((sets) =>
         sets.reduce((sum, set) => {
