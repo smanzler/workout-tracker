@@ -77,10 +77,9 @@ export async function checkPRs(
 ) {
   await Promise.all(
     workoutExercises.map(async (workoutExercise) => {
-      const prevPRs = await getMaxPRBefore(
-        workout,
-        workoutExercise.exercise.id
-      );
+      const exercise = await workoutExercise.exercise;
+
+      const prevPRs = await getMaxPRBefore(workout, exercise.id);
 
       console.log(
         "Previous PRs for exercise:",
