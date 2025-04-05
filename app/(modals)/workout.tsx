@@ -9,11 +9,24 @@ import { Entypo, Feather, FontAwesome6 } from "@expo/vector-icons";
 import { useTheme } from "@react-navigation/native";
 import Button from "@/components/Button";
 import { checkPRs } from "@/utils/PRs";
+import { BlurView } from "expo-blur";
+import Animated, {
+  Extrapolation,
+  interpolate,
+  useAnimatedRef,
+  useAnimatedStyle,
+  useScrollViewOffset,
+  useSharedValue,
+  withTiming,
+} from "react-native-reanimated";
 
 const Workout = () => {
   const { seconds, activeWorkoutId, stopWorkout } = useWorkout();
   const [workout, setWorkout] = useState<WorkoutModel | undefined>(undefined);
   const theme = useTheme();
+
+  const scrollRef = useAnimatedRef<Animated.ScrollView>();
+  const scrollHandler = useScrollViewOffset(scrollRef);
 
   useEffect(() => {
     async function fetchWorkout() {
@@ -26,6 +39,10 @@ const Workout = () => {
 
     fetchWorkout();
   }, [activeWorkoutId]);
+
+  const borderStyle = useAnimatedStyle(() => {
+    return { opacity: scrollHandler.value > 0 ? withTiming(0) : withTiming(1) };
+  });
 
   const formatTime = (totalSeconds: number): string => {
     const hours = Math.floor(totalSeconds / 3600);
@@ -150,14 +167,38 @@ const Workout = () => {
 
   return (
     <View style={styles.container}>
-      <View
+      <ScrollView ref={scrollRef} style={{ paddingHorizontal: 20 }}>
+        <View style={{ height: 90 }} />
+        {workout && <WorkoutExerciseList workout={workout} />}
+
+        <Button
+          onPress={() => {
+            router.push("/(modals)/add_exercise");
+          }}
+        >
+          Add Exercises
+        </Button>
+
+        <Button
+          style={{ marginTop: 10 }}
+          variant="outline"
+          onPress={handleCancel}
+        >
+          Cancel Workout
+        </Button>
+
+        <View style={{ height: 50 }} />
+      </ScrollView>
+
+      <BlurView
         style={{
+          position: "absolute",
           flexDirection: "row",
           justifyContent: "space-between",
           alignItems: "center",
-          padding: 20,
-          borderBottomColor: theme.colors.border,
-          borderBottomWidth: 1,
+          width: "100%",
+          height: 80,
+          paddingHorizontal: 20,
         }}
       >
         <Text style={[styles.header, { color: theme.colors.text }]}>
@@ -180,29 +221,21 @@ const Workout = () => {
         <Button size="sm" onPress={finish}>
           Finish
         </Button>
-      </View>
 
-      <ScrollView style={{ paddingHorizontal: 20 }}>
-        {workout && <WorkoutExerciseList workout={workout} />}
-
-        <Button
-          onPress={() => {
-            router.push("/(modals)/add_exercise");
-          }}
-        >
-          Add Exercises
-        </Button>
-
-        <Button
-          style={{ marginTop: 10 }}
-          variant="outline"
-          onPress={handleCancel}
-        >
-          Cancel Workout
-        </Button>
-
-        <View style={{ height: 50 }} />
-      </ScrollView>
+        <Animated.View
+          style={[
+            {
+              backgroundColor: theme.colors.border,
+              position: "absolute",
+              bottom: 0,
+              left: 0,
+              right: 0,
+              height: 1,
+            },
+            borderStyle,
+          ]}
+        />
+      </BlurView>
     </View>
   );
 };
