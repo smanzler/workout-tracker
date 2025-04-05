@@ -52,7 +52,7 @@ export default function ProfileScreen() {
       >
         Log Out
       </Button>
-      {/* <Button title="Reset DB" onPress={resetDatabase} /> */}
+      {/* <Button onPress={resetDatabase}>Reset DB</Button> */}
     </BodyScrollView>
   );
 }
