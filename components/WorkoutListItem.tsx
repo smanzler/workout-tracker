@@ -18,62 +18,26 @@ import {
   MaterialCommunityIcons,
   MaterialIcons,
 } from "@expo/vector-icons";
-import database from "@/db";
+import database, { setsCollection } from "@/db";
 import { useTheme } from "@react-navigation/native";
 import { Set } from "@/models/Set";
+import { map } from "@nozbe/watermelondb/utils/rx";
+import { Q } from "@nozbe/watermelondb";
+import Button from "./Button";
+import { checkPRs } from "@/utils/PRs";
 
 const WorkoutListItem = ({
   workout,
   workoutExercises,
+  totalVolume = 0,
+  totalPRCount = 0,
 }: {
   workout: Workout;
   workoutExercises: WorkoutExercise[];
+  totalVolume: number;
+  totalPRCount: number;
 }) => {
   const theme = useTheme();
-  const [totalVolume, setTotalVolume] = useState(0);
-  const [totalPRCount, setTotalPRCount] = useState(0);
-
-  useEffect(() => {
-    const calculateTotalVolume = async () => {
-      let total = 0;
-
-      for (const workoutExercise of workoutExercises) {
-        const sets = await workoutExercise.sets.fetch();
-
-        total += sets.reduce((sum, set) => {
-          if (set.weight != null && set.reps != null) {
-            return sum + set.weight * set.reps;
-          }
-          return sum;
-        }, 0);
-      }
-
-      setTotalVolume(total);
-    };
-
-    const fetchPRCount = async () => {
-      const count = (
-        await Promise.all(
-          workoutExercises.map(async (workoutExercise) => {
-            const sets = await workoutExercise.sets;
-            return sets.reduce((total, set) => {
-              return (
-                total +
-                (set.isWeightPr ? 1 : 0) +
-                (set.isVolumePr ? 1 : 0) +
-                (set.is1RMPr ? 1 : 0)
-              );
-            }, 0);
-          })
-        )
-      ).reduce((sum, count) => sum + count, 0);
-
-      setTotalPRCount(count);
-    };
-
-    calculateTotalVolume();
-    fetchPRCount();
-  }, [workoutExercises]);
 
   const handleDelete = () => {
     try {
@@ -223,10 +187,52 @@ const WorkoutListItem = ({
   );
 };
 
-const enhance = withObservables(["workout"], ({ workout }) => ({
-  workout,
-  workoutExercises: workout.workoutExercises,
-}));
+const enhance = withObservables(
+  ["workout"],
+  ({ workout }: { workout: Workout }) => {
+    const workoutExercises = workout.workoutExercises.observe();
+    const allSets = setsCollection
+      .query(Q.on("workout_exercises", "workout_id", workout.id))
+      .observe();
+
+    const sets = setsCollection
+      .query(Q.on("workout_exercises", "workout_id", workout.id))
+      .then((sets) => console.log(sets));
+
+    console.log(allSets, "allSets for workout:", workout.id);
+
+    const totalVolume = allSets.pipe(
+      map((sets) =>
+        sets.reduce((sum, set) => {
+          if (set.weight != null && set.reps != null) {
+            return sum + set.weight * set.reps;
+          }
+          return sum;
+        }, 0)
+      )
+    );
+
+    const totalPRCount = allSets.pipe(
+      map((sets) =>
+        sets.reduce(
+          (count, set) =>
+            count +
+            (set.isWeightPr ? 1 : 0) +
+            (set.isVolumePr ? 1 : 0) +
+            (set.is1RMPr ? 1 : 0),
+          0
+        )
+      )
+    );
+
+    return {
+      workout,
+      workoutExercises,
+      totalVolume,
+      totalPRCount,
+    };
+  }
+);
 
 export default enhance(WorkoutListItem);
 

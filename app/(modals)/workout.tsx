@@ -102,9 +102,9 @@ const Workout = () => {
       return;
     }
 
-    await stopWorkout();
-
     await checkPRs(workout, workoutExercises);
+
+    await stopWorkout();
 
     router.replace({
       pathname: "/(modals)/summary",
