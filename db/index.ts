@@ -1,4 +1,4 @@
-import { Database } from "@nozbe/watermelondb";
+import { Database, Q } from "@nozbe/watermelondb";
 import SQLiteAdapter from "@nozbe/watermelondb/adapters/sqlite";
 
 import schema from "./schema";
@@ -43,3 +43,61 @@ export const workoutsCollection = database.get<Workout>("workouts");
 export const workoutExercisesCollection =
   database.get<WorkoutExercise>("workout_exercises");
 export const setsCollection = database.get<Set>("sets");
+
+export const migrateUserData = async (userId: string) => {
+  try {
+    await database.write(async () => {
+      const workoutsToUpdate = await workoutsCollection
+        .query(Q.where("user_id", null))
+        .fetch();
+      const workoutUpdates = workoutsToUpdate.map((w) =>
+        w.prepareUpdate((rec) => {
+          rec.userId = userId;
+        })
+      );
+
+      const setsToUpdate = await setsCollection
+        .query(Q.where("user_id", null))
+        .fetch();
+      const setUpdates = setsToUpdate.map((s) =>
+        s.prepareUpdate((rec) => {
+          rec.userId = userId;
+        })
+      );
+
+      const workoutExercisesToUpdate = await workoutExercisesCollection
+        .query(Q.where("user_id", null))
+        .fetch();
+      const workoutExerciseUpdates = workoutExercisesToUpdate.map((we) =>
+        we.prepareUpdate((rec) => {
+          rec.userId = userId;
+        })
+      );
+
+      const exercisesToUpdate = await exercisesCollection
+        .query(Q.where("user_id", null), Q.where("is_default", false))
+        .fetch();
+      const exerciseUpdates = exercisesToUpdate.map((e) =>
+        e.prepareUpdate((rec) => {
+          rec.userId = userId;
+        })
+      );
+
+      const allUpdates = [
+        ...workoutUpdates,
+        ...setUpdates,
+        ...workoutExerciseUpdates,
+        ...exerciseUpdates,
+      ];
+
+      if (allUpdates.length > 0) {
+        await database.batch(...allUpdates);
+        console.log(`Migrated ${allUpdates.length} records`);
+      } else {
+        console.log("No records needed migration");
+      }
+    });
+  } catch (error) {
+    console.error("Error migrating user data:", error);
+  }
+};

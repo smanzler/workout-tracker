@@ -5,21 +5,20 @@ import { supabase } from "@/lib/supabase";
 import { useTheme } from "@react-navigation/native";
 import TextInput from "@/components/TextInput";
 import Button from "@/components/Button";
-import { ThemedText } from "@/components/ThemedText";
 import { migrateUserData } from "@/db";
 
-export default function LoginScreen() {
+export default function SignupScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const theme = useTheme();
 
-  async function signInWithEmail() {
+  async function signUpWithEmail() {
     setLoading(true);
     const {
       data: { session },
       error,
-    } = await supabase.auth.signInWithPassword({
+    } = await supabase.auth.signUp({
       email: email,
       password: password,
     });
@@ -35,7 +34,6 @@ export default function LoginScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <Stack.Screen options={{ headerTitle: "Login" }} />
       <View style={{ flex: 1, padding: 20 }}>
         <View>
           <TextInput
@@ -44,7 +42,6 @@ export default function LoginScreen() {
             label="Email"
             autoCapitalize={"none"}
             variant="filled"
-            keyboardType="email-address"
           />
         </View>
         <View style={styles.verticallySpaced}>
@@ -57,21 +54,7 @@ export default function LoginScreen() {
             variant="filled"
           />
         </View>
-        <Button
-          style={{ marginBottom: 20 }}
-          disabled={loading || !email || !password}
-          onPress={() => signInWithEmail()}
-        >
-          Sign in
-        </Button>
-        <ThemedText type="defaultSemiBold" style={styles.signupText}>
-          Don't have an account?
-        </ThemedText>
-        <Button
-          disabled={loading}
-          onPress={() => router.push("/(auth)/signup")}
-          variant="outline"
-        >
+        <Button disabled={loading} onPress={() => signUpWithEmail()}>
           Sign up
         </Button>
       </View>
@@ -92,9 +75,5 @@ const styles = StyleSheet.create({
   },
   mt20: {
     marginTop: 20,
-  },
-  signupText: {
-    marginBottom: 5,
-    textAlign: "center",
   },
 });

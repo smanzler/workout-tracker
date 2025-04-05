@@ -100,6 +100,25 @@ export default function RootLayout() {
                       headerShown: false,
                     }}
                   />
+                  <Stack.Screen
+                    name="(auth)/signup"
+                    options={{
+                      headerShown: true,
+                      headerTitle: "Sign Up",
+                      ...(process.env.EXPO_OS !== "ios"
+                        ? {}
+                        : {
+                            headerLargeTitle: true,
+                            headerTransparent: true,
+                            headerBlurEffect: "systemChromeMaterial",
+                            headerLargeTitleShadowVisible: false,
+                            headerShadowVisible: true,
+                            headerLargeStyle: {
+                              backgroundColor: "transparent",
+                            },
+                          }),
+                    }}
+                  />
                 </Stack>
 
                 <StatusBar style="auto" />
