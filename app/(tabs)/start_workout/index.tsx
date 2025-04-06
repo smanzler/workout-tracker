@@ -20,6 +20,7 @@ import { ThemedText } from "@/components/ThemedText";
 import { withObservables } from "@nozbe/watermelondb/react";
 import { Routine } from "@/models/Routine";
 import RoutineItem from "@/components/RoutineItem";
+import { Q } from "@nozbe/watermelondb";
 
 function StartWorkoutScreen({ routines }: { routines: Routine[] }) {
   const { activeWorkoutId, startWorkout } = useWorkout();
@@ -97,9 +98,7 @@ function StartWorkoutScreen({ routines }: { routines: Routine[] }) {
     console.log("Creating new routine...");
     try {
       database.write(async () => {
-        const routine = await routinesCollection.create((r) => {
-          r.name = "New Routine";
-        });
+        const routine = await routinesCollection.create(() => {});
 
         console.log("pushing to new routine modal with id:", routine.id);
         router.push({
@@ -134,7 +133,7 @@ function StartWorkoutScreen({ routines }: { routines: Routine[] }) {
 }
 
 const enhance = withObservables([], () => ({
-  routines: routinesCollection.query(),
+  routines: routinesCollection.query(Q.where("name", Q.notEq(null))),
 }));
 
 export default enhance(StartWorkoutScreen);
