@@ -86,7 +86,12 @@ const RoutineItem = ({
 
   return (
     <Pressable
-      onPress={() => {}}
+      onPress={() => {
+        router.push({
+          pathname: "/(modals)/routine_modal",
+          params: { routineId: routine.id },
+        });
+      }}
       style={[styles.container, { backgroundColor: colors.card }]}
     >
       <View style={styles.rowHeader}>

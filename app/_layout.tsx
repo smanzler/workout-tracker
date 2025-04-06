@@ -150,6 +150,14 @@ export default function RootLayout() {
                       },
                     }}
                   />
+                  <Stack.Screen
+                    name="(modals)/routine_modal"
+                    options={{
+                      presentation: "transparentModal",
+                      animation: "fade",
+                      headerShown: false,
+                    }}
+                  />
                 </Stack>
 
                 <StatusBar style="auto" />

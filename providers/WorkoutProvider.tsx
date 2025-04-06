@@ -8,14 +8,15 @@ import React, {
 import { AppState, AppStateStatus } from "react-native";
 import BackgroundTimer from "react-native-background-timer";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import database from "@/db";
+import database, { setsCollection, workoutExercisesCollection } from "@/db";
 import { Workout } from "@/models/Workout";
 import { useAuth } from "./AuthProvider";
+import { Routine } from "@/models/Routine";
 
 interface WorkoutContextType {
   seconds: number;
   activeWorkoutId: string | undefined;
-  startWorkout: () => Promise<void>;
+  startWorkout: (routine?: Routine) => Promise<void>;
   stopWorkout: () => Promise<void>;
 }
 
@@ -90,7 +91,7 @@ export const WorkoutProvider = ({
     };
   }, []);
 
-  const startWorkout = async () => {
+  const startWorkout = async (routine?: Routine) => {
     try {
       const newWorkout = await database.write(async () => {
         const workout = await database
@@ -99,6 +100,42 @@ export const WorkoutProvider = ({
             workout.startTime = Date.now();
             user && (workout.userId = user.id);
           });
+
+        if (routine) {
+          const routineExercises = await routine.routineExercises.fetch();
+
+          const batchOps = await Promise.all(
+            routineExercises.map(async (routineExercise) => {
+              const routineSets = await routineExercise.routineSets.fetch();
+
+              const workoutExercise = workoutExercisesCollection.prepareCreate(
+                (workoutExercise) => {
+                  // @ts-ignore
+                  workoutExercise.exercise.set(routineExercise.exercise);
+                  // @ts-ignore
+                  workoutExercise.workout.set(workout);
+                  user && (workoutExercise.userId = user.id);
+                }
+              );
+
+              const setOps = routineSets.map((routineSet) => {
+                return setsCollection.prepareCreate((set) => {
+                  // @ts-ignore
+                  set.workoutExercise.set(workoutExercise);
+                  set.workoutStartTime = workout.startTime;
+                  set.reps = routineSet.reps;
+                  set.weight = routineSet.weight;
+                  user && (set.userId = user.id);
+                });
+              });
+
+              return [workoutExercise, ...setOps];
+            })
+          );
+
+          await database.batch(...batchOps.flat());
+        }
+
         return workout;
       });
 
