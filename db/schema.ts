@@ -1,7 +1,7 @@
 import { appSchema, tableSchema } from "@nozbe/watermelondb";
 
 export default appSchema({
-  version: 1,
+  version: 2,
   tables: [
     tableSchema({
       name: "exercises",
@@ -73,7 +73,7 @@ export default appSchema({
       ],
     }),
     tableSchema({
-      name: "templates",
+      name: "routines",
       columns: [
         { name: "name", type: "string" },
         { name: "description", type: "string", isOptional: true },
@@ -83,9 +83,9 @@ export default appSchema({
       ],
     }),
     tableSchema({
-      name: "template_exercises",
+      name: "routine_exercises",
       columns: [
-        { name: "template_id", type: "string", isIndexed: true },
+        { name: "routines_id", type: "string", isIndexed: true },
         { name: "exercise_id", type: "string", isIndexed: true },
         {
           name: "superset_id",

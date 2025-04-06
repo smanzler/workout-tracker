@@ -9,8 +9,8 @@ import { Set } from "@/models/Set";
 import { Superset } from "@/models/Superset";
 import { Workout } from "@/models/Workout";
 import { WorkoutExercise } from "@/models/WorkoutExercise";
-import { Template } from "@/models/Template";
-import { TemplateExercise } from "@/models/TemplateExercise";
+import { Routine } from "@/models/Routine";
+import { RoutineExercise } from "@/models/RoutineExercise";
 
 const adapter = new SQLiteAdapter({
   schema,
@@ -25,10 +25,10 @@ const database = new Database({
   adapter,
   modelClasses: [
     Exercise,
+    Routine,
+    RoutineExercise,
     Set,
     Superset,
-    Template,
-    TemplateExercise,
     Workout,
     WorkoutExercise,
   ],
