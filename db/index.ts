@@ -11,6 +11,7 @@ import { Workout } from "@/models/Workout";
 import { WorkoutExercise } from "@/models/WorkoutExercise";
 import { Routine } from "@/models/Routine";
 import { RoutineExercise } from "@/models/RoutineExercise";
+import { RoutineSet } from "@/models/RoutineSets";
 
 const adapter = new SQLiteAdapter({
   schema,
@@ -27,6 +28,7 @@ const database = new Database({
     Exercise,
     Routine,
     RoutineExercise,
+    RoutineSet,
     Set,
     Superset,
     Workout,
@@ -43,6 +45,10 @@ export const workoutsCollection = database.get<Workout>("workouts");
 export const workoutExercisesCollection =
   database.get<WorkoutExercise>("workout_exercises");
 export const setsCollection = database.get<Set>("sets");
+export const routinesCollection = database.get<Routine>("routines");
+export const routineExercisesCollection =
+  database.get<RoutineExercise>("routine_exercises");
+export const routineSetsCollection = database.get<RoutineSet>("routine_sets");
 
 export const migrateUserData = async (userId: string) => {
   try {

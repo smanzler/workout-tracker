@@ -127,6 +127,29 @@ export default function RootLayout() {
                       headerShown: false,
                     }}
                   />
+                  <Stack.Screen
+                    name="(modals)/add_routine"
+                    options={{
+                      headerTitle: "New Routine",
+                      headerBackVisible: false,
+                      headerTransparent: true,
+                      headerBlurEffect: "systemChromeMaterial",
+                    }}
+                  />
+                  <Stack.Screen
+                    name="(modals)/add_routine_exercises"
+                    options={{
+                      headerTitle: "New Routine",
+                      headerTransparent: true,
+                      headerBlurEffect: "systemChromeMaterial",
+                      headerLargeTitle: true,
+                      headerLargeTitleShadowVisible: false,
+                      headerShadowVisible: true,
+                      headerLargeStyle: {
+                        backgroundColor: "transparent",
+                      },
+                    }}
+                  />
                 </Stack>
 
                 <StatusBar style="auto" />

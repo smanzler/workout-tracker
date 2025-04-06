@@ -73,7 +73,7 @@ export default appSchema({
     tableSchema({
       name: "routines",
       columns: [
-        { name: "name", type: "string" },
+        { name: "name", type: "string", isOptional: true },
         { name: "description", type: "string", isOptional: true },
         { name: "user_id", type: "string", isIndexed: true },
         { name: "created_at", type: "number" },
@@ -83,7 +83,7 @@ export default appSchema({
     tableSchema({
       name: "routine_exercises",
       columns: [
-        { name: "routines_id", type: "string", isIndexed: true },
+        { name: "routine_id", type: "string", isIndexed: true },
         { name: "exercise_id", type: "string", isIndexed: true },
         {
           name: "superset_id",
@@ -91,7 +91,17 @@ export default appSchema({
           isIndexed: true,
           isOptional: true,
         },
-        { name: "order", type: "number" },
+        { name: "user_id", type: "string", isOptional: true },
+        { name: "created_at", type: "number" },
+        { name: "updated_at", type: "number" },
+      ],
+    }),
+    tableSchema({
+      name: "routine_sets",
+      columns: [
+        { name: "routine_exercise_id", type: "string", isIndexed: true },
+        { name: "reps", type: "number", isOptional: true },
+        { name: "weight", type: "number", isOptional: true },
         { name: "user_id", type: "string", isOptional: true },
         { name: "created_at", type: "number" },
         { name: "updated_at", type: "number" },
