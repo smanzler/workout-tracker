@@ -23,9 +23,11 @@ import { useTheme } from "@react-navigation/native";
 const SetListItem = ({
   set,
   workoutExerciseId,
+  index,
 }: {
   set: Set;
   workoutExerciseId: string;
+  index: number;
 }) => {
   const [weight, setWeight] = useState(set.weight?.toString() || "");
   const [reps, setReps] = useState(set.reps?.toString() || "");
@@ -63,20 +65,6 @@ const SetListItem = ({
     try {
       database.write(async () => {
         await set.markAsDeleted();
-
-        const remainingSets = await database
-          .get<Set>("sets")
-          .query(
-            Q.where("workout_exercise_id", workoutExerciseId),
-            Q.sortBy("order", Q.asc)
-          )
-          .fetch();
-
-        for (let i = 0; i < remainingSets.length; i++) {
-          await remainingSets[i].update((record) => {
-            record.order = i + 1;
-          });
-        }
       });
     } catch (error) {
       console.error("Failed to delete exercise:", error);
@@ -122,7 +110,7 @@ const SetListItem = ({
             },
           ]}
         >
-          {set.order}
+          {index}
         </Text>
         <Text style={{ color: theme.colors.text }}>-</Text>
         <View style={styles.rightContainer}>

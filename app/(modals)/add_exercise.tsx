@@ -77,10 +77,6 @@ function Add_Exercise({ exercises }: { exercises: Exercise[] }) {
     await database.write(async () => {
       const workout = await workoutsCollection.find(activeWorkoutId);
 
-      const existingWorkoutExercises = await workout.workoutExercises.fetch();
-
-      let nextOrder = existingWorkoutExercises.length + 1;
-
       const batchOps = selectedItems.flatMap((exercise) => {
         const workoutExercise = workoutExercisesCollection.prepareCreate(
           (workoutExercise) => {
@@ -88,7 +84,6 @@ function Add_Exercise({ exercises }: { exercises: Exercise[] }) {
             workoutExercise.exercise.set(exercise);
             // @ts-ignore
             workoutExercise.workout.set(workout);
-            workoutExercise.order = nextOrder++;
             user && (workoutExercise.userId = user.id);
           }
         );
@@ -97,7 +92,6 @@ function Add_Exercise({ exercises }: { exercises: Exercise[] }) {
           // @ts-ignore
           set.workoutExercise.set(workoutExercise);
           set.workoutStartTime = workout.startTime;
-          set.order = 1;
           set.reps = undefined;
           set.weight = undefined;
           user && (set.userId = user.id);

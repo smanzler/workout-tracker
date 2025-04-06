@@ -26,8 +26,6 @@ export class WorkoutExercise extends Model {
 
   @children("sets") sets!: Query<Set>;
 
-  @field("order") order!: number;
-
   @field("user_id") userId?: string;
 
   @date("created_at") createdAt!: number;

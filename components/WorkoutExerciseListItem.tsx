@@ -50,15 +50,12 @@ const WorkoutExerciseListItem = ({
     Keyboard.dismiss();
 
     await database.write(async () => {
-      const nextOrder = sets.length + 1;
-
       const previousSet = sets.length > 0 ? sets[sets.length - 1] : null;
 
       await setsCollection.create((set) => {
         // @ts-ignore
         set.workoutExercise.set(workoutExercise);
         set.workoutStartTime = workoutExercise.workout.startTime;
-        set.order = nextOrder;
         set.weight = previousSet ? previousSet.weight : undefined;
         set.reps = previousSet ? previousSet.reps : undefined;
         user && (set.userId = user.id);
@@ -139,11 +136,12 @@ const WorkoutExerciseListItem = ({
           </View>
         </View>
       </View>
-      {sets.map((set) => (
+      {sets.map((set, index) => (
         <SetListItem
           key={set.id}
           set={set}
           workoutExerciseId={workoutExercise.id}
+          index={index + 1}
         />
       ))}
 
