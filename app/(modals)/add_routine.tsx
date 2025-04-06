@@ -107,7 +107,7 @@ const AddRoutine = () => {
         router.back();
       });
     } catch (error) {
-      console.error("Failed to delete workout:", error);
+      console.error("Failed to delete routine:", error);
     }
   };
 
