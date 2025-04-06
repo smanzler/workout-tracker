@@ -123,6 +123,7 @@ const WorkoutModal = () => {
 
       {workout && (
         <Animated.View
+          key={workout.id}
           style={[styles.card, { backgroundColor: colors.card }, animatedStyle]}
         >
           <View style={styles.headerContainer}>
