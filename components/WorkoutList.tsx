@@ -1,17 +1,25 @@
-import { ScrollView, StyleSheet, View } from "react-native";
-import React from "react";
-import { withObservables } from "@nozbe/watermelondb/react";
-import { workoutsCollection } from "@/db";
+import { Pressable, StyleSheet, View } from "react-native";
+import React, { useState } from "react";
 import { Workout } from "@/models/Workout";
 import WorkoutListItem from "./WorkoutListItem";
-import { Q } from "@nozbe/watermelondb";
+import { router } from "expo-router";
 
 const WorkoutList = ({ workouts }: { workouts: Workout[] }) => {
   return (
     <>
       {workouts &&
         workouts.map((workout) => (
-          <WorkoutListItem key={workout.id} workout={workout} />
+          <Pressable
+            key={workout.id}
+            onPress={() =>
+              router.push({
+                pathname: "/(modals)/workout_modal",
+                params: { workoutId: workout.id },
+              })
+            }
+          >
+            <WorkoutListItem workout={workout} />
+          </Pressable>
         ))}
       <View style={{ height: 200 }} />
     </>

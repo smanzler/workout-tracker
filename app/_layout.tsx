@@ -119,6 +119,14 @@ export default function RootLayout() {
                           }),
                     }}
                   />
+                  <Stack.Screen
+                    name="(modals)/workout_modal"
+                    options={{
+                      presentation: "transparentModal",
+                      animation: "fade",
+                      headerShown: false,
+                    }}
+                  />
                 </Stack>
 
                 <StatusBar style="auto" />
