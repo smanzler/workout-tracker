@@ -120,7 +120,7 @@ function Exercises({ exercises }: { exercises: Exercise[] }) {
           </ThemedText>
 
           <View style={styles.row}>
-            <ThemedText>{item.muscleGroup}</ThemedText>
+            <ThemedText style={styles.mgText}>{item.muscleGroup}</ThemedText>
           </View>
         </Animated.View>
       </GestureDetector>
@@ -174,5 +174,9 @@ const styles = StyleSheet.create({
   },
   row: {
     flexDirection: "row",
+  },
+  mgText: {
+    fontWeight: 600,
+    opacity: 0.6,
   },
 });

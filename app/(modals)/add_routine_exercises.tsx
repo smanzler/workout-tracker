@@ -20,6 +20,8 @@ import { router, Stack, useLocalSearchParams } from "expo-router";
 import { useTheme } from "@react-navigation/native";
 import ExercisesList from "@/components/ExercisesList";
 import { useAuth } from "@/providers/AuthProvider";
+import { ThemedText } from "@/components/ThemedText";
+import ExerciseModal from "@/components/ExerciseModal";
 
 interface Section {
   title: string;
@@ -51,6 +53,7 @@ function AddRoutineExercises({ exercises }: { exercises: Exercise[] }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [recent, setRecent] = useState<Exercise[]>([]);
   const [selectedItems, setSelectedItems] = useState<Exercise[]>([]);
+  const [visible, setVisible] = useState(false);
   const { routineId } = useLocalSearchParams<{ routineId: string }>();
   const theme = useTheme();
   const { user } = useAuth();
@@ -118,28 +121,6 @@ function AddRoutineExercises({ exercises }: { exercises: Exercise[] }) {
     }
   };
 
-  const handleAddItem = () => {
-    Alert.prompt(
-      "Add Exercise",
-      "Enter the name of the new exercise:",
-      async (name) => {
-        if (name) {
-          try {
-            await database.write(async () => {
-              await exercisesCollection.create((exercise) => {
-                exercise.title = name;
-                exercise.isDefault = false;
-                user && (exercise.userId = user.id);
-              });
-            });
-          } catch (error) {
-            console.error("Failed to add exercise:", error);
-          }
-        }
-      }
-    );
-  };
-
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <Stack.Screen
@@ -151,7 +132,9 @@ function AddRoutineExercises({ exercises }: { exercises: Exercise[] }) {
               setSearchQuery(e.nativeEvent.text);
             },
           },
-          headerRight: () => <Button title="New" onPress={handleAddItem} />,
+          headerRight: () => (
+            <Button title="New" onPress={() => setVisible(true)} />
+          ),
         }}
       />
 
@@ -186,11 +169,21 @@ function AddRoutineExercises({ exercises }: { exercises: Exercise[] }) {
                 { borderBottomColor: theme.colors.border },
               ]}
             >
-              <Text style={{ color: theme.colors.text }}>{item.title}</Text>
+              <ThemedText style={{ fontSize: 16, fontWeight: 600 }}>
+                {item.title}
+              </ThemedText>
+
+              <View style={styles.row}>
+                <ThemedText style={styles.mgText}>
+                  {item.muscleGroup}
+                </ThemedText>
+              </View>
             </View>
           </TouchableOpacity>
         )}
       />
+
+      <ExerciseModal visible={visible} setVisible={setVisible} />
     </SafeAreaView>
   );
 }
@@ -223,5 +216,12 @@ const styles = StyleSheet.create({
     padding: 10,
     paddingLeft: 20,
     borderBottomWidth: 1,
+  },
+  row: {
+    flexDirection: "row",
+  },
+  mgText: {
+    fontWeight: 600,
+    opacity: 0.6,
   },
 });
