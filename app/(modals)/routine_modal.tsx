@@ -30,6 +30,7 @@ import { Exercise } from "@/models/Exercise";
 import { Routine } from "@/models/Routine";
 import RoutineExerciseView from "@/components/RoutineExerciseView";
 import { useWorkout } from "@/providers/WorkoutProvider";
+import ButtonWithIcon from "@/components/ButtonWithIcon";
 
 const RoutineModal = () => {
   const { colors } = useTheme();
@@ -102,18 +103,9 @@ const RoutineModal = () => {
               {routine.name}
             </ThemedText>
 
-            <Button
-              style={{
-                height: 26,
-                paddingHorizontal: 10,
-                backgroundColor: colors.text
-                  .replace("rgb", "rgba")
-                  .replace(")", ", 0.1)"),
-              }}
-              onPress={() => router.back()}
-            >
+            <ButtonWithIcon onPress={() => router.back()}>
               <Ionicons name="close" size={24} color={colors.text} />
-            </Button>
+            </ButtonWithIcon>
           </View>
 
           <ThemedText
