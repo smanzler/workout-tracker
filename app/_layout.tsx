@@ -16,6 +16,8 @@ import { Ionicons } from "@expo/vector-icons";
 import { DarkTheme, DefaultTheme } from "@/constants/Colors";
 import { pullDefaultExercises } from "@/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { exercisesCollection, setsCollection } from "@/db";
+import { Q } from "@nozbe/watermelondb";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -34,20 +36,25 @@ export default function RootLayout() {
   }, [loaded]);
 
   async function checkAndSyncDefaults() {
-    const hasSyncedDefaults = await AsyncStorage.getItem(
-      "hasSyncedDefaultExercises"
-    );
+    console.log("checking defaults");
+    try {
+      const hasSyncedDefaults = await exercisesCollection.query(
+        Q.where("is_default", true)
+      );
 
-    if (!hasSyncedDefaults) {
-      try {
-        await pullDefaultExercises();
-        await AsyncStorage.setItem("hasSyncedDefaultExercises", "true");
-        console.log("Default exercises synced on first app open");
-      } catch (error) {
-        console.error("Error syncing default exercises:", error);
+      if (hasSyncedDefaults.length === 0) {
+        try {
+          await pullDefaultExercises();
+          await AsyncStorage.setItem("hasSyncedDefaultExercises", "true");
+          console.log("Default exercises synced on first app open");
+        } catch (error) {
+          console.error("Error syncing default exercises:", error);
+        }
+      } else {
+        console.log("Default exercises already synced");
       }
-    } else {
-      console.log("Default exercises already synced");
+    } catch (error) {
+      console.log(error);
     }
   }
 
