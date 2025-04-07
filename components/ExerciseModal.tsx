@@ -60,7 +60,7 @@ const ExerciseModal = ({
       console.log("Error creating Exercise", error);
     }
 
-    router.back();
+    handleClose();
   };
 
   const handleClose = () => {
