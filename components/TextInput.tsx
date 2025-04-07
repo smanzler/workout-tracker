@@ -108,7 +108,9 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   label: {
+    fontWeight: 600,
     marginBottom: 4,
+    opacity: 0.6,
   },
   error: {
     color: "#ef4444", // red-500

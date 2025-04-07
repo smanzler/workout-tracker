@@ -15,6 +15,8 @@ import ExercisesList from "@/components/ExercisesList";
 import { useAuth } from "@/providers/AuthProvider";
 import { BodyScrollView } from "@/components/BodyScrollViiew";
 import { Stack } from "expo-router";
+import { ThemedText } from "@/components/ThemedText";
+import ExerciseModal from "@/components/ExerciseModal";
 
 interface Section {
   title: string;
@@ -40,6 +42,7 @@ const groupData = (data: Exercise[]): Section[] => {
 
 function Exercises({ exercises }: { exercises: Exercise[] }) {
   const [searchQuery, setSearchQuery] = useState("");
+  const [visible, setVisible] = useState(false);
   const theme = useTheme();
   const { user } = useAuth();
 
@@ -48,28 +51,6 @@ function Exercises({ exercises }: { exercises: Exercise[] }) {
   );
 
   const sections: Section[] = groupData(filteredData);
-
-  const handleAddItem = () => {
-    Alert.prompt(
-      "Add Exercise",
-      "Enter the name of the new exercise:",
-      async (name) => {
-        if (name) {
-          try {
-            await database.write(async () => {
-              await exercisesCollection.create((exercise) => {
-                exercise.title = name;
-                exercise.isDefault = false;
-                user && (exercise.userId = user.id);
-              });
-            });
-          } catch (error) {
-            console.error("Failed to add exercise:", error);
-          }
-        }
-      }
-    );
-  };
 
   const handleItemPress = (item: Exercise) => {};
 
@@ -131,12 +112,16 @@ function Exercises({ exercises }: { exercises: Exercise[] }) {
             },
           ]}
         >
-          <Text
-            style={{ color: theme.colors.text }}
+          <ThemedText
+            style={{ fontSize: 16, fontWeight: 600 }}
             onPress={() => handleItemPress(item)}
           >
             {item.title}
-          </Text>
+          </ThemedText>
+
+          <View style={styles.row}>
+            <ThemedText>{item.muscleGroup}</ThemedText>
+          </View>
         </Animated.View>
       </GestureDetector>
     );
@@ -152,10 +137,14 @@ function Exercises({ exercises }: { exercises: Exercise[] }) {
               setSearchQuery(e.nativeEvent.text);
             },
           },
-          headerRight: () => <Button title="New" onPress={handleAddItem} />,
+          headerRight: () => (
+            <Button title="New" onPress={() => setVisible(true)} />
+          ),
         }}
       />
       <ExercisesList sections={sections} renderItem={renderItem} />
+
+      <ExerciseModal visible={visible} setVisible={setVisible} />
     </>
   );
 }
@@ -182,5 +171,8 @@ const styles = StyleSheet.create({
     padding: 10,
     paddingLeft: 20,
     borderBottomWidth: 1,
+  },
+  row: {
+    flexDirection: "row",
   },
 });
