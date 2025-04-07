@@ -42,6 +42,12 @@ const AddRoutine = () => {
       return;
     }
 
+    const re = await routine.routineExercises.fetch();
+    if (re.length === 0) {
+      Alert.alert("Add Exercises", "Add exercises to the routine to save it");
+      return;
+    }
+
     try {
       await database.write(async () => {
         routine.update((r) => {
