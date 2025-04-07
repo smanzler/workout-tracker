@@ -31,12 +31,15 @@ import { Routine } from "@/models/Routine";
 import RoutineExerciseView from "@/components/RoutineExerciseView";
 import { useWorkout } from "@/providers/WorkoutProvider";
 import ButtonWithIcon from "@/components/ButtonWithIcon";
+import { RoutineExercise } from "@/models/RoutineExercise";
 
 const RoutineModal = () => {
   const { colors } = useTheme();
   const { routineId } = useLocalSearchParams<{ routineId: string }>();
   const [routine, setRoutine] = useState<Routine | undefined>(undefined);
-  const [exercises, setExercises] = useState<Exercise[]>([]);
+  const [routineExercises, setRoutineExercises] = useState<RoutineExercise[]>(
+    []
+  );
   const [loading, setLoading] = useState(true);
   const opacity = useSharedValue(0);
   const { startWorkout } = useWorkout();
@@ -51,14 +54,7 @@ const RoutineModal = () => {
       setRoutine(r);
 
       const rExercises = await r.routineExercises.fetch();
-      const e = await Promise.all(
-        rExercises.map(
-          async (re) =>
-            // @ts-ignore
-            await re.exercise.fetch()
-        )
-      );
-      setExercises(e);
+      setRoutineExercises(rExercises);
 
       setLoading(false);
     };
@@ -108,14 +104,15 @@ const RoutineModal = () => {
             </ButtonWithIcon>
           </View>
 
-          <ThemedText
-            style={{ fontSize: 18, fontWeight: "bold", opacity: 0.6 }}
-          >
-            Exercises
-          </ThemedText>
-
-          {exercises.map((exercise) => (
-            <RoutineExerciseView key={exercise.id} exercise={exercise} />
+          {routineExercises.map((re, index) => (
+            <React.Fragment key={re.id}>
+              <RoutineExerciseView routineExercise={re} />
+              {index < routineExercises.length - 1 && (
+                <View
+                  style={[styles.divider, { backgroundColor: colors.border }]}
+                />
+              )}
+            </React.Fragment>
           ))}
 
           <Button onPress={handleStart} style={{ marginTop: 10 }}>
@@ -158,5 +155,10 @@ const styles = StyleSheet.create({
   itemText: {
     fontSize: 16,
     fontWeight: "500",
+  },
+  divider: {
+    height: 2,
+    width: "100%",
+    marginVertical: 5,
   },
 });
