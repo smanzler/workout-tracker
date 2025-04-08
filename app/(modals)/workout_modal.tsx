@@ -123,7 +123,6 @@ const WorkoutModal = () => {
 
       {workout && (
         <Animated.View
-          key={workout.id}
           style={[styles.card, { backgroundColor: colors.card }, animatedStyle]}
         >
           <View style={styles.headerContainer}>
@@ -192,6 +191,7 @@ const WorkoutModal = () => {
           </View>
           {workoutExercises.map((we) => (
             <WorkoutModalWorkoutExercise
+              key={we.id}
               workoutExercise={we}
               setSetsLoading={setSetsLoading}
             />
