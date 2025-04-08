@@ -4,6 +4,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import database, { routinesCollection } from "@/db";
 import { Alert } from "react-native";
 import { router } from "expo-router";
+import { useAuth } from "./AuthProvider";
 
 interface RoutineContextType {
   activeRoutineId: string | undefined;
@@ -22,6 +23,7 @@ export const RoutineProvider = ({
   const [activeRoutineId, setActiveRoutineId] = useState<string | undefined>(
     undefined
   );
+  const { user } = useAuth();
 
   useEffect(() => {
     const loadRoutine = async () => {
@@ -44,7 +46,9 @@ export const RoutineProvider = ({
         await deleteRoutine();
       }
       database.write(async () => {
-        const { id } = await routinesCollection.create(() => {});
+        const { id } = await routinesCollection.create((r) => {
+          user && (r.userId = user.id);
+        });
         await AsyncStorage.setItem("activeRoutineId", id);
         setActiveRoutineId(id);
       });
