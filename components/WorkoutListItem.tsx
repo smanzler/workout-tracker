@@ -25,6 +25,7 @@ import { map } from "@nozbe/watermelondb/utils/rx";
 import { Q } from "@nozbe/watermelondb";
 import Button from "./Button";
 import { checkPRs } from "@/utils/PRs";
+import ButtonWithIcon from "./ButtonWithIcon";
 
 const WorkoutListItem = ({
   workout,
@@ -97,15 +98,13 @@ const WorkoutListItem = ({
         </Text>
         <DropdownMenuRoot>
           <DropdownMenuTrigger>
-            <TouchableOpacity
-              style={[styles.btn, { backgroundColor: theme.colors.background }]}
-            >
+            <ButtonWithIcon>
               <Entypo
                 name="dots-three-horizontal"
                 size={24}
                 color={theme.colors.text}
               />
-            </TouchableOpacity>
+            </ButtonWithIcon>
           </DropdownMenuTrigger>
           <DropdownMenuContent>
             <DropdownMenuItem destructive key="delete" onSelect={handleDelete}>

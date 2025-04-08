@@ -23,6 +23,7 @@ import { useAuth } from "@/providers/AuthProvider";
 import { RoutineExercise } from "@/models/RoutineExercise";
 import RoutineSetListItem from "./RoutineSetListItem";
 import { RoutineSet } from "@/models/RoutineSets";
+import ButtonWithIcon from "./ButtonWithIcon";
 
 const RoutineExerciseListItem = ({
   routineExercise,
@@ -75,15 +76,13 @@ const RoutineExerciseListItem = ({
         </Text>
         <DropdownMenuRoot>
           <DropdownMenuTrigger>
-            <TouchableOpacity
-              style={[styles.btn, { backgroundColor: theme.colors.background }]}
-            >
+            <ButtonWithIcon>
               <Entypo
                 name="dots-three-horizontal"
                 size={24}
                 color={theme.colors.text}
               />
-            </TouchableOpacity>
+            </ButtonWithIcon>
           </DropdownMenuTrigger>
           <DropdownMenuContent>
             <DropdownMenuItem destructive key="delete" onSelect={handleDelete}>

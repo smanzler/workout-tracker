@@ -22,6 +22,7 @@ import {
 import { Entypo } from "@expo/vector-icons";
 import database from "@/db";
 import { router } from "expo-router";
+import ButtonWithIcon from "./ButtonWithIcon";
 
 const RoutineItem = ({
   routine,
@@ -101,15 +102,13 @@ const RoutineItem = ({
 
         <DropdownMenuRoot>
           <DropdownMenuTrigger>
-            <TouchableOpacity
-              style={[styles.btn, { backgroundColor: colors.background }]}
-            >
+            <ButtonWithIcon>
               <Entypo
                 name="dots-three-horizontal"
                 size={24}
                 color={colors.text}
               />
-            </TouchableOpacity>
+            </ButtonWithIcon>
           </DropdownMenuTrigger>
           <DropdownMenuContent>
             <DropdownMenuItem destructive key="delete" onSelect={handleDelete}>

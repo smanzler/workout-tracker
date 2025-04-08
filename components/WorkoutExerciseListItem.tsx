@@ -23,6 +23,7 @@ import {
 import database, { setsCollection } from "@/db";
 import { useTheme } from "@react-navigation/native";
 import { useAuth } from "@/providers/AuthProvider";
+import ButtonWithIcon from "./ButtonWithIcon";
 
 const WorkoutExerciseListItem = ({
   workoutExercise,
@@ -75,15 +76,13 @@ const WorkoutExerciseListItem = ({
         </Text>
         <DropdownMenuRoot>
           <DropdownMenuTrigger>
-            <TouchableOpacity
-              style={[styles.btn, { backgroundColor: theme.colors.background }]}
-            >
+            <ButtonWithIcon>
               <Entypo
                 name="dots-three-horizontal"
                 size={24}
                 color={theme.colors.text}
               />
-            </TouchableOpacity>
+            </ButtonWithIcon>
           </DropdownMenuTrigger>
           <DropdownMenuContent>
             <DropdownMenuItem destructive key="delete" onSelect={handleDelete}>
