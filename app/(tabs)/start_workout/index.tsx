@@ -21,10 +21,12 @@ import { withObservables } from "@nozbe/watermelondb/react";
 import { Routine } from "@/models/Routine";
 import RoutineItem from "@/components/RoutineItem";
 import { Q } from "@nozbe/watermelondb";
+import { useRoutine } from "@/providers/RoutineProvider";
 
 function StartWorkoutScreen({ routines }: { routines: Routine[] }) {
   const { activeWorkoutId, startWorkout } = useWorkout();
   const theme = useTheme();
+  const { createRoutine } = useRoutine();
 
   const handleDelete = async () => {
     if (!activeWorkoutId) return;
@@ -95,20 +97,8 @@ function StartWorkoutScreen({ routines }: { routines: Routine[] }) {
   };
 
   const handleNewRoutine = async () => {
-    console.log("Creating new routine...");
-    try {
-      database.write(async () => {
-        const routine = await routinesCollection.create(() => {});
-
-        console.log("pushing to new routine modal with id:", routine.id);
-        router.push({
-          pathname: "/(modals)/add_routine",
-          params: { routineId: routine.id },
-        });
-      });
-    } catch (error) {
-      console.log("Error creating new routine:", error);
-    }
+    await createRoutine();
+    router.push("/(modals)/add_routine");
   };
 
   return (

@@ -17,49 +17,28 @@ import database, { routinesCollection } from "@/db";
 import Button from "@/components/Button";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "@react-navigation/native";
+import { useRoutine } from "@/providers/RoutineProvider";
 
 const AddRoutine = () => {
-  const { routineId } = useLocalSearchParams<{ routineId: string }>();
   const [routine, setRoutine] = useState<Routine | null>(null);
   const { colors } = useTheme();
   const [routineName, setRoutineName] = useState<string>("");
+  const { activeRoutineId, deleteRoutine, saveRoutine } = useRoutine();
 
   useEffect(() => {
     const load = async () => {
-      if (routineId) {
-        console.log("routineId:", routineId);
-        const r = await routinesCollection.find(routineId);
+      if (activeRoutineId) {
+        console.log("activeRoutineId:", activeRoutineId);
+        const r = await routinesCollection.find(activeRoutineId);
         setRoutine(r);
       }
     };
 
     load();
-  }, [routineId]);
+  }, [activeRoutineId]);
 
   const handleSave = async () => {
-    if (!routine) {
-      console.error("No routine to save");
-      return;
-    }
-
-    const re = await routine.routineExercises.fetch();
-    if (re.length === 0) {
-      Alert.alert("Add Exercises", "Add exercises to the routine to save it");
-      return;
-    }
-
-    try {
-      await database.write(async () => {
-        routine.update((r) => {
-          r.name = routineName || "New Routine";
-        });
-      });
-    } catch (error) {
-      console.error("Failed to save routine:", error);
-      return;
-    }
-
-    router.back();
+    await saveRoutine(routineName);
   };
 
   const handleBack = () => {
@@ -73,48 +52,14 @@ const AddRoutine = () => {
         },
         {
           text: "Discard",
-          onPress: handleDelete,
+          onPress: async () => {
+            await deleteRoutine();
+            router.back();
+          },
           style: "destructive",
         },
       ]
     );
-  };
-
-  const handleDelete = () => {
-    if (!routine) {
-      console.error("No routine to delete");
-      return;
-    }
-
-    try {
-      database.write(async () => {
-        const routineExercises = await routine.routineExercises.fetch();
-
-        const setsToDelete = await Promise.all(
-          routineExercises.map((re) => re.routineSets.fetch())
-        );
-
-        const routineExerciseDeletions = await Promise.all(
-          routineExercises.map((re) => re.markAsDeleted())
-        );
-        const routineSetDeletions = await Promise.all(
-          setsToDelete.flat().map((set) => set.markAsDeleted())
-        );
-        const routineDeletion = await routine.markAsDeleted();
-
-        const batchOps = [
-          ...routineExerciseDeletions,
-          ...routineSetDeletions,
-          routineDeletion,
-        ];
-
-        await database.batch(...batchOps);
-
-        router.back();
-      });
-    } catch (error) {
-      console.error("Failed to delete routine:", error);
-    }
   };
 
   return (
@@ -151,7 +96,7 @@ const AddRoutine = () => {
         onPress={() => {
           router.push({
             pathname: "/(modals)/add_routine_exercises",
-            params: { routineId },
+            params: { activeRoutineId },
           });
         }}
       >

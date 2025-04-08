@@ -18,6 +18,7 @@ import { pullDefaultExercises } from "@/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { exercisesCollection, setsCollection } from "@/db";
 import { Q } from "@nozbe/watermelondb";
+import { RoutineProvider } from "@/providers/RoutineProvider";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -70,107 +71,109 @@ export default function RootLayout() {
     <GestureHandlerRootView>
       <AuthProvider>
         <WorkoutProvider>
-          <ThemeProvider
-            value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
-          >
-            <SyncProvider>
-              <View style={{ flex: 1 }}>
-                <Stack>
-                  <Stack.Screen
-                    name="(tabs)"
-                    options={{ headerShown: false }}
-                  />
-                  <Stack.Screen
-                    name="(modals)/workout"
-                    options={{ presentation: "modal", headerShown: false }}
-                  />
-                  <Stack.Screen
-                    name="(modals)/add_exercise"
-                    options={{
-                      title: "Add Exercises",
-                      presentation: "fullScreenModal",
-                      headerLeft: () => (
-                        <TouchableOpacity onPress={() => router.back()}>
-                          <Ionicons
-                            name="chevron-back"
-                            size={24}
-                            color={theme.colors.primary}
-                          />
-                        </TouchableOpacity>
-                      ),
-                    }}
-                  />
-                  <Stack.Screen
-                    name="(modals)/summary"
-                    options={{
-                      presentation: "fullScreenModal",
-                      headerShown: false,
-                    }}
-                  />
-                  <Stack.Screen
-                    name="(auth)/signup"
-                    options={{
-                      headerShown: true,
-                      headerTitle: "Sign Up",
-                      ...(process.env.EXPO_OS !== "ios"
-                        ? {}
-                        : {
-                            headerLargeTitle: true,
-                            headerTransparent: true,
-                            headerBlurEffect: "systemChromeMaterial",
-                            headerLargeTitleShadowVisible: false,
-                            headerShadowVisible: true,
-                            headerLargeStyle: {
-                              backgroundColor: "transparent",
-                            },
-                          }),
-                    }}
-                  />
-                  <Stack.Screen
-                    name="(modals)/workout_modal"
-                    options={{
-                      presentation: "transparentModal",
-                      animation: "fade",
-                      headerShown: false,
-                    }}
-                  />
-                  <Stack.Screen
-                    name="(modals)/add_routine"
-                    options={{
-                      headerTitle: "New Routine",
-                      headerBackVisible: false,
-                      headerTransparent: true,
-                      headerBlurEffect: "systemChromeMaterial",
-                    }}
-                  />
-                  <Stack.Screen
-                    name="(modals)/add_routine_exercises"
-                    options={{
-                      headerTitle: "New Routine",
-                      headerTransparent: true,
-                      headerBlurEffect: "systemChromeMaterial",
-                      headerLargeTitle: true,
-                      headerLargeTitleShadowVisible: false,
-                      headerShadowVisible: true,
-                      headerLargeStyle: {
-                        backgroundColor: "transparent",
-                      },
-                    }}
-                  />
-                  <Stack.Screen
-                    name="(modals)/routine_modal"
-                    options={{
-                      presentation: "transparentModal",
-                      animation: "fade",
-                      headerShown: false,
-                    }}
-                  />
-                </Stack>
+          <RoutineProvider>
+            <ThemeProvider
+              value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
+            >
+              <SyncProvider>
+                <View style={{ flex: 1 }}>
+                  <Stack>
+                    <Stack.Screen
+                      name="(tabs)"
+                      options={{ headerShown: false }}
+                    />
+                    <Stack.Screen
+                      name="(modals)/workout"
+                      options={{ presentation: "modal", headerShown: false }}
+                    />
+                    <Stack.Screen
+                      name="(modals)/add_exercise"
+                      options={{
+                        title: "Add Exercises",
+                        presentation: "fullScreenModal",
+                        headerLeft: () => (
+                          <TouchableOpacity onPress={() => router.back()}>
+                            <Ionicons
+                              name="chevron-back"
+                              size={24}
+                              color={theme.colors.primary}
+                            />
+                          </TouchableOpacity>
+                        ),
+                      }}
+                    />
+                    <Stack.Screen
+                      name="(modals)/summary"
+                      options={{
+                        presentation: "fullScreenModal",
+                        headerShown: false,
+                      }}
+                    />
+                    <Stack.Screen
+                      name="(auth)/signup"
+                      options={{
+                        headerShown: true,
+                        headerTitle: "Sign Up",
+                        ...(process.env.EXPO_OS !== "ios"
+                          ? {}
+                          : {
+                              headerLargeTitle: true,
+                              headerTransparent: true,
+                              headerBlurEffect: "systemChromeMaterial",
+                              headerLargeTitleShadowVisible: false,
+                              headerShadowVisible: true,
+                              headerLargeStyle: {
+                                backgroundColor: "transparent",
+                              },
+                            }),
+                      }}
+                    />
+                    <Stack.Screen
+                      name="(modals)/workout_modal"
+                      options={{
+                        presentation: "transparentModal",
+                        animation: "fade",
+                        headerShown: false,
+                      }}
+                    />
+                    <Stack.Screen
+                      name="(modals)/add_routine"
+                      options={{
+                        headerTitle: "New Routine",
+                        headerBackVisible: false,
+                        headerTransparent: true,
+                        headerBlurEffect: "systemChromeMaterial",
+                      }}
+                    />
+                    <Stack.Screen
+                      name="(modals)/add_routine_exercises"
+                      options={{
+                        headerTitle: "New Routine",
+                        headerTransparent: true,
+                        headerBlurEffect: "systemChromeMaterial",
+                        headerLargeTitle: true,
+                        headerLargeTitleShadowVisible: false,
+                        headerShadowVisible: true,
+                        headerLargeStyle: {
+                          backgroundColor: "transparent",
+                        },
+                      }}
+                    />
+                    <Stack.Screen
+                      name="(modals)/routine_modal"
+                      options={{
+                        presentation: "transparentModal",
+                        animation: "fade",
+                        headerShown: false,
+                      }}
+                    />
+                  </Stack>
 
-                <StatusBar style="auto" />
-              </View>
-            </SyncProvider>
-          </ThemeProvider>
+                  <StatusBar style="auto" />
+                </View>
+              </SyncProvider>
+            </ThemeProvider>
+          </RoutineProvider>
         </WorkoutProvider>
       </AuthProvider>
     </GestureHandlerRootView>

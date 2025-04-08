@@ -22,6 +22,7 @@ import ExercisesList from "@/components/ExercisesList";
 import { useAuth } from "@/providers/AuthProvider";
 import { ThemedText } from "@/components/ThemedText";
 import ExerciseModal from "@/components/ExerciseModal";
+import { useRoutine } from "@/providers/RoutineProvider";
 
 interface Section {
   title: string;
@@ -54,7 +55,7 @@ function AddRoutineExercises({ exercises }: { exercises: Exercise[] }) {
   const [recent, setRecent] = useState<Exercise[]>([]);
   const [selectedItems, setSelectedItems] = useState<Exercise[]>([]);
   const [visible, setVisible] = useState(false);
-  const { routineId } = useLocalSearchParams<{ routineId: string }>();
+  const { activeRoutineId } = useRoutine();
   const theme = useTheme();
   const { user } = useAuth();
 
@@ -75,10 +76,22 @@ function AddRoutineExercises({ exercises }: { exercises: Exercise[] }) {
   };
 
   const handleAddToRoutine = async () => {
-    if (selectedItems.length === 0) return;
+    if (selectedItems.length === 0) {
+      router.back();
+      return;
+    }
+
+    if (!activeRoutineId) {
+      Alert.alert(
+        "Error",
+        "There was an error adding exercise the the routine"
+      );
+      router.back();
+      return;
+    }
     try {
       await database.write(async () => {
-        const routine = await routinesCollection.find(routineId);
+        const routine = await routinesCollection.find(activeRoutineId);
 
         const batchOps = selectedItems.flatMap((exercise) => {
           const routineExercise = routineExercisesCollection.prepareCreate(
