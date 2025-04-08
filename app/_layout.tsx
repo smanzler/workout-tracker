@@ -114,6 +114,7 @@ export default function RootLayout() {
                       options={{
                         headerShown: true,
                         headerTitle: "Sign Up",
+                        headerBackTitle: "Log In",
                         ...(process.env.EXPO_OS !== "ios"
                           ? {}
                           : {
