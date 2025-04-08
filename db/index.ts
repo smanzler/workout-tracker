@@ -89,11 +89,41 @@ export const migrateUserData = async (userId: string) => {
         })
       );
 
+      const routinesToUpdate = await routinesCollection
+        .query(Q.where("user_id", null))
+        .fetch();
+      const routineUpdates = routinesToUpdate.map((r) =>
+        r.prepareUpdate((rec) => {
+          rec.userId = userId;
+        })
+      );
+
+      const routineExercisesToUpdate = await routineExercisesCollection
+        .query(Q.where("user_id", null))
+        .fetch();
+      const routineExerciseUpdates = routineExercisesToUpdate.map((re) =>
+        re.prepareUpdate((rec) => {
+          rec.userId = userId;
+        })
+      );
+
+      const routineSetsToUpdate = await routineSetsCollection
+        .query(Q.where("user_id", null))
+        .fetch();
+      const routineSetUpdates = routineSetsToUpdate.map((rs) =>
+        rs.prepareUpdate((rec) => {
+          rec.userId = userId;
+        })
+      );
+
       const allUpdates = [
         ...workoutUpdates,
         ...setUpdates,
         ...workoutExerciseUpdates,
         ...exerciseUpdates,
+        ...routineUpdates,
+        ...routineExerciseUpdates,
+        ...routineSetUpdates,
       ];
 
       if (allUpdates.length > 0) {
