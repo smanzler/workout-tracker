@@ -54,7 +54,10 @@ export default function SignupScreen() {
             variant="filled"
           />
         </View>
-        <Button disabled={loading} onPress={() => signUpWithEmail()}>
+        <Button
+          disabled={loading || !email || !password}
+          onPress={() => signUpWithEmail()}
+        >
           Sign up
         </Button>
       </View>
