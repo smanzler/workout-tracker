@@ -1,5 +1,13 @@
 import React, { useState } from "react";
-import { TextInput, Text, View, Button, Alert, StyleSheet } from "react-native";
+import {
+  TextInput,
+  Text,
+  View,
+  Button,
+  Alert,
+  StyleSheet,
+  Pressable,
+} from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, {
   useAnimatedStyle,
@@ -14,7 +22,7 @@ import { useTheme } from "@react-navigation/native";
 import ExercisesList from "@/components/ExercisesList";
 import { useAuth } from "@/providers/AuthProvider";
 import { BodyScrollView } from "@/components/BodyScrollViiew";
-import { Stack } from "expo-router";
+import { router, Stack } from "expo-router";
 import { ThemedText } from "@/components/ThemedText";
 import ExerciseModal from "@/components/ExerciseModal";
 
@@ -51,8 +59,6 @@ function Exercises({ exercises }: { exercises: Exercise[] }) {
   );
 
   const sections: Section[] = groupData(filteredData);
-
-  const handleItemPress = (item: Exercise) => {};
 
   const handleDelete = (id: string) => {
     Alert.alert(
@@ -112,16 +118,22 @@ function Exercises({ exercises }: { exercises: Exercise[] }) {
             },
           ]}
         >
-          <ThemedText
-            style={{ fontSize: 16, fontWeight: 600 }}
-            onPress={() => handleItemPress(item)}
+          <Pressable
+            onPress={() =>
+              router.push({
+                pathname: "/(modals)/exercise_history",
+                params: { exerciseId: item.id, title: item.title },
+              })
+            }
           >
-            {item.title}
-          </ThemedText>
+            <ThemedText style={{ fontSize: 16, fontWeight: 600 }}>
+              {item.title}
+            </ThemedText>
 
-          <View style={styles.row}>
-            <ThemedText style={styles.mgText}>{item.muscleGroup}</ThemedText>
-          </View>
+            <View style={styles.row}>
+              <ThemedText style={styles.mgText}>{item.muscleGroup}</ThemedText>
+            </View>
+          </Pressable>
         </Animated.View>
       </GestureDetector>
     );

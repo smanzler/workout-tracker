@@ -168,6 +168,21 @@ export default function RootLayout() {
                         headerShown: false,
                       }}
                     />
+                    <Stack.Screen
+                      name="(modals)/exercise_history"
+                      options={{
+                        headerTitle: "Exercise",
+                        headerBackVisible: false,
+                        headerTransparent: true,
+                        headerBlurEffect: "systemChromeMaterial",
+                        headerLargeTitle: true,
+                        headerLargeTitleShadowVisible: false,
+                        headerShadowVisible: true,
+                        headerLargeStyle: {
+                          backgroundColor: "transparent",
+                        },
+                      }}
+                    />
                   </Stack>
 
                   <StatusBar style="auto" />
