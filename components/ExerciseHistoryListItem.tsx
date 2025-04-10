@@ -67,7 +67,7 @@ const ExerciseHistoryListItem = ({
       </View>
 
       {sets.map((set) => (
-        <View style={[styles.textWithIcon]}>
+        <View key={set.id} style={[styles.textWithIcon]}>
           <ThemedText style={{ fontWeight: 600 }} key={set.id}>
             {set.weight} lbs × {set.reps}
           </ThemedText>
