@@ -7,10 +7,8 @@ import { Workout } from "@/models/Workout";
 import { WorkoutExercise } from "@/models/WorkoutExercise";
 import { Q } from "@nozbe/watermelondb";
 
-export async function getMaxPRBefore(workout: Workout, exerciseId: string) {
+export async function getMaxPRBefore(startTime: number, exerciseId: string) {
   console.log("Fetching previous PRs using PR flags...");
-
-  const startTime = new Date(workout.startTime).getTime();
 
   const prevMaxSet = await setsCollection
     .query(
@@ -79,7 +77,10 @@ export async function checkPRs(
     workoutExercises.map(async (workoutExercise) => {
       const exercise = await workoutExercise.exercise;
 
-      const prevPRs = await getMaxPRBefore(workout, exercise.id);
+      const prevPRs = await getMaxPRBefore(
+        new Date(workout.startTime).getTime(),
+        exercise.id
+      );
 
       console.log(
         "Previous PRs for exercise:",
