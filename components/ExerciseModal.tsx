@@ -25,7 +25,6 @@ import {
   DropdownMenuRoot,
   DropdownMenuTrigger,
 } from "@/zeego/drop-down";
-import Animated from "react-native-reanimated";
 import ButtonWithIcon from "./ButtonWithIcon";
 
 const ExerciseModal = ({
@@ -80,7 +79,17 @@ const ExerciseModal = ({
           <BlurView intensity={40} style={styles.blurView} />
         </TouchableWithoutFeedback>
 
-        <Animated.View style={[styles.card, { backgroundColor: colors.card }]}>
+        <BlurView
+          intensity={60}
+          style={[
+            styles.card,
+            {
+              backgroundColor: colors.text
+                .replace("rgb", "rgba")
+                .replace(")", ", 0.1)"),
+            },
+          ]}
+        >
           <View style={styles.headerContainer}>
             <ThemedText style={styles.modalTitle}>Add Exercise</ThemedText>
             <ButtonWithIcon onPress={handleClose}>
@@ -282,7 +291,7 @@ const ExerciseModal = ({
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenuRoot>
-        </Animated.View>
+        </BlurView>
       </KeyboardAvoidingView>
     </Modal>
   );
@@ -308,6 +317,8 @@ const styles = StyleSheet.create({
     padding: 20,
     borderRadius: 16,
     width: "90%",
+
+    overflow: "hidden",
   },
   row: {
     flexDirection: "row",
@@ -335,7 +346,6 @@ const styles = StyleSheet.create({
   },
   label: {
     fontWeight: 600,
-    marginBottom: 4,
     opacity: 0.6,
   },
 });
