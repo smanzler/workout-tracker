@@ -41,12 +41,21 @@ export async function getMaxPRBefore(startTime: number, exerciseId: string) {
     .fetch();
 
   return {
-    weight: prevMaxSet[0]?.weight ?? 0,
-    volume:
-      (prevMaxVolumeSet[0]?.weight ?? 0) * (prevMaxVolumeSet[0]?.reps ?? 0),
-    oneRepMax:
-      (prevMax1RMSet[0]?.weight ?? 0) *
-      (1 + (prevMax1RMSet[0]?.reps ?? 0) / 30),
+    weight: {
+      value: prevMaxSet[0]?.weight ?? 0,
+      date: prevMaxSet[0]?.workoutStartTime,
+    },
+    volume: {
+      value:
+        (prevMaxVolumeSet[0]?.weight ?? 0) * (prevMaxVolumeSet[0]?.reps ?? 0),
+      date: prevMaxSet[0]?.workoutStartTime,
+    },
+    oneRepMax: {
+      value:
+        (prevMax1RMSet[0]?.weight ?? 0) *
+        (1 + (prevMax1RMSet[0]?.reps ?? 0) / 30),
+      date: prevMaxSet[0]?.workoutStartTime,
+    },
   };
 }
 
@@ -92,9 +101,9 @@ export async function checkPRs(
       let newVolumePRSet = null;
       let new1RMPRSet = null;
 
-      let maxWeight = prevPRs.weight;
-      let maxVolume = prevPRs.volume;
-      let max1RM = prevPRs.oneRepMax;
+      let maxWeight = prevPRs.weight.value;
+      let maxVolume = prevPRs.volume.value;
+      let max1RM = prevPRs.oneRepMax.value;
 
       const sets = await workoutExercise.sets;
 
