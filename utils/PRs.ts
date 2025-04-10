@@ -10,51 +10,87 @@ import { Q } from "@nozbe/watermelondb";
 export async function getMaxPRBefore(startTime: number, exerciseId: string) {
   console.log("Fetching previous PRs using PR flags...");
 
-  const prevMaxSet = await setsCollection
+  const prevMaxSetRaw = await setsCollection
     .query(
-      Q.on("workout_exercises", "exercise_id", exerciseId),
-      Q.where("workout_start_time", Q.lt(startTime)),
-      Q.where("is_weight_pr", true),
-      Q.sortBy("workout_start_time", Q.desc),
-      Q.take(1)
+      Q.unsafeSqlQuery(
+        `
+      SELECT sets.weight, sets.reps, workouts.start_time
+      FROM sets
+      JOIN workout_exercises ON sets.workout_exercise_id = workout_exercises.id
+      JOIN workouts ON workout_exercises.workout_id = workouts.id
+      WHERE workout_exercises.exercise_id = ?
+        AND sets.is_weight_pr = 1
+        AND workouts.start_time < ?
+      ORDER BY workouts.start_time DESC
+      LIMIT 1
+    `,
+        [exerciseId, startTime]
+      )
     )
-    .fetch();
+    .unsafeFetchRaw();
 
-  const prevMaxVolumeSet = await setsCollection
-    .query(
-      Q.on("workout_exercises", "exercise_id", exerciseId),
-      Q.where("workout_start_time", Q.lt(startTime)),
-      Q.where("is_volume_pr", true),
-      Q.sortBy("workout_start_time", Q.desc),
-      Q.take(1)
-    )
-    .fetch();
+  console.log("weight", prevMaxSetRaw);
 
-  const prevMax1RMSet = await setsCollection
+  const prevMaxVolumeSetRaw = await setsCollection
     .query(
-      Q.on("workout_exercises", "exercise_id", exerciseId),
-      Q.where("workout_start_time", Q.lt(startTime)),
-      Q.where("is_1rm_pr", true),
-      Q.sortBy("workout_start_time", Q.desc),
-      Q.take(1)
+      Q.unsafeSqlQuery(
+        `
+      SELECT sets.weight, sets.reps, workouts.start_time
+      FROM sets
+      JOIN workout_exercises ON sets.workout_exercise_id = workout_exercises.id
+      JOIN workouts ON workout_exercises.workout_id = workouts.id
+      WHERE workout_exercises.exercise_id = ?
+        AND sets.is_volume_pr = 1
+        AND workouts.start_time < ?
+      ORDER BY workouts.start_time DESC
+      LIMIT 1
+    `,
+        [exerciseId, startTime]
+      )
     )
-    .fetch();
+    .unsafeFetchRaw();
+
+  console.log("volume", prevMaxVolumeSetRaw);
+
+  const prev1RMSetRaw = await setsCollection
+    .query(
+      Q.unsafeSqlQuery(
+        `
+      SELECT sets.weight, sets.reps, workouts.start_time
+      FROM sets
+      JOIN workout_exercises ON sets.workout_exercise_id = workout_exercises.id
+      JOIN workouts ON workout_exercises.workout_id = workouts.id
+      WHERE workout_exercises.exercise_id = ?
+        AND sets.is_weight_pr = 1
+        AND workouts.start_time < ?
+      ORDER BY workouts.start_time DESC
+      LIMIT 1
+    `,
+        [exerciseId, startTime]
+      )
+    )
+    .unsafeFetchRaw();
+
+  console.log("1rm", prev1RMSetRaw);
+
+  const date = new Date().getTime();
 
   return {
     weight: {
-      value: prevMaxSet[0]?.weight ?? 0,
-      date: prevMaxSet[0]?.workoutStartTime,
+      value: prevMaxSetRaw[0]?.weight ?? 0,
+      date: prevMaxSetRaw[0]?.start_time,
     },
     volume: {
       value:
-        (prevMaxVolumeSet[0]?.weight ?? 0) * (prevMaxVolumeSet[0]?.reps ?? 0),
-      date: prevMaxSet[0]?.workoutStartTime,
+        (prevMaxVolumeSetRaw[0]?.weight ?? 0) *
+        (prevMaxVolumeSetRaw[0]?.reps ?? 0),
+      date: prevMaxSetRaw[0]?.start_time,
     },
     oneRepMax: {
       value:
-        (prevMax1RMSet[0]?.weight ?? 0) *
-        (1 + (prevMax1RMSet[0]?.reps ?? 0) / 30),
-      date: prevMaxSet[0]?.workoutStartTime,
+        (prev1RMSetRaw[0]?.weight ?? 0) *
+        (1 + (prev1RMSetRaw[0]?.reps ?? 0) / 30),
+      date: prevMaxSetRaw[0]?.start_time,
     },
   };
 }

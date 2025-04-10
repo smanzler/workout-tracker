@@ -94,7 +94,6 @@ function Add_Exercise({ exercises }: { exercises: Exercise[] }) {
         const set = setsCollection.prepareCreate((set) => {
           // @ts-ignore
           set.workoutExercise.set(workoutExercise);
-          set.workoutStartTime = workout.startTime;
           set.reps = undefined;
           set.weight = undefined;
           user && (set.userId = user.id);

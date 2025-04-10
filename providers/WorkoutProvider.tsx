@@ -122,7 +122,6 @@ export const WorkoutProvider = ({
                 return setsCollection.prepareCreate((set) => {
                   // @ts-ignore
                   set.workoutExercise.set(workoutExercise);
-                  set.workoutStartTime = workout.startTime;
                   set.reps = routineSet.reps;
                   set.weight = routineSet.weight;
                   user && (set.userId = user.id);

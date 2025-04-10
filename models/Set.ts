@@ -17,8 +17,6 @@ export class Set extends Model {
   @relation("workout_exercises", "workout_exercise_id")
   workoutExercise!: WorkoutExercise;
 
-  @date("workout_start_time") workoutStartTime!: number;
-
   @field("reps") reps?: number;
   @field("weight") weight?: number;
   @field("completed") completed!: boolean;
