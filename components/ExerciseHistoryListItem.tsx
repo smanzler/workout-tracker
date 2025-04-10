@@ -71,7 +71,9 @@ const ExerciseHistoryListItem = ({
           <ThemedText style={{ fontWeight: 600 }} key={set.id}>
             {set.weight} lbs × {set.reps}
           </ThemedText>
-          <MaterialCommunityIcons name="trophy" color={"#e3c254"} size={16} />
+          {(set.isWeightPr || set.is1RMPr || set.isVolumePr) && (
+            <MaterialCommunityIcons name="trophy" color={"#e3c254"} size={16} />
+          )}
         </View>
       ))}
     </View>
@@ -93,6 +95,7 @@ const styles = StyleSheet.create({
   card: {
     padding: 12,
     borderRadius: 12,
+    marginBottom: 10,
   },
   textWithIcon: {
     flexDirection: "row",
