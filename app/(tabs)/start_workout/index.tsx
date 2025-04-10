@@ -10,7 +10,7 @@ import {
   Button as RNButton,
 } from "react-native";
 import { router } from "expo-router";
-import { Entypo, Feather } from "@expo/vector-icons";
+import { Entypo, Feather, Ionicons } from "@expo/vector-icons";
 import { useWorkout } from "@/providers/WorkoutProvider";
 import database, { routinesCollection, workoutsCollection } from "@/db";
 import { useTheme } from "@react-navigation/native";
@@ -25,7 +25,7 @@ import { useRoutine } from "@/providers/RoutineProvider";
 
 function StartWorkoutScreen({ routines }: { routines: Routine[] }) {
   const { activeWorkoutId, startWorkout } = useWorkout();
-  const theme = useTheme();
+  const { colors } = useTheme();
   const { createRoutine } = useRoutine();
 
   const handleDelete = async () => {
@@ -110,13 +110,26 @@ function StartWorkoutScreen({ routines }: { routines: Routine[] }) {
       <View style={styles.headerContainer}>
         <ThemedText type="title">Routines</ThemedText>
 
-        <RNButton title="New" onPress={handleNewRoutine} />
+        <TouchableOpacity onPress={handleNewRoutine}>
+          <Ionicons name="add" color={colors.primary} size={28} />
+        </TouchableOpacity>
       </View>
 
       <View>
-        {routines.map((r, i) => (
-          <RoutineItem key={i} routine={r} />
-        ))}
+        {routines.length !== 0 ? (
+          routines.map((r, i) => <RoutineItem key={i} routine={r} />)
+        ) : (
+          <View style={{ alignItems: "center", padding: 50, marginTop: 100 }}>
+            <Ionicons name="create" color={colors.text} size={50} />
+            <ThemedText type="subtitle">No Routines</ThemedText>
+            <ThemedText
+              type="defaultSemiBold"
+              style={{ opacity: 0.6, textAlign: "center" }}
+            >
+              Your Routines will appear here when you create them.
+            </ThemedText>
+          </View>
+        )}
       </View>
     </BodyScrollView>
   );
