@@ -59,13 +59,14 @@ const ExerciseHistory = () => {
       const we = await e.workoutExercises.fetch();
       setWorkoutExercises(we);
 
-      if (we.length === 0) return;
-
-      const p = await getMaxPRBefore(new Date().getTime(), exerciseId);
-      setPrs(p);
+      if (we.length > 0) {
+        const p = await getMaxPRBefore(new Date().getTime(), exerciseId);
+        setPrs(p);
+      }
 
       setLoading(false);
     };
+
     load();
   }, [exerciseId]);
 
@@ -82,7 +83,7 @@ const ExerciseHistory = () => {
   });
 
   return (
-    <BodyScrollView style={{ paddingHorizontal: 20 }} stickyHeaderIndices={[1]}>
+    <BodyScrollView style={{ paddingHorizontal: 20 }}>
       <Stack.Screen
         options={{
           headerTitle: title,
@@ -94,7 +95,7 @@ const ExerciseHistory = () => {
         }}
       />
 
-      <Animated.View style={animatedStyle}>
+      <Animated.View style={[animatedStyle]}>
         {workoutExercises && workoutExercises?.length !== 0 ? (
           <>
             <ThemedText
