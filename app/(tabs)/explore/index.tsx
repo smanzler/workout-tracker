@@ -31,8 +31,6 @@ const ExplorePage = () => {
 
   const posts = data?.pages.flat() ?? [];
 
-  console.log(posts);
-
   return (
     <>
       <Stack.Screen
@@ -61,6 +59,7 @@ const ExplorePage = () => {
         contentInsetAdjustmentBehavior="automatic"
         contentInset={{ bottom: 0 }}
         scrollIndicatorInsets={{ bottom: 0 }}
+        style={{ paddingHorizontal: 20 }}
       />
     </>
   );
