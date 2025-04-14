@@ -32,6 +32,7 @@ import RoutineExerciseView from "@/components/RoutineExerciseView";
 import { useWorkout } from "@/providers/WorkoutProvider";
 import ButtonWithIcon from "@/components/ButtonWithIcon";
 import { RoutineExercise } from "@/models/RoutineExercise";
+import Divider from "@/components/Divider";
 
 const RoutineModal = () => {
   const { colors } = useTheme();
@@ -107,11 +108,7 @@ const RoutineModal = () => {
           {routineExercises.map((re, index) => (
             <React.Fragment key={re.id}>
               <RoutineExerciseView routineExercise={re} />
-              {index < routineExercises.length - 1 && (
-                <View
-                  style={[styles.divider, { backgroundColor: colors.border }]}
-                />
-              )}
+              {index < routineExercises.length - 1 && <Divider />}
             </React.Fragment>
           ))}
 
@@ -155,10 +152,5 @@ const styles = StyleSheet.create({
   itemText: {
     fontSize: 16,
     fontWeight: "500",
-  },
-  divider: {
-    height: 2,
-    width: "100%",
-    marginVertical: 5,
   },
 });
