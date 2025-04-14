@@ -26,6 +26,7 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from "react-native-reanimated";
+import { formatDuration } from "@/utils/format";
 
 const WorkoutModal = () => {
   const { colors } = useTheme();
@@ -80,28 +81,6 @@ const WorkoutModal = () => {
 
     loadWorkout();
   }, [workoutId]);
-
-  function formatWorkoutDuration(startTime: number, endTime: number): string {
-    const durationInSeconds = Math.floor(
-      ((endTime ?? startTime) - startTime) / 1000
-    );
-
-    if (durationInSeconds < 60) {
-      return `${durationInSeconds}s`;
-    }
-
-    const minutes = Math.floor(durationInSeconds / 60);
-    const hours = Math.floor(minutes / 60);
-    const remainingMinutes = minutes % 60;
-
-    if (hours > 0) {
-      return remainingMinutes > 0
-        ? `${hours}h ${remainingMinutes}m`
-        : `${hours}h`;
-    }
-
-    return `${minutes}m`;
-  }
 
   useEffect(() => {
     if (!loading && !setsLoading) {
@@ -164,7 +143,7 @@ const WorkoutModal = () => {
               />
               <Text style={[styles.itemText, { color: colors.text }]}>
                 {workout.startTime && workout.endTime
-                  ? formatWorkoutDuration(workout.startTime, workout.endTime)
+                  ? formatDuration(workout.startTime, workout.endTime)
                   : "—"}
               </Text>
             </View>
