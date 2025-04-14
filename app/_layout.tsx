@@ -205,6 +205,24 @@ function RootLayoutNav() {
           headerTransparent: true,
         }}
       />
+      <Stack.Screen
+        name="(modals)/create_post"
+        options={{
+          headerTitle: "Create Post",
+          headerBackVisible: false,
+          headerBlurEffect: "systemChromeMaterial",
+          headerTransparent: true,
+        }}
+      />
+      <Stack.Screen
+        name="(modals)/workout_picker"
+        options={{
+          headerTitle: "Choose Workout to Add",
+          headerBackVisible: false,
+          headerBlurEffect: "systemChromeMaterial",
+          headerTransparent: true,
+        }}
+      />
     </Stack>
   );
 }

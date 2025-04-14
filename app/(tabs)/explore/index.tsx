@@ -36,14 +36,19 @@ const ExplorePage = () => {
       <Stack.Screen
         options={{
           headerRight: () => (
-            <TouchableOpacity>
-              <Ionicons
-                name="people"
-                size={24}
-                color={colors.primary}
+            <View style={{ flexDirection: "row", gap: 12 }}>
+              <TouchableOpacity
+                onPress={() => router.push("/(modals)/create_post")}
+              >
+                <Ionicons name="add" color={colors.primary} size={24} />
+              </TouchableOpacity>
+
+              <TouchableOpacity
                 onPress={() => router.push("/(modals)/add_friends")}
-              />
-            </TouchableOpacity>
+              >
+                <Ionicons name="people" size={24} color={colors.primary} />
+              </TouchableOpacity>
+            </View>
           ),
         }}
       />
