@@ -10,6 +10,8 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { formatDuration } from "@/utils/format";
 import { map, switchMap } from "rxjs/operators";
 import { combineLatest } from "rxjs";
+import { usePostActions } from "@/stores/postStore";
+import { router } from "expo-router";
 
 const WorkoutListitemShort = ({
   workout,
@@ -20,6 +22,7 @@ const WorkoutListitemShort = ({
 }) => {
   const { colors } = useTheme();
   const [exerciseNames, setExerciseNames] = useState<string[]>([]);
+  const { setWorkout } = usePostActions();
 
   useEffect(() => {
     const fetchExerciseNames = async () => {
@@ -36,7 +39,11 @@ const WorkoutListitemShort = ({
     fetchExerciseNames();
   }, [workoutExercises]);
 
-  const handlePress = () => {};
+  const handlePress = () => {
+    setWorkout(workout);
+
+    router.back();
+  };
 
   return (
     <TouchableOpacity
