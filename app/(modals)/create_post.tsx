@@ -57,7 +57,9 @@ const CreatePost = () => {
       <Divider />
 
       <View style={{ flexDirection: "row", gap: 20, marginVertical: 20 }}>
-        <ThemedText type="defaultSemiBold">Caption</ThemedText>
+        <ThemedText style={{ alignSelf: "baseline" }} type="defaultSemiBold">
+          Caption
+        </ThemedText>
         <TextInput
           placeholder="Write a caption here..."
           placeholderTextColor={colors.text}
@@ -65,7 +67,6 @@ const CreatePost = () => {
           onChangeText={(text) => setCaption(text)}
           style={{
             fontSize: 16,
-            lineHeight: 24,
             color: colors.text,
             opacity: 0.6,
           }}
