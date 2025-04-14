@@ -7,7 +7,7 @@ import {
   View,
 } from "react-native";
 import React from "react";
-import { Stack } from "expo-router";
+import { router, Stack } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "@react-navigation/native";
 import { BodyScrollView } from "@/components/BodyScrollViiew";
@@ -37,7 +37,12 @@ const ExplorePage = () => {
         options={{
           headerRight: () => (
             <TouchableOpacity>
-              <Ionicons name="people" size={24} color={colors.primary} />
+              <Ionicons
+                name="people"
+                size={24}
+                color={colors.primary}
+                onPress={() => router.push("/(modals)/add_friends")}
+              />
             </TouchableOpacity>
           ),
         }}
