@@ -31,13 +31,9 @@ const usePostStore = create<PostState>((set) => ({
 }));
 
 export const usePostWorkout = () =>
-  usePostStore((state) => ({
-    selectedWorkout: state.selectedWorkout,
-  }));
+  usePostStore((state) => state.selectedWorkout);
 
 export const usePostRoutine = () =>
-  usePostStore((state) => ({
-    selectedWorkout: state.selectedWorkout,
-  }));
+  usePostStore((state) => state.selectedRoutine);
 
 export const usePostActions = () => usePostStore((state) => state.actions);
