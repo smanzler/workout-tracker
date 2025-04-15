@@ -1,11 +1,11 @@
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import React from "react";
-import { Image } from "react-native";
 import { ThemedText } from "./ThemedText";
 import { formatDuration } from "@/utils/format";
 import dayjs from "dayjs";
 import { useTheme } from "@react-navigation/native";
 import { FontAwesome } from "@expo/vector-icons";
+import { Image } from "expo-image";
 
 type Post = {
   id: string;
@@ -66,7 +66,10 @@ const PostListItem = ({ post }: { post: Post }) => {
           }}
         >
           <Image
-            style={{ backgroundColor: "pink", width: "100%", height: "100%" }}
+            source={post.image_url}
+            style={{ width: 200, height: 200, borderRadius: 10 }}
+            contentFit="cover"
+            transition={300}
           />
         </View>
 
