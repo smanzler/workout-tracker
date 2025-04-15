@@ -55,15 +55,22 @@ export const postPost = async (
 
       if (storageError) throw storageError;
 
-      const { error } = await supabase.from("posts").insert({
+      const {
+        data: { publicUrl },
+      } = supabase.storage.from("post-images").getPublicUrl(filePath);
+
+      console.log(publicUrl);
+
+      const { error: insertError } = await supabase.from("posts").insert({
         user_id: user.id,
         workout_id: workout?.id,
+        routine_id: routine?.id,
         caption,
-        image_url: filePath,
+        image_url: publicUrl,
         is_public: true,
       });
 
-      if (error) throw error;
+      if (insertError) throw insertError;
     }
   } catch (error) {
     console.log(error);
