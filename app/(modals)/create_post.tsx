@@ -18,12 +18,17 @@ import { usePostWorkout } from "@/stores/postStore";
 import { BodyScrollView } from "@/components/BodyScrollViiew";
 import * as ImagePicker from "expo-image-picker";
 import Button from "@/components/Button";
+import { postPost } from "@/api/posts";
+import { useAuth } from "@/providers/AuthProvider";
+import { useWorkout } from "@/providers/WorkoutProvider";
 
 const CreatePost = () => {
   const { colors } = useTheme();
   const [caption, setCaption] = useState("");
   const [image, setImage] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
   const workout = usePostWorkout();
+  const { user } = useAuth();
 
   const handlePickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -36,6 +41,22 @@ const CreatePost = () => {
     if (!result.canceled) {
       setImage(result.assets[0].uri);
     }
+  };
+
+  const handlePost = async () => {
+    setLoading(true);
+
+    await postPost(
+      caption,
+      user || undefined,
+      workout || undefined,
+      undefined,
+      image || undefined
+    );
+
+    router.back();
+
+    setLoading(false);
   };
 
   return (
@@ -133,7 +154,9 @@ const CreatePost = () => {
         </View>
       </View>
 
-      <Button disabled={!caption}>Post</Button>
+      <Button disabled={!caption} onPress={handlePost} loading={loading}>
+        Post
+      </Button>
     </BodyScrollView>
   );
 };
