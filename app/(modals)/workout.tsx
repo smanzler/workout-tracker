@@ -19,11 +19,17 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from "react-native-reanimated";
+import { mySync } from "@/db/sync";
+import { useAuth } from "@/providers/AuthProvider";
+import { useSync } from "@/providers/SyncProvider";
+import { useRoutine } from "@/providers/RoutineProvider";
 
 const Workout = () => {
   const { seconds, activeWorkoutId, stopWorkout } = useWorkout();
   const [workout, setWorkout] = useState<WorkoutModel | undefined>(undefined);
   const theme = useTheme();
+  const { user } = useAuth();
+  const { updateLastSync } = useSync();
 
   const scrollRef = useAnimatedRef<Animated.ScrollView>();
   const scrollHandler = useScrollViewOffset(scrollRef);
@@ -105,6 +111,8 @@ const Workout = () => {
     await checkPRs(workout, workoutExercises);
 
     await stopWorkout();
+
+    await mySync(user, updateLastSync, () => {});
 
     router.replace({
       pathname: "/(modals)/summary",
