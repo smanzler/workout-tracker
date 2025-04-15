@@ -66,12 +66,9 @@ const CreatePost = () => {
     <BodyScrollView style={{ paddingHorizontal: 20 }}>
       <Stack.Screen
         options={{
-          headerLeft: () => (
-            <TouchableOpacity onPress={() => router.back()}>
-              <Ionicons name="chevron-back" size={24} color={colors.primary} />
-            </TouchableOpacity>
+          headerRight: () => (
+            <RNButton onPress={() => router.back()} title="Cancel" />
           ),
-          headerRight: () => <RNButton onPress={() => {}} title="Cancel" />,
         }}
       />
 
