@@ -14,7 +14,7 @@ import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { useTheme } from "@react-navigation/native";
 import { ThemedText } from "@/components/ThemedText";
 import Divider from "@/components/Divider";
-import { usePostWorkout } from "@/stores/postStore";
+import { usePostActions, usePostWorkout } from "@/stores/postStore";
 import { BodyScrollView } from "@/components/BodyScrollViiew";
 import * as ImagePicker from "expo-image-picker";
 import Button from "@/components/Button";
@@ -28,6 +28,7 @@ const CreatePost = () => {
   const [image, setImage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const workout = usePostWorkout();
+  const { setWorkout } = usePostActions();
   const { user } = useAuth();
 
   const handlePickImage = async () => {
@@ -53,6 +54,8 @@ const CreatePost = () => {
       undefined,
       image || undefined
     );
+
+    setWorkout(null);
 
     router.back();
 
