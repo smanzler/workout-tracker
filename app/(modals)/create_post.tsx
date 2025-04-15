@@ -1,5 +1,5 @@
 import {
-  Button,
+  Button as RNButton,
   Image,
   SafeAreaView,
   StyleSheet,
@@ -16,11 +16,27 @@ import { ThemedText } from "@/components/ThemedText";
 import Divider from "@/components/Divider";
 import { usePostWorkout } from "@/stores/postStore";
 import { BodyScrollView } from "@/components/BodyScrollViiew";
+import * as ImagePicker from "expo-image-picker";
+import Button from "@/components/Button";
 
 const CreatePost = () => {
   const { colors } = useTheme();
   const [caption, setCaption] = useState("");
+  const [image, setImage] = useState<string | null>(null);
   const workout = usePostWorkout();
+
+  const handlePickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ["images"],
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0,
+    });
+
+    if (!result.canceled) {
+      setImage(result.assets[0].uri);
+    }
+  };
 
   return (
     <BodyScrollView style={{ paddingHorizontal: 20 }}>
@@ -31,7 +47,7 @@ const CreatePost = () => {
               <Ionicons name="chevron-back" size={24} color={colors.primary} />
             </TouchableOpacity>
           ),
-          headerRight: () => <Button onPress={() => {}} title="Cancel" />,
+          headerRight: () => <RNButton onPress={() => {}} title="Cancel" />,
         }}
       />
 
@@ -84,20 +100,40 @@ const CreatePost = () => {
         }}
       >
         <ThemedText type="defaultSemiBold">Image</ThemedText>
-        <TouchableOpacity
-          style={{
-            backgroundColor: colors.card,
-            width: 200,
-            aspectRatio: 1,
-            borderRadius: 10,
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <Image />
-          <MaterialIcons name="question-mark" size={50} color={colors.text} />
-        </TouchableOpacity>
+        <View style={{ alignItems: "center" }}>
+          <TouchableOpacity
+            style={{
+              backgroundColor: colors.card,
+              width: 200,
+              aspectRatio: 1,
+              borderRadius: 10,
+              overflow: "hidden",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+            onPress={handlePickImage}
+          >
+            {image ? (
+              <Image
+                style={{ width: 200, aspectRatio: 1 }}
+                source={{ uri: image }}
+              />
+            ) : (
+              <MaterialIcons
+                name="question-mark"
+                size={50}
+                color={colors.text}
+              />
+            )}
+          </TouchableOpacity>
+
+          {image && (
+            <RNButton title="Remove Image" onPress={() => setImage(null)} />
+          )}
+        </View>
       </View>
+
+      <Button disabled={!caption}>Post</Button>
     </BodyScrollView>
   );
 };
