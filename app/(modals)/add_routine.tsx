@@ -66,12 +66,7 @@ const AddRoutine = () => {
     <BodyScrollView style={{ paddingHorizontal: 20 }}>
       <Stack.Screen
         options={{
-          headerRight: () => <RNButton title="Done" onPress={handleSave} />,
-          headerLeft: () => (
-            <TouchableOpacity onPress={handleBack}>
-              <Ionicons name="chevron-back" size={24} color={colors.primary} />
-            </TouchableOpacity>
-          ),
+          headerRight: () => <RNButton title="Cancel" onPress={handleBack} />,
         }}
       />
 
@@ -93,6 +88,7 @@ const AddRoutine = () => {
       {routine && <RoutineExerciseList routine={routine} />}
 
       <Button
+        variant="outline"
         onPress={() => {
           router.push({
             pathname: "/(modals)/add_routine_exercises",
@@ -101,6 +97,10 @@ const AddRoutine = () => {
         }}
       >
         Add Exercises
+      </Button>
+
+      <Button onPress={handleSave} style={{ marginTop: 10 }}>
+        Save
       </Button>
 
       <View style={{ height: 50 }} />
