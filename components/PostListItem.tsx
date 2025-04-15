@@ -26,7 +26,7 @@ const PostListItem = ({ post }: { post: Post }) => {
   const { colors } = useTheme();
 
   return (
-    <View>
+    <View style={{ marginBottom: 20 }}>
       <View style={{ flexDirection: "row", gap: 10 }}>
         <View
           style={{
