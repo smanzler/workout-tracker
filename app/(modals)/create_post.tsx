@@ -101,13 +101,13 @@ const CreatePost = () => {
           placeholder="Write a caption here..."
           placeholderTextColor={colors.text}
           value={caption}
-          onChangeText={(text) => setCaption(text)}
+          onChangeText={setCaption}
           style={{
+            flex: 1,
             fontSize: 16,
             color: colors.text,
             opacity: 0.6,
           }}
-          numberOfLines={1}
         />
       </View>
 
