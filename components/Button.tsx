@@ -2,9 +2,9 @@ import { useTheme } from "@react-navigation/native";
 import React from "react";
 import {
   ActivityIndicator,
-  Pressable,
   StyleSheet,
   TextStyle,
+  TouchableOpacity,
   ViewStyle,
 } from "react-native";
 import { ThemedText } from "./ThemedText";
@@ -88,7 +88,7 @@ export const Button: React.FC<ButtonProps> = ({
   };
 
   return (
-    <Pressable
+    <TouchableOpacity
       onPress={onPress}
       disabled={disabled || loading}
       style={[
@@ -119,7 +119,7 @@ export const Button: React.FC<ButtonProps> = ({
           {children}
         </ThemedText>
       )}
-    </Pressable>
+    </TouchableOpacity>
   );
 };
 
