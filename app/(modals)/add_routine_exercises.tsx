@@ -22,7 +22,7 @@ import ExercisesList from "@/components/ExercisesList";
 import { useAuth } from "@/providers/AuthProvider";
 import { ThemedText } from "@/components/ThemedText";
 import ExerciseModal from "@/components/ExerciseModal";
-import { useRoutine } from "@/providers/RoutineProvider";
+import { useRoutineActions } from "@/stores/routineStore";
 
 interface Section {
   title: string;
@@ -55,9 +55,9 @@ function AddRoutineExercises({ exercises }: { exercises: Exercise[] }) {
   const [recent, setRecent] = useState<Exercise[]>([]);
   const [selectedItems, setSelectedItems] = useState<Exercise[]>([]);
   const [visible, setVisible] = useState(false);
-  const { activeRoutineId } = useRoutine();
   const theme = useTheme();
   const { user } = useAuth();
+  const { addExercises } = useRoutineActions();
 
   const filteredData = exercises.filter((item) =>
     item.title.toLowerCase().includes(searchQuery.toLowerCase())
@@ -81,57 +81,11 @@ function AddRoutineExercises({ exercises }: { exercises: Exercise[] }) {
       return;
     }
 
-    if (!activeRoutineId) {
-      Alert.alert(
-        "Error",
-        "There was an error adding exercise the the routine"
-      );
-      router.back();
-      return;
-    }
-    try {
-      await database.write(async () => {
-        const routine = await routinesCollection.find(activeRoutineId);
+    addExercises(selectedItems);
 
-        const batchOps = selectedItems.flatMap((exercise) => {
-          const routineExercise = routineExercisesCollection.prepareCreate(
-            (routineExercise) => {
-              // @ts-ignore
-              routineExercise.exercise.set(exercise);
-              // @ts-ignore
-              routineExercise.routine.set(routine);
-              user && (routineExercise.userId = user.id);
-            }
-          );
+    router.back();
 
-          const routineSet = routineSetsCollection.prepareCreate((set) => {
-            // @ts-ignore
-            set.routineExercise.set(routineExercise);
-            set.reps = undefined;
-            set.weight = undefined;
-            user && (set.userId = user.id);
-          });
-
-          return [routineExercise, routineSet];
-        });
-
-        await database.batch(...batchOps);
-      });
-
-      router.back();
-
-      setRecent((prev) => {
-        const updatedRecent = [
-          ...selectedItems,
-          ...prev.filter((i) => !selectedItems.some((s) => s.id === i.id)),
-        ].slice(0, 5);
-        return updatedRecent;
-      });
-
-      setSelectedItems([]);
-    } catch (error) {
-      console.log(error);
-    }
+    setSelectedItems([]);
   };
 
   return (

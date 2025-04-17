@@ -17,40 +17,22 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 import { useTheme } from "@react-navigation/native";
-import { RoutineSet } from "@/models/RoutineSets";
+import { RoutineSet, useRoutineActions } from "@/stores/routineStore";
 
 const RoutineSetListItem = ({
-  routineSet,
+  exerciseIndex,
+  set,
   index,
 }: {
-  routineSet: RoutineSet;
+  exerciseIndex: number;
+  set: RoutineSet;
   index: number;
 }) => {
-  const [weight, setWeight] = useState(routineSet.weight?.toString() || "");
-  const [reps, setReps] = useState(routineSet.reps?.toString() || "");
+  const [weight, setWeight] = useState(set.weight?.toString() || "");
+  const [reps, setReps] = useState(set.reps?.toString() || "");
   const theme = useTheme();
-
-  const isCompleteable = weight !== "" && reps !== "";
-
-  const handleUpdate = async (field: "weight" | "reps", value: string) => {
-    const newValue = value === "" ? undefined : parseInt(value);
-
-    await database.write(async () => {
-      await routineSet.update((record) => {
-        record[field] = newValue;
-      });
-    });
-  };
-
-  const handleDelete = () => {
-    try {
-      database.write(async () => {
-        await routineSet.markAsDeleted();
-      });
-    } catch (error) {
-      console.error("Failed to delete exercise:", error);
-    }
-  };
+  const { updateSetReps, updateSetWeight, removeSetAtIndex } =
+    useRoutineActions();
 
   const translateX = useSharedValue(0);
 
@@ -62,7 +44,7 @@ const RoutineSetListItem = ({
     })
     .onEnd(() => {
       if (translateX.value < -50) {
-        runOnJS(handleDelete)();
+        runOnJS(removeSetAtIndex)(exerciseIndex, index);
       }
       translateX.value = withTiming(0);
     });
@@ -85,7 +67,7 @@ const RoutineSetListItem = ({
             },
           ]}
         >
-          {index}
+          {index + 1}
         </Text>
         <Text style={{ color: theme.colors.text }}>-</Text>
         <View style={styles.rightContainer}>
@@ -101,7 +83,7 @@ const RoutineSetListItem = ({
             value={weight}
             onChangeText={(text) => {
               setWeight(text);
-              handleUpdate("weight", text);
+              updateSetWeight(exerciseIndex, index, text);
             }}
             keyboardType="numeric"
             placeholder="0"
@@ -118,7 +100,7 @@ const RoutineSetListItem = ({
             value={reps}
             onChangeText={(text) => {
               setReps(text);
-              handleUpdate("reps", text);
+              updateSetReps(exerciseIndex, index, text);
             }}
             keyboardType="numeric"
             placeholder="0"

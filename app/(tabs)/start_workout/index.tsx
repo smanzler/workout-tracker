@@ -21,12 +21,10 @@ import { withObservables } from "@nozbe/watermelondb/react";
 import { Routine } from "@/models/Routine";
 import RoutineItem from "@/components/RoutineItem";
 import { Q } from "@nozbe/watermelondb";
-import { useRoutine } from "@/providers/RoutineProvider";
 
 function StartWorkoutScreen({ routines }: { routines: Routine[] }) {
   const { activeWorkoutId, startWorkout } = useWorkout();
   const { colors } = useTheme();
-  const { createRoutine } = useRoutine();
 
   const handleDelete = async () => {
     if (!activeWorkoutId) return;
@@ -96,11 +94,6 @@ function StartWorkoutScreen({ routines }: { routines: Routine[] }) {
     }
   };
 
-  const handleNewRoutine = async () => {
-    await createRoutine();
-    router.push("/(modals)/add_routine");
-  };
-
   return (
     <BodyScrollView style={{ paddingHorizontal: 20 }}>
       <Button onPress={start} size="md">
@@ -110,7 +103,7 @@ function StartWorkoutScreen({ routines }: { routines: Routine[] }) {
       <View style={styles.headerContainer}>
         <ThemedText type="title">Routines</ThemedText>
 
-        <TouchableOpacity onPress={handleNewRoutine}>
+        <TouchableOpacity onPress={() => router.push("/(modals)/add_routine")}>
           <Ionicons name="add" color={colors.primary} size={28} />
         </TouchableOpacity>
       </View>
@@ -136,7 +129,7 @@ function StartWorkoutScreen({ routines }: { routines: Routine[] }) {
 }
 
 const enhance = withObservables([], () => ({
-  routines: routinesCollection.query(Q.where("name", Q.notEq(null))),
+  routines: routinesCollection.query(Q.sortBy("created_at", "desc")),
 }));
 
 export default enhance(StartWorkoutScreen);

@@ -1,44 +1,75 @@
 import {
   StyleSheet,
-  Text,
   View,
   Button as RNButton,
-  TouchableOpacity,
   Alert,
   TextInput,
 } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { BodyScrollView } from "@/components/BodyScrollViiew";
-import { ThemedText } from "@/components/ThemedText";
 import RoutineExerciseList from "@/components/RoutineExerciseList";
-import { router, Stack, useLocalSearchParams } from "expo-router";
-import { Routine } from "@/models/Routine";
-import database, { routinesCollection } from "@/db";
+import { router, Stack } from "expo-router";
+import database, {
+  routineExercisesCollection,
+  routinesCollection,
+  routineSetsCollection,
+} from "@/db";
 import Button from "@/components/Button";
-import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "@react-navigation/native";
-import { useRoutine } from "@/providers/RoutineProvider";
+import { useAuth } from "@/providers/AuthProvider";
+import { useRoutineActions, useRoutineExercises } from "@/stores/routineStore";
 
 const AddRoutine = () => {
-  const [routine, setRoutine] = useState<Routine | null>(null);
   const { colors } = useTheme();
+  const { user } = useAuth();
   const [routineName, setRoutineName] = useState<string>("");
-  const { activeRoutineId, deleteRoutine, saveRoutine } = useRoutine();
-
-  useEffect(() => {
-    const load = async () => {
-      if (activeRoutineId) {
-        console.log("activeRoutineId:", activeRoutineId);
-        const r = await routinesCollection.find(activeRoutineId);
-        setRoutine(r);
-      }
-    };
-
-    load();
-  }, [activeRoutineId]);
+  const exercises = useRoutineExercises();
+  const { clearRoutine } = useRoutineActions();
 
   const handleSave = async () => {
-    await saveRoutine(routineName);
+    if (exercises.length === 0) {
+      Alert.alert("Add Exercises", "Add exercises to the routine to save it");
+      return;
+    }
+
+    try {
+      await database.write(async () => {
+        const routine = await routinesCollection.create((r) => {
+          r.name = routineName || "New Routine";
+          if (user) r.userId = user.id;
+        });
+
+        const batchOps = exercises.flatMap((exercise) => {
+          const routineExercise = routineExercisesCollection.prepareCreate(
+            (routineExercise) => {
+              // @ts-ignore
+              routineExercise.exercise.set(exercise.exercise);
+              // @ts-ignore
+              routineExercise.routine.set(routine);
+              if (user) routineExercise.userId = user.id;
+            }
+          );
+
+          const sets = exercise.sets.map((s) =>
+            routineSetsCollection.prepareCreate((set) => {
+              // @ts-ignore
+              set.routineExercise.set(routineExercise);
+              set.reps = s.reps ? parseInt(s.reps) : undefined;
+              set.weight = s.weight ? parseInt(s.weight) : undefined;
+              if (user) set.userId = user.id;
+            })
+          );
+
+          return [routineExercise, ...sets];
+        });
+
+        await database.batch(...batchOps);
+      });
+    } catch (error) {
+      console.log("Error creating routine", error);
+    }
+
+    router.back();
   };
 
   const handleBack = () => {
@@ -53,7 +84,7 @@ const AddRoutine = () => {
         {
           text: "Discard",
           onPress: async () => {
-            await deleteRoutine();
+            clearRoutine();
             router.back();
           },
           style: "destructive",
@@ -85,16 +116,11 @@ const AddRoutine = () => {
           .replace(")", ", 0.4)")}
       />
 
-      {routine && <RoutineExerciseList routine={routine} />}
+      <RoutineExerciseList exercises={exercises} />
 
       <Button
         variant="outline"
-        onPress={() => {
-          router.push({
-            pathname: "/(modals)/add_routine_exercises",
-            params: { activeRoutineId },
-          });
-        }}
+        onPress={() => router.push("/(modals)/add_routine_exercises")}
       >
         Add Exercises
       </Button>

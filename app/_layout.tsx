@@ -18,7 +18,6 @@ import { pullDefaultExercises } from "@/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { exercisesCollection, setsCollection } from "@/db";
 import { Q } from "@nozbe/watermelondb";
-import { RoutineProvider } from "@/providers/RoutineProvider";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
@@ -73,21 +72,19 @@ export default function RootLayout() {
     <GestureHandlerRootView>
       <AuthProvider>
         <WorkoutProvider>
-          <RoutineProvider>
-            <QueryClientProvider client={queryClient}>
-              <ThemeProvider
-                value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
-              >
-                <SyncProvider>
-                  <View style={{ flex: 1 }}>
-                    <RootLayoutNav />
+          <QueryClientProvider client={queryClient}>
+            <ThemeProvider
+              value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
+            >
+              <SyncProvider>
+                <View style={{ flex: 1 }}>
+                  <RootLayoutNav />
 
-                    <StatusBar style="auto" />
-                  </View>
-                </SyncProvider>
-              </ThemeProvider>
-            </QueryClientProvider>
-          </RoutineProvider>
+                  <StatusBar style="auto" />
+                </View>
+              </SyncProvider>
+            </ThemeProvider>
+          </QueryClientProvider>
         </WorkoutProvider>
       </AuthProvider>
     </GestureHandlerRootView>

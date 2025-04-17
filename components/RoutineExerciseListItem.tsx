@@ -20,49 +20,21 @@ import {
 import database, { routineSetsCollection, setsCollection } from "@/db";
 import { useTheme } from "@react-navigation/native";
 import { useAuth } from "@/providers/AuthProvider";
-import { RoutineExercise } from "@/models/RoutineExercise";
 import RoutineSetListItem from "./RoutineSetListItem";
 import { RoutineSet } from "@/models/RoutineSets";
 import ButtonWithIcon from "./ButtonWithIcon";
+import { RoutineExercise, useRoutineActions } from "@/stores/routineStore";
 
 const RoutineExerciseListItem = ({
-  routineExercise,
   exercise,
-  routineSets,
+  index,
 }: {
-  routineExercise: RoutineExercise;
-  exercise: Exercise;
-  routineSets: RoutineSet[];
+  exercise: RoutineExercise;
+  index: number;
 }) => {
   const theme = useTheme();
   const { user } = useAuth();
-
-  const handleDelete = () => {
-    database.write(async () => {
-      for (const set of routineSets) {
-        await set.markAsDeleted();
-      }
-
-      await routineExercise.markAsDeleted();
-    });
-  };
-
-  const handleAddSet = async () => {
-    Keyboard.dismiss();
-
-    await database.write(async () => {
-      const previousSet =
-        routineSets.length > 0 ? routineSets[routineSets.length - 1] : null;
-
-      await routineSetsCollection.create((set) => {
-        // @ts-ignore
-        set.routineExercise.set(routineExercise);
-        set.weight = previousSet ? previousSet.weight : undefined;
-        set.reps = previousSet ? previousSet.reps : undefined;
-        user && (set.userId = user.id);
-      });
-    });
-  };
+  const { removeExercise, addSetToExercise } = useRoutineActions();
 
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.card }]}>
@@ -72,7 +44,7 @@ const RoutineExerciseListItem = ({
           numberOfLines={1}
           ellipsizeMode="tail"
         >
-          {exercise.title}
+          {exercise.exercise.title}
         </Text>
         <DropdownMenuRoot>
           <DropdownMenuTrigger>
@@ -85,7 +57,11 @@ const RoutineExerciseListItem = ({
             </ButtonWithIcon>
           </DropdownMenuTrigger>
           <DropdownMenuContent>
-            <DropdownMenuItem destructive key="delete" onSelect={handleDelete}>
+            <DropdownMenuItem
+              destructive
+              key="delete"
+              onSelect={() => removeExercise(index)}
+            >
               <DropdownMenuItemTitle>Delete Exercise</DropdownMenuItemTitle>
               <DropdownMenuItemIcon ios={{ name: "trash" }} />
             </DropdownMenuItem>
@@ -135,13 +111,23 @@ const RoutineExerciseListItem = ({
           </View>
         </View>
       </View>
-      {routineSets.map((set, index) => (
-        <RoutineSetListItem key={set.id} routineSet={set} index={index + 1} />
+      {exercise.sets.map((set, i) => (
+        <RoutineSetListItem
+          key={`${index}:${i}`}
+          exerciseIndex={index}
+          set={set}
+          index={i}
+        />
       ))}
 
       <TouchableOpacity
         style={[styles.addBtn, { backgroundColor: theme.colors.background }]}
-        onPress={handleAddSet}
+        onPress={() =>
+          addSetToExercise(index, {
+            reps: undefined,
+            weight: undefined,
+          })
+        }
       >
         <Text style={[styles.addBtnText, { color: theme.colors.text }]}>
           Add Set
@@ -151,13 +137,7 @@ const RoutineExerciseListItem = ({
   );
 };
 
-const enhance = withObservables(["routineExercise"], ({ routineExercise }) => ({
-  routineExercise,
-  exercise: routineExercise.exercise,
-  routineSets: routineExercise.routineSets,
-}));
-
-export default enhance(RoutineExerciseListItem);
+export default RoutineExerciseListItem;
 
 const styles = StyleSheet.create({
   container: {

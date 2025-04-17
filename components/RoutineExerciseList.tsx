@@ -4,22 +4,23 @@ import { withObservables } from "@nozbe/watermelondb/react";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "@react-navigation/native";
 import { ThemedText } from "./ThemedText";
-import { RoutineExercise } from "@/models/RoutineExercise";
 import RoutineExerciseListItem from "./RoutineExerciseListItem";
+import { RoutineExercise } from "@/stores/routineStore";
 
 const RoutineExerciseList = ({
-  routineExercises,
+  exercises,
 }: {
-  routineExercises: RoutineExercise[];
+  exercises: RoutineExercise[];
 }) => {
   const theme = useTheme();
   return (
     <>
-      {routineExercises?.length ? (
-        routineExercises.map((routineExercise) => (
+      {exercises?.length ? (
+        exercises.map((exercise, index) => (
           <RoutineExerciseListItem
-            key={routineExercise.id}
-            routineExercise={routineExercise}
+            key={index}
+            exercise={exercise}
+            index={index}
           />
         ))
       ) : (
@@ -35,10 +36,6 @@ const RoutineExerciseList = ({
   );
 };
 
-const enhance = withObservables(["routine"], ({ routine }) => ({
-  routineExercises: routine.routineExercises,
-}));
-
-export default enhance(RoutineExerciseList);
+export default RoutineExerciseList;
 
 const styles = StyleSheet.create({});
