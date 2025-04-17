@@ -65,6 +65,8 @@ const AddRoutine = () => {
 
         await database.batch(...batchOps);
       });
+
+      clearRoutine();
     } catch (error) {
       console.log("Error creating routine", error);
     }
