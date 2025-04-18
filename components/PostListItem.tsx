@@ -6,6 +6,7 @@ import dayjs from "dayjs";
 import { useTheme } from "@react-navigation/native";
 import { FontAwesome } from "@expo/vector-icons";
 import { Image } from "expo-image";
+import { getProfileImageUrl } from "@/api/profile";
 
 type Post = {
   id: string;
@@ -38,7 +39,12 @@ const PostListItem = ({ post }: { post: Post }) => {
           }}
         >
           <Image
-            style={{ backgroundColor: "pink", width: "100%", height: "100%" }}
+            style={{
+              backgroundColor: colors.card,
+              width: "100%",
+              height: "100%",
+            }}
+            source={{ uri: getProfileImageUrl(post.user.user_id, Date.now()) }}
           />
         </View>
         <View>
