@@ -28,6 +28,14 @@ import {
   uploadImageAsync,
   getProfileImageUrl,
 } from "@/api/profile";
+import {
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuItemIcon,
+  DropdownMenuItemTitle,
+  DropdownMenuRoot,
+  DropdownMenuTrigger,
+} from "@/zeego/drop-down";
 
 export default function ProfileScreen() {
   const { user } = useAuth();
@@ -87,13 +95,34 @@ export default function ProfileScreen() {
         options={{
           headerTitle: profile?.username,
           headerRight: () => (
-            <TouchableOpacity>
-              <Ionicons
-                name="ellipsis-horizontal-sharp"
-                size={24}
-                color={colors.primary}
-              />
-            </TouchableOpacity>
+            <DropdownMenuRoot>
+              <DropdownMenuTrigger>
+                <TouchableOpacity>
+                  <Ionicons
+                    name="ellipsis-horizontal-sharp"
+                    size={24}
+                    color={colors.primary}
+                  />
+                </TouchableOpacity>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuItem
+                  key="sync"
+                  onClick={() => mySync(user, updateLastSync, () => {})}
+                >
+                  <DropdownMenuItemTitle>Sync</DropdownMenuItemTitle>
+                  <DropdownMenuItemIcon ios={{ name: "arrow.2.circlepath" }} />
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  destructive
+                  key="logout"
+                  onClick={() => supabase.auth.signOut()}
+                >
+                  <DropdownMenuItemTitle>Logout</DropdownMenuItemTitle>
+                  <DropdownMenuItemIcon ios={{ name: "arrow.left.square" }} />
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenuRoot>
           ),
         }}
       />
@@ -128,19 +157,6 @@ export default function ProfileScreen() {
       <ThemedText type="defaultSemiBold" style={styles.user}>
         Logged in as {user.email}
       </ThemedText>
-      <Button
-        style={{ marginBottom: 10 }}
-        onPress={() => mySync(user, updateLastSync, () => {})}
-      >
-        Sync
-      </Button>
-      <Button
-        style={{}}
-        onPress={() => supabase.auth.signOut()}
-        variant="outline"
-      >
-        Log Out
-      </Button>
     </BodyScrollView>
   );
 }
