@@ -1,5 +1,5 @@
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import React from "react";
+import React, { useState } from "react";
 import { ThemedText } from "./ThemedText";
 import { formatDuration } from "@/utils/format";
 import dayjs from "dayjs";
@@ -7,6 +7,7 @@ import { useTheme } from "@react-navigation/native";
 import { FontAwesome } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { getProfileImageUrl } from "@/api/profile";
+import { supabase } from "@/lib/supabase";
 
 type Post = {
   id: string;
@@ -15,6 +16,7 @@ type Post = {
   image_url: null;
   created_at: Date;
   like_count: number;
+  liked_by_user: boolean;
   routine_or_workout: {
     exercises: { set_count: number; exercise_title: string }[];
     start_time: Date;
@@ -25,6 +27,27 @@ type Post = {
 
 const PostListItem = ({ post }: { post: Post }) => {
   const { colors } = useTheme();
+  const [liked, setLiked] = useState(post.liked_by_user);
+  const [likeCount, setLikeCount] = useState(post.like_count);
+
+  const toggleLike = async () => {
+    const newLikedState = !liked;
+    setLiked(newLikedState);
+    setLikeCount((prev) => prev + (newLikedState ? 1 : -1));
+
+    const { error } = await supabase.rpc(
+      newLikedState ? "like_post" : "unlike_post",
+      {
+        _post_id: post.id,
+      }
+    );
+
+    if (error) {
+      setLiked(!newLikedState);
+      setLikeCount((prev) => prev - (newLikedState ? 1 : -1));
+      console.error("Failed to toggle like:", error.message);
+    }
+  };
 
   return (
     <View style={{ marginBottom: 20 }}>
@@ -100,9 +123,17 @@ const PostListItem = ({ post }: { post: Post }) => {
       </View>
 
       <View style={{ flexDirection: "row", marginBottom: 10 }}>
-        <TouchableOpacity>
-          <FontAwesome name="heart-o" color={colors.text} size={24} />
-        </TouchableOpacity>
+        <View style={{ flexDirection: "row", gap: 10 }}>
+          <TouchableOpacity onPress={toggleLike}>
+            <FontAwesome
+              name={liked ? "heart" : "heart-o"}
+              color={colors.text}
+              size={24}
+            />
+          </TouchableOpacity>
+
+          <ThemedText type="defaultSemiBold">{likeCount}</ThemedText>
+        </View>
       </View>
 
       <View>
