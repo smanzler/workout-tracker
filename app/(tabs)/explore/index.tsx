@@ -14,9 +14,12 @@ import { BodyScrollView } from "@/components/BodyScrollViiew";
 import { useExplorePosts } from "@/api/posts";
 import { FlatList } from "react-native-gesture-handler";
 import PostListItem from "@/components/PostListItem";
+import { useAuth } from "@/providers/AuthProvider";
+import { ThemedText } from "@/components/ThemedText";
 
 const ExplorePage = () => {
   const { colors } = useTheme();
+  const { user } = useAuth();
 
   const {
     data,
@@ -30,6 +33,15 @@ const ExplorePage = () => {
   } = useExplorePosts();
 
   const posts = data?.pages.flat() ?? [];
+
+  if (!user) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <Stack.Screen options={{ headerRight: () => null }} />
+        <ThemedText>You need to login to see this page</ThemedText>
+      </View>
+    );
+  }
 
   return (
     <>
