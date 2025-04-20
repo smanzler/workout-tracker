@@ -35,7 +35,9 @@ export default function LoginScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <Stack.Screen options={{ headerTitle: "Login" }} />
+      <Stack.Screen
+        options={{ headerTitle: "Login", headerRight: () => null }}
+      />
       <View style={{ flex: 1, padding: 20 }}>
         <View>
           <TextInput
