@@ -108,7 +108,7 @@ export default function ProfileScreen() {
               <DropdownMenuContent>
                 <DropdownMenuItem
                   key="sync"
-                  onClick={() => mySync(user, updateLastSync, () => {})}
+                  onSelect={() => mySync(user, updateLastSync, () => {})}
                 >
                   <DropdownMenuItemTitle>Sync</DropdownMenuItemTitle>
                   <DropdownMenuItemIcon ios={{ name: "arrow.2.circlepath" }} />
@@ -116,7 +116,7 @@ export default function ProfileScreen() {
                 <DropdownMenuItem
                   destructive
                   key="logout"
-                  onClick={() => supabase.auth.signOut()}
+                  onSelect={() => supabase.auth.signOut()}
                 >
                   <DropdownMenuItemTitle>Logout</DropdownMenuItemTitle>
                   <DropdownMenuItemIcon ios={{ name: "arrow.left.square" }} />
