@@ -14,7 +14,7 @@ import { mySync } from "@/db/sync";
 import { useSync } from "@/providers/SyncProvider";
 import database from "@/db";
 import Button from "@/components/Button";
-import { Stack } from "expo-router";
+import { router, Stack } from "expo-router";
 import LoginScreen from "@/app/(auth)/login";
 import { supabase } from "@/lib/supabase";
 import { BodyScrollView } from "@/components/BodyScrollViiew";
@@ -95,34 +95,44 @@ export default function ProfileScreen() {
         options={{
           headerTitle: profile?.username,
           headerRight: () => (
-            <DropdownMenuRoot>
-              <DropdownMenuTrigger>
-                <TouchableOpacity>
-                  <Ionicons
-                    name="ellipsis-horizontal-sharp"
-                    size={24}
-                    color={colors.primary}
-                  />
-                </TouchableOpacity>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuItem
-                  key="sync"
-                  onSelect={() => mySync(user, updateLastSync, () => {})}
-                >
-                  <DropdownMenuItemTitle>Sync</DropdownMenuItemTitle>
-                  <DropdownMenuItemIcon ios={{ name: "arrow.2.circlepath" }} />
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  destructive
-                  key="logout"
-                  onSelect={() => supabase.auth.signOut()}
-                >
-                  <DropdownMenuItemTitle>Logout</DropdownMenuItemTitle>
-                  <DropdownMenuItemIcon ios={{ name: "arrow.left.square" }} />
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenuRoot>
+            <View style={{ flexDirection: "row", gap: 12 }}>
+              <TouchableOpacity
+                onPress={() => router.push("/(modals)/friends")}
+              >
+                <Ionicons name="people" size={24} color={colors.primary} />
+              </TouchableOpacity>
+
+              <DropdownMenuRoot>
+                <DropdownMenuTrigger>
+                  <TouchableOpacity>
+                    <Ionicons
+                      name="ellipsis-horizontal-sharp"
+                      size={24}
+                      color={colors.primary}
+                    />
+                  </TouchableOpacity>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuItem
+                    key="sync"
+                    onSelect={() => mySync(user, updateLastSync, () => {})}
+                  >
+                    <DropdownMenuItemTitle>Sync</DropdownMenuItemTitle>
+                    <DropdownMenuItemIcon
+                      ios={{ name: "arrow.2.circlepath" }}
+                    />
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    destructive
+                    key="logout"
+                    onSelect={() => supabase.auth.signOut()}
+                  >
+                    <DropdownMenuItemTitle>Logout</DropdownMenuItemTitle>
+                    <DropdownMenuItemIcon ios={{ name: "arrow.left.square" }} />
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenuRoot>
+            </View>
           ),
         }}
       />
