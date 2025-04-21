@@ -21,6 +21,7 @@ import Button from "@/components/Button";
 import { postPost } from "@/api/posts";
 import { useAuth } from "@/providers/AuthProvider";
 import { useWorkout } from "@/providers/WorkoutProvider";
+import { useQueryClient } from "@tanstack/react-query";
 
 const CreatePost = () => {
   const { colors } = useTheme();
@@ -30,6 +31,8 @@ const CreatePost = () => {
   const workout = usePostWorkout();
   const { setWorkout } = usePostActions();
   const { user } = useAuth();
+
+  const queryClient = useQueryClient();
 
   const handlePickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -52,7 +55,8 @@ const CreatePost = () => {
       user || undefined,
       workout || undefined,
       undefined,
-      image || undefined
+      image || undefined,
+      queryClient
     );
 
     setWorkout(null);

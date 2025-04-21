@@ -4,7 +4,7 @@ import { Routine } from "@/models/Routine";
 import { Workout } from "@/models/Workout";
 import { useSync } from "@/providers/SyncProvider";
 import { User } from "@supabase/supabase-js";
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { QueryClient, useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { decode } from "base64-arraybuffer";
 import * as FileSystem from "expo-file-system";
 
@@ -37,7 +37,8 @@ export const postPost = async (
   user?: User,
   workout?: Workout,
   routine?: Routine,
-  image?: string
+  image?: string,
+  queryClient?: QueryClient
 ) => {
   if (!user) return;
 
@@ -74,6 +75,10 @@ export const postPost = async (
     });
 
     if (insertError) throw insertError;
+
+    if (queryClient) {
+      await queryClient.invalidateQueries({ queryKey: ["explore-posts"] });
+    }
   } catch (error) {
     console.log(error);
   }
