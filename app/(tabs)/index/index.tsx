@@ -44,6 +44,8 @@ export default function ProfileScreen() {
   const [imageVersion, setImageVersion] = useState(Date.now());
   const { data: profile, refetch } = useProfile(user?.id);
 
+  console.log(profile);
+
   if (!user) return <LoginScreen />;
 
   const pickImage = async () => {
@@ -93,7 +95,7 @@ export default function ProfileScreen() {
     <BodyScrollView style={{ paddingHorizontal: 20 }}>
       <Stack.Screen
         options={{
-          headerTitle: profile?.username,
+          headerTitle: profile?.profile.username,
           headerRight: () => (
             <View style={{ flexDirection: "row", gap: 12 }}>
               <TouchableOpacity

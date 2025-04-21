@@ -3,6 +3,35 @@ import { useQuery } from "@tanstack/react-query";
 import { decode } from "base64-arraybuffer";
 import * as FileSystem from "expo-file-system";
 
+export interface ProfileDetails {
+  posts: Post[];
+  profile: Profile;
+}
+
+interface Profile {
+  bio: string;
+  follow_requested: boolean;
+  follower_count: number;
+  id: string;
+  is_following: boolean;
+  is_public: boolean;
+  username: string;
+}
+
+interface Post {
+  caption: string;
+  created_at: string;
+  deleted_at: string;
+  id: string;
+  image_url: string;
+  is_public: boolean;
+  like_count: number;
+  routine_id: string;
+  update_at: string;
+  user_id: string;
+  workout_id: string;
+}
+
 export const uploadImageAsync = async (
   uri: string,
   userId: string,
@@ -35,18 +64,16 @@ export const uploadImageAsync = async (
 };
 
 export const useProfile = (userId: string | undefined) => {
-  return useQuery({
+  return useQuery<ProfileDetails>({
     queryKey: ["profile", userId],
     queryFn: async () => {
       if (!userId) {
         throw new Error("User ID is required");
       }
 
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("id, username, bio")
-        .eq("id", userId)
-        .single();
+      const { data, error } = await supabase.rpc("get_profile_details", {
+        target_user_id: userId,
+      });
 
       if (error) {
         console.error("Failed to fetch profile:", error.message);
