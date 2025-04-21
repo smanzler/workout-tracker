@@ -1,10 +1,11 @@
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import React from "react";
 import { WorkoutExercise } from "@/models/WorkoutExercise";
 import { Exercise } from "@/models/Exercise";
 import { withObservables } from "@nozbe/watermelondb/react";
 import { useTheme } from "@react-navigation/native";
 import { Set } from "@/models/Set";
+import { ThemedText } from "./ThemedText";
 
 const WorkoutExerciseTitle = ({
   workoutExercise,
@@ -28,33 +29,27 @@ const WorkoutExerciseTitle = ({
 
   return (
     <View style={styles.container}>
-      <Text
+      <ThemedText
         style={{
-          color: theme.colors.text,
-          fontWeight: "600",
           width: "50%",
           paddingRight: 10,
           opacity: 0.6,
-          fontSize: 16,
         }}
         numberOfLines={1}
         ellipsizeMode="tail"
       >
         {sets?.length} × {exercise.title}
-      </Text>
+      </ThemedText>
       {bestSet ? (
-        <Text
+        <ThemedText
           style={{
-            color: theme.colors.text,
-            fontWeight: "600",
             opacity: 0.6,
-            fontSize: 16,
           }}
         >
           {bestSet.weight} lbs × {bestSet.reps}
-        </Text>
+        </ThemedText>
       ) : (
-        <Text style={{ color: theme.colors.text }}>No sets recorded yet</Text>
+        <ThemedText>No sets recorded yet</ThemedText>
       )}
     </View>
   );

@@ -96,7 +96,12 @@ const RoutineItem = ({
       style={[styles.container, { backgroundColor: colors.card }]}
     >
       <View style={styles.rowHeader}>
-        <ThemedText style={{ fontSize: 20, fontWeight: 600 }}>
+        <ThemedText
+          type="subtitle"
+          numberOfLines={1}
+          ellipsizeMode="tail"
+          style={{ flexShrink: 1 }}
+        >
           {routine.name}
         </ThemedText>
 
@@ -119,9 +124,7 @@ const RoutineItem = ({
         </DropdownMenuRoot>
       </View>
 
-      <ThemedText style={{ fontSize: 18, fontWeight: 600, opacity: 0.6 }}>
-        {exerciseNames}
-      </ThemedText>
+      <ThemedText style={{ opacity: 0.6 }}>{exerciseNames}</ThemedText>
     </Pressable>
   );
 };

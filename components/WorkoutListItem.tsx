@@ -1,4 +1,4 @@
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import dayjs from "dayjs";
 import React, { useEffect, useState } from "react";
 import { Workout } from "@/models/Workout";
@@ -26,6 +26,7 @@ import { Q } from "@nozbe/watermelondb";
 import Button from "./Button";
 import { checkPRs } from "@/utils/PRs";
 import ButtonWithIcon from "./ButtonWithIcon";
+import { ThemedText } from "./ThemedText";
 
 const WorkoutListItem = ({
   workout,
@@ -93,9 +94,7 @@ const WorkoutListItem = ({
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.card }]}>
       <View style={styles.headerContainer}>
-        <Text style={[styles.header, { color: theme.colors.text }]}>
-          Workout
-        </Text>
+        <ThemedText style={styles.header}>{workout.name}</ThemedText>
         <DropdownMenuRoot>
           <DropdownMenuTrigger>
             <ButtonWithIcon>
@@ -115,9 +114,9 @@ const WorkoutListItem = ({
         </DropdownMenuRoot>
       </View>
 
-      <Text style={[styles.dateText, { color: theme.colors.text }]}>
+      <ThemedText style={styles.dateText}>
         {dayjs(workout.startTime).format("dddd, MMM D")}
-      </Text>
+      </ThemedText>
 
       <View
         style={{
@@ -133,9 +132,9 @@ const WorkoutListItem = ({
             color={theme.colors.text}
             size={18}
           />
-          <Text style={[styles.itemText, { color: theme.colors.text }]}>
+          <ThemedText style={styles.itemText}>
             {formatWorkoutDuration()}
-          </Text>
+          </ThemedText>
         </View>
         <View style={[styles.item]}>
           <MaterialCommunityIcons
@@ -143,9 +142,7 @@ const WorkoutListItem = ({
             color={theme.colors.text}
             size={18}
           />
-          <Text style={[styles.itemText, { color: theme.colors.text }]}>
-            {totalVolume} lb
-          </Text>
+          <ThemedText style={styles.itemText}>{totalVolume} lb</ThemedText>
         </View>
         <View style={[styles.item]}>
           <MaterialCommunityIcons
@@ -153,26 +150,17 @@ const WorkoutListItem = ({
             color={theme.colors.text}
             size={18}
           />
-          <Text style={[styles.itemText, { color: theme.colors.text }]}>
-            {totalPRCount} PRs
-          </Text>
+          <ThemedText style={styles.itemText}>{totalPRCount} PRs</ThemedText>
         </View>
       </View>
 
       {workoutExercises.length !== 0 && (
         <>
           <View style={{ flexDirection: "row" }}>
-            <Text
-              style={[
-                styles.header2,
-                { color: theme.colors.text, width: "50%" },
-              ]}
-            >
+            <ThemedText type="subtitle" style={{ width: "50%" }}>
               Exercise
-            </Text>
-            <Text style={[styles.header2, { color: theme.colors.text }]}>
-              Best Set
-            </Text>
+            </ThemedText>
+            <ThemedText type="subtitle">Best Set</ThemedText>
           </View>
           {workoutExercises.map((workoutExercise) => (
             <WorkoutExerciseTitle
@@ -260,11 +248,5 @@ const styles = StyleSheet.create({
   },
   itemText: {
     fontSize: 16,
-    fontWeight: "500",
-  },
-  header2: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 3,
   },
 });

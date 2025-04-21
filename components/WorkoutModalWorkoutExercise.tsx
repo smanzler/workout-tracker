@@ -45,18 +45,16 @@ const WorkoutModalWorkoutExercise = ({
   return (
     <>
       <View style={styles.row}>
-        <ThemedText style={{ fontWeight: "bold", fontSize: 18 }}>
+        <ThemedText type="defaultSemiBold">
           {exercise && exercise.title}
         </ThemedText>
 
-        <ThemedText style={{ fontWeight: "bold", fontSize: 18 }}>
-          1RM
-        </ThemedText>
+        <ThemedText type="defaultSemiBold">1RM</ThemedText>
       </View>
       {sets?.map((s, index) => (
         <View key={index} style={styles.row}>
           <View key={index} style={{ flexDirection: "row", gap: 5 }}>
-            <ThemedText style={{ fontWeight: 500, opacity: 0.6 }}>
+            <ThemedText style={{ opacity: 0.6 }}>
               {index + 1}
               {"   "}
               {s.weight} lb × {s.reps}
@@ -102,7 +100,7 @@ const WorkoutModalWorkoutExercise = ({
             </View>
           </View>
 
-          <ThemedText style={{ fontWeight: "bold", opacity: 0.6 }}>
+          <ThemedText style={{ opacity: 0.6 }}>
             {Math.floor((s.weight ?? 0) * (1 + (s.reps ?? 0) / 30))}
           </ThemedText>
         </View>

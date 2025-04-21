@@ -95,7 +95,10 @@ const RoutineModal = () => {
         >
           <View style={styles.headerContainer}>
             <ThemedText
-              style={{ fontSize: 24, fontWeight: "bold", marginBottom: 10 }}
+              type="title"
+              style={{ marginBottom: 10, flexShrink: 1 }}
+              numberOfLines={1}
+              ellipsizeMode="tail"
             >
               {routine.name}
             </ThemedText>

@@ -105,9 +105,7 @@ const WorkoutModal = () => {
           style={[styles.card, { backgroundColor: colors.card }, animatedStyle]}
         >
           <View style={styles.headerContainer}>
-            <ThemedText style={{ fontSize: 24, fontWeight: "bold" }}>
-              Workout
-            </ThemedText>
+            <ThemedText type="title">{workout.name}</ThemedText>
 
             <Button
               style={{
