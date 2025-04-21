@@ -69,7 +69,12 @@ const Profile = () => {
       </ThemedText>
 
       <View
-        style={{ flex: 1, borderTopColor: colors.border, borderTopWidth: 1 }}
+        style={{
+          flex: 1,
+          borderTopColor: colors.border,
+          borderTopWidth: 1,
+          paddingTop: 10,
+        }}
       >
         {profile?.posts.length === 0 ? (
           <View>
