@@ -8,6 +8,7 @@ import { FontAwesome } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { getProfileImageUrl } from "@/api/profile";
 import { supabase } from "@/lib/supabase";
+import { router } from "expo-router";
 
 type Post = {
   id: string;
@@ -51,13 +52,25 @@ const PostListItem = ({ post }: { post: Post }) => {
 
   return (
     <View style={{ marginBottom: 20 }}>
-      <View style={{ flexDirection: "row", gap: 10 }}>
+      <TouchableOpacity
+        onPress={() => {
+          router.push({
+            pathname: "/(modals)/profile",
+            params: { userId: post.user.user_id },
+          });
+        }}
+        style={{
+          flexDirection: "row",
+          gap: 10,
+          alignItems: "center",
+          marginBottom: 10,
+        }}
+      >
         <View
           style={{
             width: 50,
             aspectRatio: 1,
             borderRadius: 25,
-            marginBottom: 10,
             overflow: "hidden",
           }}
         >
@@ -70,13 +83,8 @@ const PostListItem = ({ post }: { post: Post }) => {
             source={{ uri: getProfileImageUrl(post.user.user_id, Date.now()) }}
           />
         </View>
-        <View>
-          <ThemedText type="defaultSemiBold">{post.user.username}</ThemedText>
-          <ThemedText>
-            {formatDuration(dayjs(post.created_at).unix(), dayjs().unix())}
-          </ThemedText>
-        </View>
-      </View>
+        <ThemedText type="defaultSemiBold">{post.user.username}</ThemedText>
+      </TouchableOpacity>
 
       <View
         style={{

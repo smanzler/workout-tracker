@@ -194,6 +194,21 @@ function RootLayoutNav() {
         }}
       />
       <Stack.Screen
+        name="(modals)/profile"
+        options={{
+          headerTitle: "Profile",
+          headerBackVisible: false,
+          headerBlurEffect: "systemChromeMaterial",
+          headerTransparent: true,
+          headerLargeTitle: true,
+          headerLargeTitleShadowVisible: false,
+          headerShadowVisible: true,
+          headerLargeStyle: {
+            backgroundColor: "transparent",
+          },
+        }}
+      />
+      <Stack.Screen
         name="(modals)/friends"
         options={{
           headerTitle: "Friends",

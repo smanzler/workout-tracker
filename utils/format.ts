@@ -19,3 +19,9 @@ export function formatDuration(startTime: number, endTime: number): string {
 
   return `${minutes}m`;
 }
+
+export const chunkArray = (arr: Array<any>, size: number) => {
+  return Array.from({ length: Math.ceil(arr.length / size) }, (_, i) =>
+    arr.slice(i * size, i * size + size)
+  );
+};
