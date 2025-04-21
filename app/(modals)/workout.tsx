@@ -22,11 +22,13 @@ import Animated, {
 import { mySync } from "@/db/sync";
 import { useAuth } from "@/providers/AuthProvider";
 import { useSync } from "@/providers/SyncProvider";
+import { TextInput } from "react-native";
 
 const Workout = () => {
   const { seconds, activeWorkoutId, stopWorkout } = useWorkout();
   const [workout, setWorkout] = useState<WorkoutModel | undefined>(undefined);
-  const theme = useTheme();
+  const [workoutName, setWorkoutName] = useState<string>("");
+  const { colors } = useTheme();
   const { user } = useAuth();
   const { updateLastSync } = useSync();
 
@@ -109,7 +111,7 @@ const Workout = () => {
 
     await checkPRs(workout, workoutExercises);
 
-    await stopWorkout();
+    await stopWorkout(workoutName);
 
     await mySync(user, updateLastSync, () => {});
 
@@ -176,6 +178,22 @@ const Workout = () => {
     <View style={styles.container}>
       <ScrollView ref={scrollRef} style={{ paddingHorizontal: 20 }}>
         <View style={{ height: 90 }} />
+
+        <TextInput
+          style={{
+            fontSize: 24,
+            fontWeight: "600",
+            color: colors.text,
+            marginVertical: 20,
+          }}
+          value={workoutName}
+          onChangeText={setWorkoutName}
+          placeholder="Workout Name"
+          placeholderTextColor={colors.text
+            .replace("rgb", "rgba")
+            .replace(")", ", 0.4)")}
+        />
+
         {workout && <WorkoutExerciseList workout={workout} />}
 
         <Button
@@ -208,9 +226,7 @@ const Workout = () => {
           paddingHorizontal: 20,
         }}
       >
-        <Text style={[styles.header, { color: theme.colors.text }]}>
-          Workout
-        </Text>
+        <Text style={[styles.header, { color: colors.text }]}>Workout</Text>
 
         <Text
           style={{
@@ -219,7 +235,7 @@ const Workout = () => {
             left: 0,
             right: 0,
             fontWeight: "bold",
-            color: theme.colors.text,
+            color: colors.text,
           }}
         >
           {formatTime(seconds)}
@@ -232,7 +248,7 @@ const Workout = () => {
         <Animated.View
           style={[
             {
-              backgroundColor: theme.colors.border,
+              backgroundColor: colors.border,
               position: "absolute",
               bottom: 0,
               left: 0,

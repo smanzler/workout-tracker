@@ -12,12 +12,13 @@ import database, { setsCollection, workoutExercisesCollection } from "@/db";
 import { Workout } from "@/models/Workout";
 import { useAuth } from "./AuthProvider";
 import { Routine } from "@/models/Routine";
+import dayjs from "dayjs";
 
 interface WorkoutContextType {
   seconds: number;
   activeWorkoutId: string | undefined;
   startWorkout: (routine?: Routine) => Promise<void>;
-  stopWorkout: () => Promise<void>;
+  stopWorkout: (workoutName?: string) => Promise<void>;
 }
 
 const WorkoutContext = createContext<WorkoutContextType | undefined>(undefined);
@@ -147,7 +148,7 @@ export const WorkoutProvider = ({
     }
   };
 
-  const stopWorkout = async () => {
+  const stopWorkout = async (workoutName?: string) => {
     if (!activeWorkoutId) {
       console.log("No active workout to stop");
       return;
@@ -161,6 +162,7 @@ export const WorkoutProvider = ({
         if (workout) {
           workout.update((w) => {
             w.endTime = Date.now();
+            w.name = workoutName || `${dayjs().format("MMM D")} Workout`;
           });
         }
       });
