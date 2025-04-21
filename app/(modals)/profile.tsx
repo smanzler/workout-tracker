@@ -99,6 +99,12 @@ const Profile = () => {
                       alignItems: "center",
                       overflow: "hidden",
                     }}
+                    onPress={() =>
+                      router.push({
+                        pathname: "/(modals)/post",
+                        params: { postId: p.id },
+                      })
+                    }
                   >
                     {p.preview?.startsWith("http") ? (
                       <Image

@@ -4,7 +4,7 @@ import { Routine } from "@/models/Routine";
 import { Workout } from "@/models/Workout";
 import { useSync } from "@/providers/SyncProvider";
 import { User } from "@supabase/supabase-js";
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { decode } from "base64-arraybuffer";
 import * as FileSystem from "expo-file-system";
 
@@ -77,4 +77,19 @@ export const postPost = async (
   } catch (error) {
     console.log(error);
   }
+};
+
+export const usePost = (postId: string) => {
+  return useQuery({
+    queryKey: ["post", postId],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("get_post_by_id", {
+        _post_id: postId,
+      });
+
+      if (error) throw error;
+
+      return data;
+    },
+  });
 };
