@@ -6,7 +6,7 @@ import {
   TextInput,
 } from "react-native";
 import React, { useState } from "react";
-import { BodyScrollView } from "@/components/BodyScrollViiew";
+import { BodyScrollView } from "@/components/BodyScrollView";
 import RoutineExerciseList from "@/components/RoutineExerciseList";
 import { router, Stack } from "expo-router";
 import database, {

@@ -15,7 +15,7 @@ import { useWorkout } from "@/providers/WorkoutProvider";
 import database, { routinesCollection, workoutsCollection } from "@/db";
 import { useTheme } from "@react-navigation/native";
 import Button from "@/components/Button";
-import { BodyScrollView } from "@/components/BodyScrollViiew";
+import { BodyScrollView } from "@/components/BodyScrollView";
 import { ThemedText } from "@/components/ThemedText";
 import { withObservables } from "@nozbe/watermelondb/react";
 import { Routine } from "@/models/Routine";

@@ -15,7 +15,7 @@ import { useTheme } from "@react-navigation/native";
 import { ThemedText } from "@/components/ThemedText";
 import Divider from "@/components/Divider";
 import { usePostActions, usePostWorkout } from "@/stores/postStore";
-import { BodyScrollView } from "@/components/BodyScrollViiew";
+import { BodyScrollView } from "@/components/BodyScrollView";
 import * as ImagePicker from "expo-image-picker";
 import Button from "@/components/Button";
 import { postPost } from "@/api/posts";

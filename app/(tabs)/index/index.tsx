@@ -17,7 +17,7 @@ import Button from "@/components/Button";
 import { router, Stack } from "expo-router";
 import LoginScreen from "@/app/(auth)/login";
 import { supabase } from "@/lib/supabase";
-import { BodyScrollView } from "@/components/BodyScrollViiew";
+import { BodyScrollView } from "@/components/BodyScrollView";
 import { ThemedText } from "@/components/ThemedText";
 import { Image } from "expo-image";
 import { ActionSheetIOS } from "react-native";

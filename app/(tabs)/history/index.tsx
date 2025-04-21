@@ -1,7 +1,7 @@
 import { SafeAreaView, StyleSheet } from "react-native";
 import React from "react";
 import WorkoutList from "@/components/WorkoutList";
-import { BodyScrollView } from "@/components/BodyScrollViiew";
+import { BodyScrollView } from "@/components/BodyScrollView";
 import { withObservables } from "@nozbe/watermelondb/react";
 import { workoutsCollection } from "@/db";
 import { Workout } from "@/models/Workout";

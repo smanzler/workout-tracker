@@ -5,7 +5,7 @@ import { usePost } from "@/api/posts";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "@react-navigation/native";
 import PostListItem from "@/components/PostListItem";
-import { BodyScrollView } from "@/components/BodyScrollViiew";
+import { BodyScrollView } from "@/components/BodyScrollView";
 
 const Post = () => {
   const { colors } = useTheme();

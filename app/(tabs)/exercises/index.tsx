@@ -21,7 +21,7 @@ import database, { exercisesCollection } from "@/db";
 import { useTheme } from "@react-navigation/native";
 import ExercisesList from "@/components/ExercisesList";
 import { useAuth } from "@/providers/AuthProvider";
-import { BodyScrollView } from "@/components/BodyScrollViiew";
+import { BodyScrollView } from "@/components/BodyScrollView";
 import { router, Stack } from "expo-router";
 import { ThemedText } from "@/components/ThemedText";
 import ExerciseModal from "@/components/ExerciseModal";

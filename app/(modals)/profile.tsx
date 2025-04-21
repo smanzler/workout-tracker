@@ -2,7 +2,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import React, { useEffect } from "react";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import { getProfileImageUrl, useProfile } from "@/api/profile";
-import { BodyScrollView } from "@/components/BodyScrollViiew";
+import { BodyScrollView } from "@/components/BodyScrollView";
 import { Image } from "expo-image";
 import { useTheme } from "@react-navigation/native";
 import { ThemedText } from "@/components/ThemedText";
