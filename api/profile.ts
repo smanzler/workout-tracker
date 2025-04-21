@@ -19,17 +19,8 @@ interface Profile {
 }
 
 interface Post {
-  caption: string;
-  created_at: string;
-  deleted_at: string;
   id: string;
-  image_url: string;
-  is_public: boolean;
-  like_count: number;
-  routine_id: string;
-  update_at: string;
-  user_id: string;
-  workout_id: string;
+  preview: string;
 }
 
 export const uploadImageAsync = async (
