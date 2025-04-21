@@ -42,6 +42,8 @@ export const postPost = async (
   if (!user) return;
 
   try {
+    let publicUrl = null;
+
     if (image) {
       const base64 = await FileSystem.readAsStringAsync(image, {
         encoding: "base64",
@@ -60,18 +62,18 @@ export const postPost = async (
       } = supabase.storage.from("post-images").getPublicUrl(filePath);
 
       console.log(publicUrl);
-
-      const { error: insertError } = await supabase.from("posts").insert({
-        user_id: user.id,
-        workout_id: workout?.id,
-        routine_id: routine?.id,
-        caption,
-        image_url: publicUrl,
-        is_public: true,
-      });
-
-      if (insertError) throw insertError;
     }
+
+    const { error: insertError } = await supabase.from("posts").insert({
+      user_id: user.id,
+      workout_id: workout?.id,
+      routine_id: routine?.id,
+      caption,
+      image_url: publicUrl || null,
+      is_public: true,
+    });
+
+    if (insertError) throw insertError;
   } catch (error) {
     console.log(error);
   }
