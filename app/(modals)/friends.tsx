@@ -1,11 +1,26 @@
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import React from "react";
+import { router, Stack } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
+import { useTheme } from "@react-navigation/native";
+import { BodyScrollView } from "@/components/BodyScrollView";
 
 const Friends = () => {
+  const { colors } = useTheme();
+
   return (
-    <View>
+    <BodyScrollView>
+      <Stack.Screen
+        options={{
+          headerLeft: () => (
+            <TouchableOpacity onPress={() => router.back()}>
+              <Ionicons name="chevron-back" size={28} color={colors.primary} />
+            </TouchableOpacity>
+          ),
+        }}
+      />
       <Text>Friends</Text>
-    </View>
+    </BodyScrollView>
   );
 };
 
