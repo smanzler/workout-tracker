@@ -98,22 +98,6 @@ const PostListItem = ({ post }: { post: Post }) => {
           style={{
             flex: 1,
             borderRadius: 10,
-            overflow: "hidden",
-            aspectRatio: 1,
-          }}
-        >
-          <Image
-            source={post.image_url}
-            style={{ width: 200, height: 200, borderRadius: 10 }}
-            contentFit="cover"
-            transition={300}
-          />
-        </View>
-
-        <View
-          style={{
-            flex: 1,
-            borderRadius: 10,
             backgroundColor: colors.card,
           }}
         >
@@ -127,6 +111,22 @@ const PostListItem = ({ post }: { post: Post }) => {
               </ThemedText>
             ))}
           </View>
+        </View>
+
+        <View
+          style={{
+            flex: 1,
+            borderRadius: 10,
+            overflow: "hidden",
+            aspectRatio: 1,
+          }}
+        >
+          <Image
+            source={post.image_url}
+            style={{ width: 200, height: 200, borderRadius: 10 }}
+            contentFit="cover"
+            transition={300}
+          />
         </View>
       </View>
 
