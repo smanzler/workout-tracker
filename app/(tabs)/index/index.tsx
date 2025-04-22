@@ -7,6 +7,7 @@ import {
   Animated,
   SafeAreaView,
   TouchableOpacity,
+  Alert,
 } from "react-native";
 import { useAuth } from "@/providers/AuthProvider";
 import { useTheme } from "@react-navigation/native";
@@ -42,9 +43,6 @@ export default function ProfileScreen() {
   const { updateLastSync } = useSync();
   const { colors } = useTheme();
   const [imageVersion, setImageVersion] = useState(Date.now());
-  const { data: profile, refetch } = useProfile(user?.id);
-
-  console.log(profile);
 
   if (!user) return <LoginScreen />;
 
@@ -53,7 +51,7 @@ export default function ProfileScreen() {
       mediaTypes: ["images"],
       allowsEditing: true,
       aspect: [1, 1],
-      quality: 0.7,
+      quality: 0.1,
     });
 
     if (!result.canceled && result.assets.length > 0) {
@@ -66,12 +64,42 @@ export default function ProfileScreen() {
     const result = await ImagePicker.launchCameraAsync({
       allowsEditing: true,
       aspect: [1, 1],
-      quality: 0.7,
+      quality: 0.1,
     });
 
     if (!result.canceled && result.assets.length > 0) {
       const uri = result.assets[0].uri;
       await uploadImageAsync(uri, user.id, setImageVersion);
+    }
+  };
+
+  const showDeleteAccountAlert = () => {
+    Alert.alert(
+      "Delete account",
+      "Are you sure you want to delete your account? This action cannot be undone.",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: handleDeleteAccount,
+        },
+      ]
+    );
+  };
+
+  const handleDeleteAccount = async () => {
+    try {
+      const { error } = await supabase.rpc("delete_user");
+
+      if (error) throw error;
+
+      await supabase.auth.signOut();
+    } catch (error) {
+      console.error("Failed to delete account:", error);
     }
   };
 
@@ -95,46 +123,44 @@ export default function ProfileScreen() {
     <BodyScrollView style={{ paddingHorizontal: 20 }}>
       <Stack.Screen
         options={{
-          headerTitle: profile?.profile.username,
+          headerTitle: user.user_metadata.username || "Profile",
           headerRight: () => (
-            <View style={{ flexDirection: "row", gap: 12 }}>
-              <TouchableOpacity
-                onPress={() => router.push("/(modals)/friends")}
-              >
-                <Ionicons name="people" size={24} color={colors.primary} />
-              </TouchableOpacity>
-
-              <DropdownMenuRoot>
-                <DropdownMenuTrigger>
-                  <TouchableOpacity>
-                    <Ionicons
-                      name="ellipsis-horizontal-sharp"
-                      size={24}
-                      color={colors.primary}
-                    />
-                  </TouchableOpacity>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent>
-                  <DropdownMenuItem
-                    key="sync"
-                    onSelect={() => mySync(user, updateLastSync, () => {})}
-                  >
-                    <DropdownMenuItemTitle>Sync</DropdownMenuItemTitle>
-                    <DropdownMenuItemIcon
-                      ios={{ name: "arrow.2.circlepath" }}
-                    />
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    destructive
-                    key="logout"
-                    onSelect={() => supabase.auth.signOut()}
-                  >
-                    <DropdownMenuItemTitle>Logout</DropdownMenuItemTitle>
-                    <DropdownMenuItemIcon ios={{ name: "arrow.left.square" }} />
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenuRoot>
-            </View>
+            <DropdownMenuRoot>
+              <DropdownMenuTrigger>
+                <TouchableOpacity>
+                  <Ionicons
+                    name="ellipsis-horizontal-sharp"
+                    size={24}
+                    color={colors.primary}
+                  />
+                </TouchableOpacity>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuItem
+                  key="sync"
+                  onSelect={() => mySync(user, updateLastSync, () => {})}
+                >
+                  <DropdownMenuItemTitle>Sync</DropdownMenuItemTitle>
+                  <DropdownMenuItemIcon ios={{ name: "arrow.2.circlepath" }} />
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  destructive
+                  key="logout"
+                  onSelect={() => supabase.auth.signOut()}
+                >
+                  <DropdownMenuItemTitle>Logout</DropdownMenuItemTitle>
+                  <DropdownMenuItemIcon ios={{ name: "arrow.left.square" }} />
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  destructive
+                  key="delete-account"
+                  onSelect={showDeleteAccountAlert}
+                >
+                  <DropdownMenuItemTitle>Delete account</DropdownMenuItemTitle>
+                  <DropdownMenuItemIcon ios={{ name: "trash" }} />
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenuRoot>
           ),
         }}
       />
