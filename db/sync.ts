@@ -6,7 +6,8 @@ import database from ".";
 export async function mySync(
   user: User | undefined,
   updateLastSync: (timestamp: number) => Promise<void>,
-  setSyncing: React.Dispatch<React.SetStateAction<boolean>>
+  setSyncing: React.Dispatch<React.SetStateAction<boolean>>,
+  pullAllChanges: boolean = false
 ) {
   if (!user) {
     console.log("no user");
@@ -20,10 +21,11 @@ export async function mySync(
     sendCreatedAsUpdated: true,
     pullChanges: async ({ lastPulledAt, schemaVersion, migration }) => {
       console.log(lastPulledAt);
+      const timestamp = pullAllChanges ? 0 : lastPulledAt || 0;
 
       try {
         const { data, error } = await supabase.rpc("pull", {
-          last_pulled_at: lastPulledAt,
+          last_pulled_at: timestamp,
           schemaversion: schemaVersion,
           migration,
         });
@@ -33,7 +35,7 @@ export async function mySync(
 
           return {
             changes: {},
-            timestamp: lastPulledAt || 0,
+            timestamp: timestamp,
           };
         }
 
