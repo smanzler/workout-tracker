@@ -47,7 +47,6 @@ export default function RootLayout() {
       if (hasSyncedDefaults.length === 0) {
         try {
           await pullDefaultExercises();
-          await AsyncStorage.setItem("hasSyncedDefaultExercises", "true");
           console.log("Default exercises synced on first app open");
         } catch (error) {
           console.error("Error syncing default exercises:", error);
