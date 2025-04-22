@@ -8,6 +8,7 @@ import Button from "@/components/Button";
 import { migrateUserData } from "@/db";
 
 export default function SignupScreen() {
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -21,6 +22,11 @@ export default function SignupScreen() {
     } = await supabase.auth.signUp({
       email: email,
       password: password,
+      options: {
+        data: {
+          username: username,
+        },
+      },
     });
 
     if (error) Alert.alert(error.message);
@@ -35,6 +41,15 @@ export default function SignupScreen() {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <View style={{ flex: 1, padding: 20 }}>
+        <View>
+          <TextInput
+            onChangeText={(text) => setUsername(text)}
+            value={username}
+            label="Username"
+            autoCapitalize={"none"}
+            variant="filled"
+          />
+        </View>
         <View>
           <TextInput
             onChangeText={(text) => setEmail(text)}
@@ -55,7 +70,7 @@ export default function SignupScreen() {
           />
         </View>
         <Button
-          disabled={loading || !email || !password}
+          disabled={loading || !email || !password || !username}
           onPress={() => signUpWithEmail()}
         >
           Sign up
