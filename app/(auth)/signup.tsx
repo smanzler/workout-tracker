@@ -6,6 +6,7 @@ import { useTheme } from "@react-navigation/native";
 import TextInput from "@/components/TextInput";
 import Button from "@/components/Button";
 import { migrateUserData } from "@/db";
+import { PostgrestError } from "@supabase/supabase-js";
 
 export default function SignupScreen() {
   const [username, setUsername] = useState("");
@@ -16,26 +17,43 @@ export default function SignupScreen() {
 
   async function signUpWithEmail() {
     setLoading(true);
-    const {
-      data: { session },
-      error,
-    } = await supabase.auth.signUp({
-      email: email,
-      password: password,
-      options: {
-        data: {
-          username: username,
+
+    try {
+      const {
+        data: { session },
+        error,
+      } = await supabase.auth.signUp({
+        email: email,
+        password: password,
+        options: {
+          data: {
+            username: username,
+          },
         },
-      },
-    });
+      });
 
-    if (error) Alert.alert(error.message);
+      if (error) throw error;
 
-    if (session?.user) {
-      await migrateUserData(session.user.id);
+      const { error: profileError } = await supabase.rpc("create_profile", {
+        username,
+      });
+
+      if (profileError) throw profileError;
+
+      if (session?.user) {
+        await migrateUserData(session.user.id);
+      }
+
+      router.back();
+    } catch (error: any) {
+      if ("message" in error && typeof error.message === "string") {
+        Alert.alert("Error", error.message);
+      }
+
+      console.error("Error signing up:", error);
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   }
 
   return (
