@@ -13,7 +13,7 @@ import { useAuth } from "@/providers/AuthProvider";
 import { useTheme } from "@react-navigation/native";
 import { mySync } from "@/db/sync";
 import { useSync } from "@/providers/SyncProvider";
-import database from "@/db";
+import database, { resetUserData } from "@/db";
 import Button from "@/components/Button";
 import { router, Stack } from "expo-router";
 import LoginScreen from "@/app/(auth)/login";
@@ -103,6 +103,47 @@ export default function ProfileScreen() {
     }
   };
 
+  const logout = async () => {
+    try {
+      await supabase.auth.signOut();
+
+      await resetUserData();
+    } catch (error) {
+      console.error("Failed to logout:", error);
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await mySync(user, updateLastSync, () => {});
+
+      await logout();
+    } catch (error) {
+      console.error("Failed to logout:", error);
+      Alert.alert(
+        "Error",
+        "Failed to sync data. If you still want to logout, you could lose data.",
+        [
+          {
+            text: "Cancel",
+            style: "cancel",
+          },
+          {
+            text: "Logout",
+            onPress: async () => {
+              try {
+                await logout();
+              } catch (error) {
+                console.error("Failed to logout:", error);
+              }
+            },
+            style: "destructive",
+          },
+        ]
+      );
+    }
+  };
+
   const showImagePickerOptions = () => {
     ActionSheetIOS.showActionSheetWithOptions(
       {
@@ -146,7 +187,7 @@ export default function ProfileScreen() {
                 <DropdownMenuItem
                   destructive
                   key="logout"
-                  onSelect={() => supabase.auth.signOut()}
+                  onSelect={handleLogout}
                 >
                   <DropdownMenuItemTitle>Logout</DropdownMenuItemTitle>
                   <DropdownMenuItemIcon ios={{ name: "arrow.left.square" }} />
