@@ -80,7 +80,7 @@ const PostListItem = ({ post }: { post: Post }) => {
               width: "100%",
               height: "100%",
             }}
-            source={{ uri: getProfileImageUrl(post.user.user_id, Date.now()) }}
+            source={{ uri: getProfileImageUrl(post.user.user_id) }}
           />
         </View>
         <ThemedText type="defaultSemiBold">{post.user.username}</ThemedText>

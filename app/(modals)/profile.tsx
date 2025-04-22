@@ -55,7 +55,7 @@ const Profile = () => {
             aspectRatio: 1,
             borderRadius: 75,
           }}
-          source={{ uri: getProfileImageUrl(userId, Date.now()) }}
+          source={{ uri: getProfileImageUrl(userId) }}
         />
         <ThemedText type="defaultSemiBold">
           {profile?.profile.bio || "User does not have a bio"}

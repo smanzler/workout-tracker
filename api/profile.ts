@@ -77,9 +77,9 @@ export const useProfile = (userId: string | undefined) => {
   });
 };
 
-export const getProfileImageUrl = (userId: string, version: number) => {
+export const getProfileImageUrl = (userId: string, version?: number) => {
   if (!userId) return null;
   const filePath = `${userId}.png`;
   const { data } = supabase.storage.from("avatars").getPublicUrl(filePath);
-  return `${data.publicUrl}?v=${version}`;
+  return version ? `${data.publicUrl}?v=${version}` : version;
 };
