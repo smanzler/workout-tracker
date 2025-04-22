@@ -81,5 +81,5 @@ export const getProfileImageUrl = (userId: string, version?: number) => {
   if (!userId) return null;
   const filePath = `${userId}.png`;
   const { data } = supabase.storage.from("avatars").getPublicUrl(filePath);
-  return version ? `${data.publicUrl}?v=${version}` : version;
+  return version ? `${data.publicUrl}?v=${version}` : data.publicUrl;
 };
