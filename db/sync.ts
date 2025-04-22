@@ -52,7 +52,7 @@ export async function mySync(
 
         return {
           changes: {},
-          timestamp: lastPulledAt || 0,
+          timestamp: timestamp,
         };
       }
     },
