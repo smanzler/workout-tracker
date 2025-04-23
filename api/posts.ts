@@ -4,9 +4,10 @@ import { Routine } from "@/models/Routine";
 import { Workout } from "@/models/Workout";
 import { useSync } from "@/providers/SyncProvider";
 import { User } from "@supabase/supabase-js";
-import { QueryClient, useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { decode } from "base64-arraybuffer";
 import * as FileSystem from "expo-file-system";
+import { Alert } from "react-native";
 
 const fetchExplorePosts = async ({ pageParam = 0 }) => {
   const { data, error } = await supabase.rpc("get_explore_posts", {
@@ -37,8 +38,7 @@ export const postPost = async (
   user?: User,
   workout?: Workout,
   routine?: Routine,
-  image?: string,
-  queryClient?: QueryClient
+  image?: string
 ) => {
   if (!user) return;
 
@@ -75,12 +75,9 @@ export const postPost = async (
     });
 
     if (insertError) throw insertError;
-
-    if (queryClient) {
-      await queryClient.invalidateQueries({ queryKey: ["explore-posts"] });
-    }
   } catch (error) {
-    console.log(error);
+    Alert.alert("Error", "Failed to post. Please try again.");
+    throw error;
   }
 };
 

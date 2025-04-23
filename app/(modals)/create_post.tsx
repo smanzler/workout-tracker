@@ -50,18 +50,23 @@ const CreatePost = () => {
   const handlePost = async () => {
     setLoading(true);
 
-    await postPost(
-      caption,
-      user || undefined,
-      workout || undefined,
-      undefined,
-      image || undefined,
-      queryClient
-    );
+    try {
+      await postPost(
+        caption,
+        user || undefined,
+        workout || undefined,
+        undefined,
+        image || undefined
+      );
 
-    setWorkout(null);
+      await queryClient.invalidateQueries({ queryKey: ["explore-posts"] });
 
-    router.back();
+      setWorkout(null);
+
+      router.back();
+    } catch (error) {
+      console.log("Error posting:", error);
+    }
 
     setLoading(false);
   };
@@ -158,7 +163,11 @@ const CreatePost = () => {
         </View>
       </View>
 
-      <Button disabled={!caption} onPress={handlePost} loading={loading}>
+      <Button
+        disabled={!caption || !workout}
+        onPress={handlePost}
+        loading={loading}
+      >
         Post
       </Button>
     </BodyScrollView>
