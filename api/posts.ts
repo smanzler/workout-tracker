@@ -22,7 +22,7 @@ const fetchExplorePosts = async ({ pageParam = 0 }) => {
   return data;
 };
 
-export const useExplorePosts = () => {
+export const useExplorePosts = (enabled = true) => {
   return useInfiniteQuery({
     queryKey: ["explore-posts"],
     queryFn: fetchExplorePosts,
@@ -30,6 +30,29 @@ export const useExplorePosts = () => {
     getNextPageParam: (lastPage, allPages) => {
       return lastPage.length < 20 ? undefined : allPages.length * 20;
     },
+    enabled,
+  });
+};
+
+export const useFollowingPosts = (enabled = true) => {
+  return useInfiniteQuery({
+    queryKey: ["following-posts"],
+    queryFn: async ({ pageParam = 0 }) => {
+      const { data, error } = await supabase.rpc("get_following_posts", {
+        p_offset: pageParam,
+        p_limit: 20,
+        p_sort_by: "created_at",
+        p_sort_order: "desc",
+      });
+
+      if (error) throw error;
+      return data;
+    },
+    initialPageParam: 0,
+    getNextPageParam: (lastPage, allPages) => {
+      return lastPage.length < 20 ? undefined : allPages.length * 20;
+    },
+    enabled,
   });
 };
 
