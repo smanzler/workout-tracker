@@ -7,6 +7,7 @@ import {
   Alert,
   StyleSheet,
   Pressable,
+  TouchableOpacity,
 } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, {
@@ -25,6 +26,18 @@ import { BodyScrollView } from "@/components/BodyScrollView";
 import { router, Stack } from "expo-router";
 import { ThemedText } from "@/components/ThemedText";
 import ExerciseModal from "@/components/ExerciseModal";
+import {
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuItemTitle,
+  DropdownMenuRoot,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
+} from "@/zeego/drop-down";
+import { Ionicons } from "@expo/vector-icons";
 
 interface Section {
   title: string;
@@ -51,14 +64,40 @@ const groupData = (data: Exercise[]): Section[] => {
 function Exercises({ exercises }: { exercises: Exercise[] }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [visible, setVisible] = useState(false);
+  const [selectedMuscleGroups, setSelectedMuscleGroups] = useState<string[]>(
+    []
+  );
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const theme = useTheme();
   const { user } = useAuth();
 
-  const filteredData = exercises.filter((item) =>
-    item.title.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredData = exercises.filter((item) => {
+    const matchesQuery = item.title
+      .toLowerCase()
+      .includes(searchQuery.toLowerCase());
+    const matchesMuscle =
+      selectedMuscleGroups.length === 0 ||
+      selectedMuscleGroups.includes(item.muscleGroup ?? "None");
+    const matchesCategory =
+      selectedCategories.length === 0 ||
+      selectedCategories.includes(item.category ?? "None");
+
+    return matchesQuery && matchesMuscle && matchesCategory;
+  });
 
   const sections: Section[] = groupData(filteredData);
+
+  const toggleSelection = (
+    value: string,
+    current: string[],
+    setFn: (v: string[]) => void
+  ) => {
+    if (current.includes(value)) {
+      setFn(current.filter((v) => v !== value));
+    } else {
+      setFn([...current, value]);
+    }
+  };
 
   const handleDelete = (id: string) => {
     Alert.alert(
@@ -150,7 +189,94 @@ function Exercises({ exercises }: { exercises: Exercise[] }) {
             },
           },
           headerRight: () => (
-            <Button title="New" onPress={() => setVisible(true)} />
+            <View
+              style={{ flexDirection: "row", gap: 12, alignItems: "center" }}
+            >
+              <DropdownMenuRoot>
+                <DropdownMenuTrigger>
+                  <TouchableOpacity>
+                    <Ionicons
+                      name="filter"
+                      size={24}
+                      color={theme.colors.primary}
+                    />
+                  </TouchableOpacity>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuSub>
+                    <DropdownMenuSubTrigger key="muscle-group">
+                      <DropdownMenuItemTitle
+                        style={{ marginLeft: 8, opacity: 0.6 }}
+                      >
+                        Muscle Group
+                      </DropdownMenuItemTitle>
+                    </DropdownMenuSubTrigger>
+                    <DropdownMenuSubContent>
+                      {[
+                        "Chest",
+                        "Shoulders",
+                        "Arms",
+                        "Legs",
+                        "Back",
+                        "None",
+                      ].map((group) => (
+                        <DropdownMenuCheckboxItem
+                          key={group}
+                          value={selectedMuscleGroups.includes(group)}
+                          onSelect={() =>
+                            toggleSelection(
+                              group,
+                              selectedMuscleGroups,
+                              setSelectedMuscleGroups
+                            )
+                          }
+                        >
+                          <DropdownMenuItemTitle>{group}</DropdownMenuItemTitle>
+                        </DropdownMenuCheckboxItem>
+                      ))}
+                    </DropdownMenuSubContent>
+                  </DropdownMenuSub>
+
+                  <DropdownMenuSub>
+                    <DropdownMenuSubTrigger key="category">
+                      <DropdownMenuItemTitle
+                        style={{ marginLeft: 8, opacity: 0.6 }}
+                      >
+                        Category
+                      </DropdownMenuItemTitle>
+                    </DropdownMenuSubTrigger>
+                    <DropdownMenuSubContent>
+                      {[
+                        "Barbell",
+                        "Dumbbell",
+                        "Machine",
+                        "Bodyweight",
+                        "Assisted Bodyweight",
+                        "Reps Only",
+                        "Duration",
+                        "None",
+                      ].map((cat) => (
+                        <DropdownMenuCheckboxItem
+                          key={cat}
+                          value={selectedCategories.includes(cat)}
+                          onSelect={() =>
+                            toggleSelection(
+                              cat,
+                              selectedCategories,
+                              setSelectedCategories
+                            )
+                          }
+                        >
+                          <DropdownMenuItemTitle>{cat}</DropdownMenuItemTitle>
+                        </DropdownMenuCheckboxItem>
+                      ))}
+                    </DropdownMenuSubContent>
+                  </DropdownMenuSub>
+                </DropdownMenuContent>
+              </DropdownMenuRoot>
+
+              <Button title="New" onPress={() => setVisible(true)} />
+            </View>
           ),
         }}
       />
