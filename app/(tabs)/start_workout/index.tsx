@@ -112,7 +112,7 @@ function StartWorkoutScreen({ routines }: { routines: Routine[] }) {
         {routines.length !== 0 ? (
           routines.map((r, i) => <RoutineItem key={i} routine={r} />)
         ) : (
-          <View style={{ alignItems: "center", padding: 50, marginTop: 100 }}>
+          <View style={{ alignItems: "center", padding: 50, marginTop: 50 }}>
             <Ionicons name="create" color={colors.text} size={50} />
             <ThemedText type="subtitle">No Routines</ThemedText>
             <ThemedText
