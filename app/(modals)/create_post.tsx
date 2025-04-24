@@ -7,6 +7,7 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  ActionSheetIOS,
 } from "react-native";
 import React, { useState } from "react";
 import { router, Stack } from "expo-router";
@@ -34,13 +35,21 @@ const CreatePost = () => {
 
   const queryClient = useQueryClient();
 
-  const handlePickImage = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ["images"],
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 0,
-    });
+  const handlePickImage = async (type: "pick" | "take") => {
+    let result =
+      type === "pick"
+        ? await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ["images"],
+            allowsEditing: true,
+            aspect: [1, 1],
+            quality: 0,
+          })
+        : await ImagePicker.launchCameraAsync({
+            mediaTypes: ["images"],
+            allowsEditing: true,
+            aspect: [1, 1],
+            quality: 0,
+          });
 
     if (!result.canceled) {
       setImage(result.assets[0].uri);
@@ -69,6 +78,22 @@ const CreatePost = () => {
     }
 
     setLoading(false);
+  };
+
+  const showImagePickerOptions = () => {
+    ActionSheetIOS.showActionSheetWithOptions(
+      {
+        options: ["Cancel", "Choose image from library", "Take a photo"],
+        cancelButtonIndex: 0,
+      },
+      (buttonIndex) => {
+        if (buttonIndex === 1) {
+          handlePickImage("pick");
+        } else if (buttonIndex === 2) {
+          handlePickImage("take");
+        }
+      }
+    );
   };
 
   return (
@@ -141,7 +166,7 @@ const CreatePost = () => {
               alignItems: "center",
               justifyContent: "center",
             }}
-            onPress={handlePickImage}
+            onPress={showImagePickerOptions}
           >
             {image ? (
               <Image
