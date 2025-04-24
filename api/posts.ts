@@ -10,6 +10,7 @@ import * as FileSystem from "expo-file-system";
 import { Alert } from "react-native";
 
 const fetchExplorePosts = async ({ pageParam = 0 }) => {
+  console.log("fetching explore posts", pageParam);
   const { data, error } = await supabase.rpc("get_explore_posts", {
     p_offset: pageParam,
     p_limit: 20,
@@ -19,6 +20,7 @@ const fetchExplorePosts = async ({ pageParam = 0 }) => {
   });
 
   if (error) throw error;
+  console.log("explore posts", data);
   return data;
 };
 
@@ -34,20 +36,24 @@ export const useExplorePosts = (enabled = true) => {
   });
 };
 
+export const fetchFollowingPosts = async ({ pageParam = 0 }) => {
+  console.log("fetching following posts", pageParam);
+  const { data, error } = await supabase.rpc("get_following_posts", {
+    p_offset: pageParam,
+    p_limit: 20,
+    p_sort_by: "created_at",
+    p_sort_order: "desc",
+  });
+
+  if (error) throw error;
+  console.log("following posts", data);
+  return data;
+};
+
 export const useFollowingPosts = (enabled = true) => {
   return useInfiniteQuery({
     queryKey: ["following-posts"],
-    queryFn: async ({ pageParam = 0 }) => {
-      const { data, error } = await supabase.rpc("get_following_posts", {
-        p_offset: pageParam,
-        p_limit: 20,
-        p_sort_by: "created_at",
-        p_sort_order: "desc",
-      });
-
-      if (error) throw error;
-      return data;
-    },
+    queryFn: fetchFollowingPosts,
     initialPageParam: 0,
     getNextPageParam: (lastPage, allPages) => {
       return lastPage.length < 20 ? undefined : allPages.length * 20;

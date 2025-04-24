@@ -59,7 +59,7 @@ const CreatePost = () => {
         image || undefined
       );
 
-      await queryClient.invalidateQueries({ queryKey: ["explore-posts"] });
+      await queryClient.invalidateQueries({ queryKey: ["following-posts"] });
 
       setWorkout(null);
 

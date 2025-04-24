@@ -98,15 +98,25 @@ const ExplorePage = () => {
         }}
       />
       {posts.length === 0 && !isLoading ? (
-        <View
-          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+        <BodyScrollView
+          refreshControl={
+            <RefreshControl refreshing={isRefetching} onRefresh={refetch} />
+          }
         >
-          <ThemedText type="defaultSemiBold">
-            {showExplore
-              ? "No posts found."
-              : "No posts found. Follow users to see their posts."}
-          </ThemedText>
-        </View>
+          <View
+            style={{
+              height: "100%",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <ThemedText type="defaultSemiBold">
+              {showExplore
+                ? "No posts found."
+                : "No posts found. Follow users to see their posts."}
+            </ThemedText>
+          </View>
+        </BodyScrollView>
       ) : (
         <FlatList
           data={posts}
