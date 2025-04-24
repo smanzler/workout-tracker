@@ -97,7 +97,7 @@ export default function ProfileScreen() {
 
       if (error) throw error;
 
-      await supabase.auth.signOut();
+      await logout();
     } catch (error) {
       console.error("Failed to delete account:", error);
     }
