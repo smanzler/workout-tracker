@@ -81,6 +81,7 @@ const PostListItem = ({ post }: { post: Post }) => {
               height: "100%",
             }}
             source={{ uri: getProfileImageUrl(post.user.user_id) }}
+            cachePolicy="memory-disk"
           />
         </View>
         <ThemedText type="defaultSemiBold">{post.user.username}</ThemedText>

@@ -56,6 +56,7 @@ const Profile = () => {
             borderRadius: 75,
           }}
           source={{ uri: getProfileImageUrl(userId) }}
+          cachePolicy="memory-disk"
         />
         <ThemedText type="defaultSemiBold">
           {profile?.profile.bio || "User does not have a bio"}
