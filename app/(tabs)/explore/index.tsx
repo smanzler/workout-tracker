@@ -19,6 +19,7 @@ import { ThemedText } from "@/components/ThemedText";
 import {
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuItemIcon,
   DropdownMenuItemTitle,
   DropdownMenuRoot,
   DropdownMenuTrigger,
@@ -77,12 +78,14 @@ const ExplorePage = () => {
                     onSelect={() => setShowExplore(true)}
                   >
                     <DropdownMenuItemTitle>Explore</DropdownMenuItemTitle>
+                    <DropdownMenuItemIcon ios={{ name: "globe" }} />
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     key="following"
                     onSelect={() => setShowExplore(false)}
                   >
                     <DropdownMenuItemTitle>Following</DropdownMenuItemTitle>
+                    <DropdownMenuItemIcon ios={{ name: "person.2.fill" }} />
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenuRoot>
