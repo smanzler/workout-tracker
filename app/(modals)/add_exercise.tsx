@@ -16,54 +16,18 @@ import database, {
   workoutExercisesCollection,
   workoutsCollection,
 } from "@/db";
-import { router, Stack } from "expo-router";
+import { router } from "expo-router";
 import { useWorkout } from "@/providers/WorkoutProvider";
 import { useTheme } from "@react-navigation/native";
-import ExercisesList from "@/components/ExercisesList";
 import { useAuth } from "@/providers/AuthProvider";
 import { ThemedText } from "@/components/ThemedText";
-import ExerciseModal from "@/components/ExerciseModal";
+import ExerciseList from "@/components/ExerciseList";
 
-interface Section {
-  title: string;
-  data: Exercise[];
-}
-
-const groupData = (data: Exercise[], recentItems: Exercise[]): Section[] => {
-  const sorted = data.sort((a, b) => a.title.localeCompare(b.title));
-  const sections: Record<string, Section> = {};
-
-  sorted.forEach((item) => {
-    const firstLetter = item.title[0].toUpperCase();
-    if (!sections[firstLetter]) {
-      sections[firstLetter] = { title: firstLetter, data: [] };
-    }
-    sections[firstLetter].data.push(item);
-  });
-
-  const groupedSections = Object.values(sections);
-
-  if (recentItems.length > 0) {
-    groupedSections.unshift({ title: "Recent", data: recentItems });
-  }
-
-  return groupedSections;
-};
-
-function Add_Exercise({ exercises }: { exercises: Exercise[] }) {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [recent, setRecent] = useState<Exercise[]>([]);
+function AddExercise() {
   const [selectedItems, setSelectedItems] = useState<Exercise[]>([]);
-  const [visible, setVisible] = useState(false);
   const { activeWorkoutId } = useWorkout();
   const theme = useTheme();
   const { user } = useAuth();
-
-  const filteredData = exercises.filter((item) =>
-    item.title.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
-  const sections: Section[] = groupData(filteredData, recent);
 
   const handleItemPress = (item: Exercise) => {
     setSelectedItems((prev) => {
@@ -107,51 +71,12 @@ function Add_Exercise({ exercises }: { exercises: Exercise[] }) {
 
     router.back();
 
-    setRecent((prev) => {
-      const updatedRecent = [
-        ...selectedItems,
-        ...prev.filter((i) => !selectedItems.some((s) => s.id === i.id)),
-      ].slice(0, 5);
-      return updatedRecent;
-    });
-
     setSelectedItems([]);
   };
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <Stack.Screen
-        options={{
-          headerSearchBarOptions: {
-            placeholder: "Search",
-            onChangeText: (e) => {
-              setSearchQuery(e.nativeEvent.text);
-            },
-          },
-          headerRight: () => (
-            <Button title="New" onPress={() => setVisible(true)} />
-          ),
-        }}
-      />
-
-      <View style={styles.topBar}>
-        <TouchableOpacity
-          onPress={handleAddToWorkout}
-          disabled={selectedItems.length === 0}
-        >
-          <Text
-            style={[
-              styles.addButton,
-              selectedItems.length === 0 && styles.disabled,
-            ]}
-          >
-            Add to Workout ({selectedItems.length})
-          </Text>
-        </TouchableOpacity>
-      </View>
-
-      <ExercisesList
-        sections={sections}
+      <ExerciseList
         renderItem={({ item }: { item: Exercise }) => (
           <TouchableOpacity onPress={() => handleItemPress(item)}>
             <View
@@ -177,18 +102,29 @@ function Add_Exercise({ exercises }: { exercises: Exercise[] }) {
             </View>
           </TouchableOpacity>
         )}
+        topBar={
+          <View style={styles.topBar}>
+            <TouchableOpacity
+              onPress={handleAddToWorkout}
+              disabled={selectedItems.length === 0}
+            >
+              <Text
+                style={[
+                  styles.addButton,
+                  selectedItems.length === 0 && styles.disabled,
+                ]}
+              >
+                Add to Workout ({selectedItems.length})
+              </Text>
+            </TouchableOpacity>
+          </View>
+        }
       />
-
-      <ExerciseModal visible={visible} setVisible={setVisible} />
     </SafeAreaView>
   );
 }
 
-const enhance = withObservables([], () => ({
-  exercises: exercisesCollection.query(),
-}));
-
-export default enhance(Add_Exercise);
+export default AddExercise;
 
 const styles = StyleSheet.create({
   topBar: {

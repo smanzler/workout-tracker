@@ -5,7 +5,7 @@ import { exercisesCollection } from "@/db";
 import { Exercise } from "@/models/Exercise";
 import { useTheme } from "@react-navigation/native";
 
-const ExercisesList = ({
+const ExerciseSectionList = ({
   sections,
   renderItem,
 }: {
@@ -51,7 +51,7 @@ const enhance = withObservables([], () => ({
   exercises: exercisesCollection.query(),
 }));
 
-export default enhance(ExercisesList);
+export default enhance(ExerciseSectionList);
 
 const styles = StyleSheet.create({
   sectionHeader: {

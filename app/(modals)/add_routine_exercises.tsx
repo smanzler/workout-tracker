@@ -18,52 +18,17 @@ import database, {
 } from "@/db";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import { useTheme } from "@react-navigation/native";
-import ExercisesList from "@/components/ExercisesList";
 import { useAuth } from "@/providers/AuthProvider";
 import { ThemedText } from "@/components/ThemedText";
 import ExerciseModal from "@/components/ExerciseModal";
 import { useRoutineActions } from "@/stores/routineStore";
+import ExerciseList from "@/components/ExerciseList";
 
-interface Section {
-  title: string;
-  data: Exercise[];
-}
-
-const groupData = (data: Exercise[], recentItems: Exercise[]): Section[] => {
-  const sorted = data.sort((a, b) => a.title.localeCompare(b.title));
-  const sections: Record<string, Section> = {};
-
-  sorted.forEach((item) => {
-    const firstLetter = item.title[0].toUpperCase();
-    if (!sections[firstLetter]) {
-      sections[firstLetter] = { title: firstLetter, data: [] };
-    }
-    sections[firstLetter].data.push(item);
-  });
-
-  const groupedSections = Object.values(sections);
-
-  if (recentItems.length > 0) {
-    groupedSections.unshift({ title: "Recent", data: recentItems });
-  }
-
-  return groupedSections;
-};
-
-function AddRoutineExercises({ exercises }: { exercises: Exercise[] }) {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [recent, setRecent] = useState<Exercise[]>([]);
+function AddRoutineExercises() {
   const [selectedItems, setSelectedItems] = useState<Exercise[]>([]);
-  const [visible, setVisible] = useState(false);
   const theme = useTheme();
   const { user } = useAuth();
   const { addExercises } = useRoutineActions();
-
-  const filteredData = exercises.filter((item) =>
-    item.title.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
-  const sections: Section[] = groupData(filteredData, recent);
 
   const handleItemPress = (item: Exercise) => {
     setSelectedItems((prev) => {
@@ -93,36 +58,10 @@ function AddRoutineExercises({ exercises }: { exercises: Exercise[] }) {
       <Stack.Screen
         options={{
           headerTitle: "Add Exercises",
-          headerSearchBarOptions: {
-            placeholder: "Search",
-            onChangeText: (e) => {
-              setSearchQuery(e.nativeEvent.text);
-            },
-          },
-          headerRight: () => (
-            <Button title="New" onPress={() => setVisible(true)} />
-          ),
         }}
       />
 
-      <View style={styles.topBar}>
-        <TouchableOpacity
-          onPress={handleAddToRoutine}
-          disabled={selectedItems.length === 0}
-        >
-          <Text
-            style={[
-              styles.addButton,
-              selectedItems.length === 0 && styles.disabled,
-            ]}
-          >
-            Add to Routine ({selectedItems.length})
-          </Text>
-        </TouchableOpacity>
-      </View>
-
-      <ExercisesList
-        sections={sections}
+      <ExerciseList
         renderItem={({ item }: { item: Exercise }) => (
           <TouchableOpacity onPress={() => handleItemPress(item)}>
             <View
@@ -148,18 +87,29 @@ function AddRoutineExercises({ exercises }: { exercises: Exercise[] }) {
             </View>
           </TouchableOpacity>
         )}
+        topBar={
+          <View style={styles.topBar}>
+            <TouchableOpacity
+              onPress={handleAddToRoutine}
+              disabled={selectedItems.length === 0}
+            >
+              <Text
+                style={[
+                  styles.addButton,
+                  selectedItems.length === 0 && styles.disabled,
+                ]}
+              >
+                Add to Routine ({selectedItems.length})
+              </Text>
+            </TouchableOpacity>
+          </View>
+        }
       />
-
-      <ExerciseModal visible={visible} setVisible={setVisible} />
     </SafeAreaView>
   );
 }
 
-const enhance = withObservables([], () => ({
-  exercises: exercisesCollection.query(),
-}));
-
-export default enhance(AddRoutineExercises);
+export default AddRoutineExercises;
 
 const styles = StyleSheet.create({
   topBar: {
