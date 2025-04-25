@@ -1,6 +1,5 @@
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, TouchableOpacity } from "react-native";
 import React from "react";
-import Button from "./Button";
 import { useTheme } from "@react-navigation/native";
 
 const ButtonWithIcon = ({
@@ -12,9 +11,11 @@ const ButtonWithIcon = ({
 }) => {
   const { colors } = useTheme();
   return (
-    <Button
+    <TouchableOpacity
       style={{
-        height: 26,
+        borderRadius: 10,
+        height: 25,
+        justifyContent: "center",
         paddingHorizontal: 10,
         backgroundColor: colors.text
           .replace("rgb", "rgba")
@@ -23,7 +24,7 @@ const ButtonWithIcon = ({
       onPress={onPress}
     >
       {children}
-    </Button>
+    </TouchableOpacity>
   );
 };
 
