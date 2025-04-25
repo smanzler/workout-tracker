@@ -29,6 +29,7 @@ import ExerciseModal from "@/components/ExerciseModal";
 import {
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuItemTitle,
   DropdownMenuRoot,
@@ -203,75 +204,90 @@ function Exercises({ exercises }: { exercises: Exercise[] }) {
                   </TouchableOpacity>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
-                  <DropdownMenuSub>
-                    <DropdownMenuSubTrigger key="muscle-group">
-                      <DropdownMenuItemTitle
-                        style={{ marginLeft: 8, opacity: 0.6 }}
-                      >
-                        Muscle Group
-                      </DropdownMenuItemTitle>
-                    </DropdownMenuSubTrigger>
-                    <DropdownMenuSubContent>
-                      {[
-                        "Chest",
-                        "Shoulders",
-                        "Arms",
-                        "Legs",
-                        "Back",
-                        "None",
-                      ].map((group) => (
-                        <DropdownMenuCheckboxItem
-                          key={group}
-                          value={selectedMuscleGroups.includes(group)}
-                          onSelect={() =>
-                            toggleSelection(
-                              group,
-                              selectedMuscleGroups,
-                              setSelectedMuscleGroups
-                            )
-                          }
+                  <DropdownMenuGroup>
+                    <DropdownMenuSub>
+                      <DropdownMenuSubTrigger key="muscle-group">
+                        <DropdownMenuItemTitle
+                          style={{ marginLeft: 8, opacity: 0.6 }}
                         >
-                          <DropdownMenuItemTitle>{group}</DropdownMenuItemTitle>
-                        </DropdownMenuCheckboxItem>
-                      ))}
-                    </DropdownMenuSubContent>
-                  </DropdownMenuSub>
+                          Muscle Group
+                        </DropdownMenuItemTitle>
+                      </DropdownMenuSubTrigger>
+                      <DropdownMenuSubContent>
+                        {[
+                          "Chest",
+                          "Shoulders",
+                          "Arms",
+                          "Legs",
+                          "Back",
+                          "None",
+                        ].map((group) => (
+                          <DropdownMenuCheckboxItem
+                            key={group}
+                            value={selectedMuscleGroups.includes(group)}
+                            onSelect={() =>
+                              toggleSelection(
+                                group,
+                                selectedMuscleGroups,
+                                setSelectedMuscleGroups
+                              )
+                            }
+                          >
+                            <DropdownMenuItemTitle>
+                              {group}
+                            </DropdownMenuItemTitle>
+                          </DropdownMenuCheckboxItem>
+                        ))}
+                      </DropdownMenuSubContent>
+                    </DropdownMenuSub>
 
-                  <DropdownMenuSub>
-                    <DropdownMenuSubTrigger key="category">
-                      <DropdownMenuItemTitle
-                        style={{ marginLeft: 8, opacity: 0.6 }}
-                      >
-                        Category
-                      </DropdownMenuItemTitle>
-                    </DropdownMenuSubTrigger>
-                    <DropdownMenuSubContent>
-                      {[
-                        "Barbell",
-                        "Dumbbell",
-                        "Machine",
-                        "Bodyweight",
-                        "Assisted Bodyweight",
-                        "Reps Only",
-                        "Duration",
-                        "None",
-                      ].map((cat) => (
-                        <DropdownMenuCheckboxItem
-                          key={cat}
-                          value={selectedCategories.includes(cat)}
-                          onSelect={() =>
-                            toggleSelection(
-                              cat,
-                              selectedCategories,
-                              setSelectedCategories
-                            )
-                          }
+                    <DropdownMenuSub>
+                      <DropdownMenuSubTrigger key="category">
+                        <DropdownMenuItemTitle
+                          style={{ marginLeft: 8, opacity: 0.6 }}
                         >
-                          <DropdownMenuItemTitle>{cat}</DropdownMenuItemTitle>
-                        </DropdownMenuCheckboxItem>
-                      ))}
-                    </DropdownMenuSubContent>
-                  </DropdownMenuSub>
+                          Category
+                        </DropdownMenuItemTitle>
+                      </DropdownMenuSubTrigger>
+                      <DropdownMenuSubContent>
+                        {[
+                          "Barbell",
+                          "Dumbbell",
+                          "Machine",
+                          "Bodyweight",
+                          "Assisted Bodyweight",
+                          "Reps Only",
+                          "Duration",
+                          "None",
+                        ].map((cat) => (
+                          <DropdownMenuCheckboxItem
+                            key={cat}
+                            value={selectedCategories.includes(cat)}
+                            onSelect={() =>
+                              toggleSelection(
+                                cat,
+                                selectedCategories,
+                                setSelectedCategories
+                              )
+                            }
+                          >
+                            <DropdownMenuItemTitle>{cat}</DropdownMenuItemTitle>
+                          </DropdownMenuCheckboxItem>
+                        ))}
+                      </DropdownMenuSubContent>
+                    </DropdownMenuSub>
+                  </DropdownMenuGroup>
+
+                  <DropdownMenuItem
+                    key="reset-filters"
+                    destructive
+                    onSelect={() => {
+                      setSelectedMuscleGroups([]);
+                      setSelectedCategories([]);
+                    }}
+                  >
+                    <DropdownMenuItemTitle>Reset Filters</DropdownMenuItemTitle>
+                  </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenuRoot>
 
