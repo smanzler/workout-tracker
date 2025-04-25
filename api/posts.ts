@@ -100,7 +100,6 @@ export const postPost = async (
       routine_id: routine?.id,
       caption,
       image_url: publicUrl || null,
-      is_public: true,
     });
 
     if (insertError) throw insertError;
