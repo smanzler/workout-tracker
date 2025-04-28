@@ -140,23 +140,23 @@ export const migrateUserData = async (userId: string) => {
 
 export const resetUserData = async () => {
   await database.write(async () => {
-    const workouts = await workoutsCollection.query().fetch();
     const sets = await setsCollection.query().fetch();
-    const routines = await routinesCollection.query().fetch();
     const workoutExercises = await workoutExercisesCollection.query().fetch();
-    const routineExercises = await routineExercisesCollection.query().fetch();
+    const workouts = await workoutsCollection.query().fetch();
     const routineSets = await routineSetsCollection.query().fetch();
+    const routineExercises = await routineExercisesCollection.query().fetch();
+    const routines = await routinesCollection.query().fetch();
     const exercises = await exercisesCollection
       .query(Q.where("is_default", false))
       .fetch();
 
     const allDeletes = [
-      ...workouts.map((item) => item.prepareDestroyPermanently()),
       ...sets.map((item) => item.prepareDestroyPermanently()),
-      ...routines.map((item) => item.prepareDestroyPermanently()),
       ...workoutExercises.map((item) => item.prepareDestroyPermanently()),
-      ...routineExercises.map((item) => item.prepareDestroyPermanently()),
+      ...workouts.map((item) => item.prepareDestroyPermanently()),
       ...routineSets.map((item) => item.prepareDestroyPermanently()),
+      ...routineExercises.map((item) => item.prepareDestroyPermanently()),
+      ...routines.map((item) => item.prepareDestroyPermanently()),
       ...exercises.map((item) => item.prepareDestroyPermanently()),
     ];
 

@@ -2,17 +2,18 @@ import React, { useState } from "react";
 import { Alert, SafeAreaView, StyleSheet, Text, View } from "react-native";
 import { router, Stack } from "expo-router";
 import { supabase } from "@/lib/supabase";
-import { useTheme } from "@react-navigation/native";
 import TextInput from "@/components/TextInput";
 import Button from "@/components/Button";
 import { ThemedText } from "@/components/ThemedText";
 import { migrateUserData } from "@/db";
+import { mySync } from "@/db/sync";
+import { useSync } from "@/providers/SyncProvider";
 
 export default function LoginScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const theme = useTheme();
+  const { updateLastSync } = useSync();
 
   async function signInWithEmail() {
     setLoading(true);
@@ -28,6 +29,8 @@ export default function LoginScreen() {
 
     if (session?.user) {
       await migrateUserData(session.user.id);
+
+      await mySync(session?.user, updateLastSync, () => null, true);
     }
 
     setLoading(false);
