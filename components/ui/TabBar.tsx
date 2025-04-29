@@ -7,6 +7,7 @@ import { useWorkout } from "@/providers/WorkoutProvider";
 import { ThemedText } from "../ThemedText";
 import { router } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useSettings } from "@/stores/settingsStore";
 
 export default function TabBar({
   state,
@@ -16,6 +17,14 @@ export default function TabBar({
   const { colors } = useTheme();
   const { activeWorkoutId } = useWorkout();
   const { bottom } = useSafeAreaInsets();
+  const showExploreTab = useSettings();
+
+  const visibleRoutes = state.routes.filter((route) => {
+    if (route.name === "explore" && !showExploreTab) {
+      return false;
+    }
+    return true;
+  });
 
   return (
     <View
@@ -37,7 +46,7 @@ export default function TabBar({
       )}
 
       <View style={styles.tabContainer}>
-        {state.routes.map((route, index) => {
+        {visibleRoutes.map((route, index) => {
           const { options } = descriptors[route.key];
           const label =
             options.tabBarLabel !== undefined
@@ -46,7 +55,7 @@ export default function TabBar({
               ? options.title
               : route.name;
 
-          const isFocused = state.index === index;
+          const isFocused = state.index === visibleRoutes.indexOf(route);
 
           const onPress = () => {
             const event = navigation.emit({

@@ -258,6 +258,29 @@ function RootLayoutNav() {
           headerTransparent: true,
         }}
       />
+      <Stack.Screen
+        name="(modals)/settings"
+        options={{
+          headerTitle: "Settings",
+          headerBackVisible: false,
+          headerBlurEffect: "systemChromeMaterial",
+          headerTransparent: true,
+          headerLargeTitle: true,
+          headerLargeTitleShadowVisible: false,
+          headerShadowVisible: true,
+          headerLargeStyle: {
+            backgroundColor: "transparent",
+          },
+        }}
+      />
+      <Stack.Screen
+        name="(modals)/info_modal"
+        options={{
+          presentation: "transparentModal",
+          animation: "fade",
+          headerShown: false,
+        }}
+      />
     </Stack>
   );
 }

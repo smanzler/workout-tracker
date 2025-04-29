@@ -35,6 +35,9 @@ import {
   DropdownMenuItemIcon,
   DropdownMenuItemTitle,
   DropdownMenuRoot,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/zeego/drop-down";
 
@@ -177,6 +180,13 @@ export default function ProfileScreen() {
                 </TouchableOpacity>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
+                <DropdownMenuItem
+                  key="settings"
+                  onSelect={() => router.push("/(modals)/settings")}
+                >
+                  <DropdownMenuItemTitle>Settings</DropdownMenuItemTitle>
+                  <DropdownMenuItemIcon ios={{ name: "gear" }} />
+                </DropdownMenuItem>
                 <DropdownMenuItem
                   key="sync"
                   onSelect={() => mySync(user, updateLastSync, () => {})}
