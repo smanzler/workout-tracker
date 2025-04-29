@@ -7,8 +7,10 @@ import {
   TextStyle,
   View,
   ViewStyle,
+  ActivityIndicator,
 } from "react-native";
 import { ThemedText } from "./ThemedText";
+import { Ionicons } from "@expo/vector-icons";
 
 type InputVariant = "default" | "filled" | "outlined" | "ghost";
 type InputSize = "sm" | "md" | "lg";
@@ -21,6 +23,9 @@ interface TextInputProps extends Omit<RNTextInputProps, "style"> {
   containerStyle?: ViewStyle;
   inputStyle?: TextStyle;
   disabled?: boolean;
+  rightIcon?: string;
+  rightIconColor?: string;
+  isLoading?: boolean;
 }
 
 export const TextInput: React.FC<TextInputProps> = ({
@@ -31,6 +36,9 @@ export const TextInput: React.FC<TextInputProps> = ({
   containerStyle,
   inputStyle,
   disabled = false,
+  rightIcon,
+  rightIconColor,
+  isLoading = false,
   ...props
 }) => {
   const sizeStyles: Record<
@@ -83,20 +91,36 @@ export const TextInput: React.FC<TextInputProps> = ({
     <View style={[styles.container, containerStyle]}>
       {label && <ThemedText style={styles.label}>{label}</ThemedText>}
       <View style={[getVariantStyle(), disabled && styles.disabled]}>
-        <RNTextInput
-          style={[
-            {
-              height: sizeStyles[size].height,
-              fontSize: sizeStyles[size].fontSize,
-              padding: sizeStyles[size].padding,
-              color: getTextColor(),
-            },
-            inputStyle,
-          ]}
-          placeholderTextColor={theme.colors.text}
-          editable={!disabled}
-          {...props}
-        />
+        <View style={styles.inputContainer}>
+          <RNTextInput
+            style={[
+              {
+                height: sizeStyles[size].height,
+                fontSize: sizeStyles[size].fontSize,
+                padding: sizeStyles[size].padding,
+                color: getTextColor(),
+                flex: 1,
+              },
+              inputStyle,
+            ]}
+            placeholderTextColor={theme.colors.text}
+            editable={!disabled}
+            {...props}
+          />
+          {isLoading ? (
+            <ActivityIndicator
+              style={styles.rightIcon}
+              color={theme.colors.text}
+            />
+          ) : rightIcon ? (
+            <Ionicons
+              name={rightIcon as any}
+              size={24}
+              color={rightIconColor || theme.colors.text}
+              style={styles.rightIcon}
+            />
+          ) : null}
+        </View>
       </View>
       {error && <ThemedText style={styles.error}>{error}</ThemedText>}
     </View>
@@ -118,6 +142,13 @@ const styles = StyleSheet.create({
   },
   disabled: {
     opacity: 0.5,
+  },
+  inputContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  rightIcon: {
+    marginRight: 14,
   },
 });
 

@@ -103,3 +103,19 @@ export const getProfileImageUrl = (userId: string, version?: number) => {
   const { data } = supabase.storage.from("avatars").getPublicUrl(filePath);
   return version ? `${data.publicUrl}?v=${version}` : data.publicUrl;
 };
+
+export async function checkUsernameAvailability(username: string) {
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("username")
+    .ilike("username", username)
+    .single();
+
+  if (error && error.code === "PGRST116") {
+    return true;
+  }
+
+  if (error) throw error;
+
+  return false;
+}
