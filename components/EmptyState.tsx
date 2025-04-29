@@ -11,7 +11,11 @@ import { useTheme } from "@react-navigation/native";
 import { ThemedText } from "./ThemedText";
 
 interface EmptyStateProps {
-  icon: "globe-outline" | "people-outline" | "log-in-outline";
+  icon:
+    | "globe-outline"
+    | "people-outline"
+    | "log-in-outline"
+    | "create-outline";
   title: string;
   description: string;
   buttonText?: string;
@@ -28,7 +32,7 @@ export const EmptyState = ({
   buttonText,
   buttonIcon,
   onButtonPress,
-  isRefetching = false,
+  isRefetching,
   onRefresh,
 }: EmptyStateProps) => {
   const { colors } = useTheme();
@@ -41,54 +45,58 @@ export const EmptyState = ({
     isRefreshingRef.current = false;
   };
 
-  return (
-    <ScrollView
-      contentContainerStyle={styles.container}
-      contentInset={{ bottom: 0 }}
-      scrollIndicatorInsets={{ bottom: 0 }}
-      refreshControl={
-        onRefresh ? (
-          <RefreshControl refreshing={isRefetching} onRefresh={handleRefresh} />
-        ) : undefined
-      }
-    >
-      <View style={styles.content}>
-        <Ionicons
-          name={icon}
-          size={48}
-          color={colors.text}
-          style={styles.icon}
-        />
-        <ThemedText type="defaultSemiBold" style={styles.title}>
-          {title}
-        </ThemedText>
-        <ThemedText style={styles.description}>{description}</ThemedText>
-        {buttonText && buttonIcon && onButtonPress && (
-          <TouchableOpacity
-            style={[styles.button, { backgroundColor: colors.primary }]}
-            onPress={onButtonPress}
-          >
-            <Ionicons
-              name={buttonIcon as any}
-              size={20}
-              color={colors.background}
-              style={styles.buttonIcon}
-            />
-            <ThemedText
-              style={[styles.buttonText, { color: colors.background }]}
-            >
-              {buttonText}
-            </ThemedText>
-          </TouchableOpacity>
-        )}
-      </View>
-    </ScrollView>
+  const content = (
+    <View style={styles.content}>
+      <Ionicons name={icon} size={48} color={colors.text} style={styles.icon} />
+      <ThemedText type="defaultSemiBold" style={styles.title}>
+        {title}
+      </ThemedText>
+      <ThemedText style={styles.description}>{description}</ThemedText>
+      {buttonText && buttonIcon && onButtonPress && (
+        <TouchableOpacity
+          style={[styles.button, { backgroundColor: colors.primary }]}
+          onPress={onButtonPress}
+        >
+          <Ionicons
+            name={buttonIcon as any}
+            size={20}
+            color={colors.background}
+            style={styles.buttonIcon}
+          />
+          <ThemedText style={[styles.buttonText, { color: colors.background }]}>
+            {buttonText}
+          </ThemedText>
+        </TouchableOpacity>
+      )}
+    </View>
   );
+
+  // If onRefresh is provided, use ScrollView with RefreshControl
+  if (onRefresh) {
+    return (
+      <ScrollView
+        contentContainerStyle={styles.container}
+        refreshControl={
+          <RefreshControl
+            refreshing={!!isRefetching}
+            onRefresh={handleRefresh}
+          />
+        }
+        contentInset={{ bottom: 0 }}
+        scrollIndicatorInsets={{ bottom: 0 }}
+      >
+        {content}
+      </ScrollView>
+    );
+  }
+
+  // Otherwise use a simple View
+  return <View style={styles.container}>{content}</View>;
 };
 
 const styles = StyleSheet.create({
   container: {
-    flexGrow: 1,
+    flex: 1,
     justifyContent: "center",
     alignItems: "center",
   },

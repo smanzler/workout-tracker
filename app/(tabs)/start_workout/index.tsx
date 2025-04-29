@@ -21,6 +21,7 @@ import { withObservables } from "@nozbe/watermelondb/react";
 import { Routine } from "@/models/Routine";
 import RoutineItem from "@/components/RoutineItem";
 import { Q } from "@nozbe/watermelondb";
+import { EmptyState } from "@/components/EmptyState";
 
 function StartWorkoutScreen({ routines }: { routines: Routine[] }) {
   const { activeWorkoutId, startWorkout } = useWorkout();
@@ -112,16 +113,14 @@ function StartWorkoutScreen({ routines }: { routines: Routine[] }) {
         {routines.length !== 0 ? (
           routines.map((r, i) => <RoutineItem key={i} routine={r} />)
         ) : (
-          <View style={{ alignItems: "center", padding: 50, marginTop: 50 }}>
-            <Ionicons name="create" color={colors.text} size={50} />
-            <ThemedText type="subtitle">No Routines</ThemedText>
-            <ThemedText
-              type="defaultSemiBold"
-              style={{ opacity: 0.6, textAlign: "center" }}
-            >
-              Your Routines will appear here when you create them.
-            </ThemedText>
-          </View>
+          <EmptyState
+            icon="create-outline"
+            title="No Routines"
+            description="Your Routines will appear here when you create them."
+            buttonText="Create Routine"
+            buttonIcon="add"
+            onButtonPress={() => router.push("/(modals)/add_routine")}
+          />
         )}
       </View>
     </BodyScrollView>

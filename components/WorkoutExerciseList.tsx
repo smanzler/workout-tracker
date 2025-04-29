@@ -3,16 +3,14 @@ import React from "react";
 import { withObservables } from "@nozbe/watermelondb/react";
 import { WorkoutExercise } from "@/models/WorkoutExercise";
 import WorkoutExerciseListItem from "./WorkoutExerciseListItem";
-import { Ionicons } from "@expo/vector-icons";
-import { useTheme } from "@react-navigation/native";
-import { ThemedText } from "./ThemedText";
+import { EmptyState } from "./EmptyState";
+import { router } from "expo-router";
 
 const WorkoutExerciseList = ({
   workoutExercises,
 }: {
   workoutExercises: WorkoutExercise[];
 }) => {
-  const theme = useTheme();
   return (
     <>
       {workoutExercises?.length ? (
@@ -23,13 +21,11 @@ const WorkoutExerciseList = ({
           />
         ))
       ) : (
-        <View style={{ alignItems: "center", padding: 40 }}>
-          <Ionicons name="barbell" color={theme.colors.text} size={50} />
-          <ThemedText type="subtitle">Get Started</ThemedText>
-          <ThemedText type="defaultSemiBold" style={{ opacity: 0.6 }}>
-            Add exercises to get started
-          </ThemedText>
-        </View>
+        <EmptyState
+          icon="log-in-outline"
+          title="Get Started"
+          description="Add exercises to get started"
+        />
       )}
     </>
   );
