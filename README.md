@@ -1,50 +1,93 @@
-# Welcome to your Expo app 👋
+# 💪 Workout Tracker
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A modern, social workout tracking app built with React Native and Expo. Track your workouts, share your progress, and connect with other fitness enthusiasts.
 
-## Get started
+## ✨ Features
 
-1. Install dependencies
+### 🏋️‍♂️ Workout Management
 
-   ```bash
-   npm install
-   ```
+- Create and customize workouts
+- Track sets, reps, and weights
+- Efficient keyboard navigation between sets
+- Real-time progress tracking
 
-2. Start the app
+### 👥 Social Features
 
-   ```bash
-    npx expo start
-   ```
+- Public/Private profile options
+- Follow other users
+- Share your workouts
+- Discover workouts from the community
 
-In the output, you'll find options to open the app in a
+### 🎨 Modern UI/UX
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+- Dark/Light theme support
+- Smooth animations
+- Intuitive gesture controls
+- Clean, minimalist design
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+### 🔒 Privacy & Security
 
-## Get a fresh project
+- Customizable privacy settings
+- Secure authentication
+- Zero-tolerance policy for objectionable content
+- Follow request system for private profiles
 
-When you're ready, run:
+## 🛠 Tech Stack
+
+- **Frontend**: React Native, Expo
+- **State Management**: React Query, WatermelonDB
+- **Backend**: Supabase
+- **UI Components**: Custom components with native feel
+- **Authentication**: Supabase Auth
+
+## 📱 Screenshots
+
+[Add screenshots of your app here]
+
+## 🚀 Getting Started
+
+1. Clone the repository
 
 ```bash
-npm run reset-project
+git clone [your-repo-url]
+cd workout-tracker
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+2. Install dependencies
 
-## Learn more
+```bash
+npm install
+```
 
-To learn more about developing your project with Expo, look at the following resources:
+3. Set up environment variables
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+```bash
+cp .env.example .env
+```
 
-## Join the community
+Fill in your Supabase credentials in `.env`
 
-Join our community of developers creating universal apps.
+4. Start the development server
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+```bash
+npx expo start
+```
+
+## 📝 License
+
+[Your chosen license]
+
+## 🤝 Contributing
+
+Contributions, issues, and feature requests are welcome! Feel free to check the [issues page](your-issues-url).
+
+## 👨‍💻 Author
+
+Your Name
+
+- GitHub: [@smanzler](your-github-url)
+- LinkedIn: [Simon Manzler](your-linkedin-url)
+
+## 🌟 Show your support
+
+Give a ⭐️ if this project helped you!
