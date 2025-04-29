@@ -10,6 +10,7 @@ import { PostgrestError } from "@supabase/supabase-js";
 import { checkUsernameAvailability } from "@/api/profile";
 import { useDebounce } from "@/hooks/useDebounce";
 import { useQuery } from "@tanstack/react-query";
+import { EulaAgreement } from "@/components/EulaAgreement";
 
 export default function SignupScreen() {
   const [username, setUsername] = useState("");
@@ -18,11 +19,11 @@ export default function SignupScreen() {
   const [loading, setLoading] = useState(false);
   const [isDebouncing, setIsDebouncing] = useState(false);
   const [error, setError] = useState<string | undefined>(undefined);
+  const [showEula, setShowEula] = useState(false);
   const theme = useTheme();
 
   const debouncedUsername = useDebounce(username, 500);
 
-  // Track when username is being debounced
   useEffect(() => {
     if (username !== debouncedUsername) {
       setIsDebouncing(true);
@@ -64,7 +65,7 @@ export default function SignupScreen() {
     return theme.colors.primary;
   };
 
-  async function signUpWithEmail() {
+  const handleSignUpPress = () => {
     if (!isValidUsername(username)) {
       Alert.alert("Error", "Username can only contain letters and numbers");
       return;
@@ -75,7 +76,12 @@ export default function SignupScreen() {
       return;
     }
 
+    setShowEula(true);
+  };
+
+  async function signUpWithEmail() {
     setLoading(true);
+    setShowEula(false);
 
     try {
       const {
@@ -113,6 +119,15 @@ export default function SignupScreen() {
     } finally {
       setLoading(false);
     }
+  }
+
+  if (showEula) {
+    return (
+      <EulaAgreement
+        onAgree={signUpWithEmail}
+        onDecline={() => setShowEula(false)}
+      />
+    );
   }
 
   return (
@@ -162,7 +177,7 @@ export default function SignupScreen() {
             isDebouncing ||
             !isValidUsername(username)
           }
-          onPress={() => signUpWithEmail()}
+          onPress={handleSignUpPress}
         >
           Sign up
         </Button>
