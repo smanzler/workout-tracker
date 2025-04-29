@@ -30,6 +30,17 @@ import { useAuth } from "@/providers/AuthProvider";
 import { useQueryClient } from "@tanstack/react-query";
 import { PostgrestError } from "@supabase/supabase-js";
 import PostWorkoutSummary from "./PostWorkoutSummary";
+import {
+  TapGestureHandler,
+  State,
+  GestureHandlerStateChangeNativeEvent,
+} from "react-native-gesture-handler";
+import Animated, {
+  withSpring,
+  useSharedValue,
+  withTiming,
+  useAnimatedStyle,
+} from "react-native-reanimated";
 
 dayjs.extend(relativeTime);
 
@@ -79,6 +90,8 @@ const PostListItem = ({ post }: { post: Post }) => {
   const [currentPage, setCurrentPage] = useState(0);
   const { user } = useAuth();
   const queryClient = useQueryClient();
+  const [isLoading, setIsLoading] = useState(false);
+  const scale = useSharedValue(0);
 
   const handleDelete = async () => {
     try {
@@ -112,6 +125,7 @@ const PostListItem = ({ post }: { post: Post }) => {
   };
 
   const toggleLike = async () => {
+    setIsLoading(true);
     const newLikedState = !liked;
     setLiked(newLikedState);
     setLikeCount((prev) => prev + (newLikedState ? 1 : -1));
@@ -128,6 +142,147 @@ const PostListItem = ({ post }: { post: Post }) => {
       setLikeCount((prev) => prev - (newLikedState ? 1 : -1));
       console.error("Failed to toggle like:", error.message);
     }
+    setIsLoading(false);
+  };
+
+  const onDoubleTapStateChange = ({
+    nativeEvent,
+  }: {
+    nativeEvent: GestureHandlerStateChangeNativeEvent;
+  }) => {
+    if (nativeEvent.state === State.ACTIVE && !liked && !isLoading) {
+      scale.value = withSpring(
+        1,
+        {
+          mass: 1,
+          damping: 15,
+          stiffness: 200,
+        },
+        (finished) => {
+          if (finished) {
+            scale.value = withTiming(0, { duration: 150 });
+          }
+        }
+      );
+      toggleLike();
+    }
+  };
+
+  const heartAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+    opacity: scale.value,
+  }));
+
+  const renderContent = () => {
+    const pages = [];
+    if (post.image_url) {
+      pages.push(
+        <View
+          key="image"
+          style={{
+            flex: 1,
+            aspectRatio: 1,
+          }}
+        >
+          <Image
+            source={{ uri: post.image_url }}
+            style={{ width: "100%", height: "100%" }}
+            contentFit="cover"
+            transition={300}
+          />
+        </View>
+      );
+    }
+
+    if (post.workout.exercises.length > 0) {
+      pages.push(<PostWorkoutSummary key="workout" workout={post.workout} />);
+    }
+
+    if (pages.length === 0) return null;
+
+    return (
+      <TapGestureHandler
+        numberOfTaps={2}
+        onHandlerStateChange={onDoubleTapStateChange}
+        maxDelayMs={250}
+      >
+        <Animated.View style={{ position: "relative" }}>
+          <PagerView
+            style={{
+              width: "100%",
+              aspectRatio: 1,
+              gap: 15,
+              marginBottom: 10,
+              borderRadius: 10,
+              overflow: "hidden",
+            }}
+            initialPage={0}
+            onPageSelected={(e) => setCurrentPage(e.nativeEvent.position)}
+          >
+            {pages}
+          </PagerView>
+
+          <Animated.View
+            style={[
+              {
+                position: "absolute",
+                left: 0,
+                right: 0,
+                top: 0,
+                bottom: 0,
+                justifyContent: "center",
+                alignItems: "center",
+                zIndex: 10,
+              },
+              heartAnimatedStyle,
+            ]}
+          >
+            <FontAwesome
+              name="heart"
+              size={80}
+              color="white"
+              style={{
+                shadowColor: "#000",
+                shadowOffset: {
+                  width: 0,
+                  height: 2,
+                },
+                shadowOpacity: 0.25,
+                shadowRadius: 3.84,
+              }}
+            />
+          </Animated.View>
+
+          {pages.length > 1 && (
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "center",
+                gap: 4,
+                marginBottom: 10,
+                position: "absolute",
+                bottom: 20,
+                left: 0,
+                right: 0,
+              }}
+            >
+              {pages.map((_, index) => (
+                <View
+                  key={index}
+                  style={{
+                    width: 6,
+                    height: 6,
+                    borderRadius: 3,
+                    backgroundColor: colors.text,
+                    opacity: currentPage === index ? 1 : 0.6,
+                  }}
+                />
+              ))}
+            </View>
+          )}
+        </Animated.View>
+      </TapGestureHandler>
+    );
   };
 
   return (
@@ -213,90 +368,16 @@ const PostListItem = ({ post }: { post: Post }) => {
         </DropdownMenuRoot>
       </View>
 
-      {(() => {
-        const pages = [];
-        if (post.image_url) {
-          pages.push(
-            <View
-              key="image"
-              style={{
-                flex: 1,
-                aspectRatio: 1,
-              }}
-            >
-              <Image
-                source={{ uri: post.image_url }}
-                style={{ width: "100%", height: "100%" }}
-                contentFit="cover"
-                transition={300}
-              />
-            </View>
-          );
-        }
-
-        if (post.workout.exercises.length > 0) {
-          pages.push(
-            <PostWorkoutSummary key="workout" workout={post.workout} />
-          );
-        }
-
-        if (pages.length === 0) return null;
-
-        return (
-          <>
-            <PagerView
-              style={{
-                width: "100%",
-                aspectRatio: 1,
-                gap: 15,
-                marginBottom: 10,
-                borderRadius: 10,
-                overflow: "hidden",
-              }}
-              initialPage={0}
-              onPageSelected={(e) => setCurrentPage(e.nativeEvent.position)}
-            >
-              {pages}
-            </PagerView>
-
-            {pages.length > 1 && (
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "center",
-                  gap: 4,
-                  marginBottom: 10,
-                  position: "absolute",
-                  bottom: 20,
-                  left: 0,
-                  right: 0,
-                }}
-              >
-                {pages.map((_, index) => (
-                  <View
-                    key={index}
-                    style={{
-                      width: 6,
-                      height: 6,
-                      borderRadius: 3,
-                      backgroundColor: colors.text,
-                      opacity: currentPage === index ? 1 : 0.6,
-                    }}
-                  />
-                ))}
-              </View>
-            )}
-          </>
-        );
-      })()}
+      {renderContent()}
 
       <View style={{ flexDirection: "row", marginBottom: 10 }}>
         <View style={{ flexDirection: "row", gap: 10 }}>
-          <TouchableOpacity onPress={toggleLike}>
+          <TouchableOpacity onPress={toggleLike} disabled={isLoading}>
             <FontAwesome
               name={liked ? "heart" : "heart-o"}
               color={colors.text}
               size={24}
+              style={{ opacity: isLoading ? 0.5 : 1 }}
             />
           </TouchableOpacity>
 
