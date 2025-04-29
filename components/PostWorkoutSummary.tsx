@@ -200,7 +200,7 @@ const PostWorkoutSummary = ({ workout }: { workout: PostWorkout }) => {
                         }}
                       >
                         <ThemedText type="defaultSemiBold">
-                          {bestSet.weight ? `${bestSet.weight}kg × ` : ""}
+                          {bestSet.weight ? `${bestSet.weight} lb × ` : ""}
                           {bestSet.reps || "-"}
                         </ThemedText>
                         {hasPR && (
