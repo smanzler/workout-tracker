@@ -23,6 +23,14 @@ import { Entypo } from "@expo/vector-icons";
 import database from "@/db";
 import { router } from "expo-router";
 import ButtonWithIcon from "./ButtonWithIcon";
+import {
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuItemIcon,
+  ContextMenuItemTitle,
+  ContextMenuRoot,
+  ContextMenuTrigger,
+} from "@/zeego/context-menu";
 
 const RoutineItem = ({
   routine,
@@ -86,35 +94,45 @@ const RoutineItem = ({
   };
 
   return (
-    <Pressable
-      onPress={() => {
-        router.push({
-          pathname: "/(modals)/routine_modal",
-          params: { routineId: routine.id },
-        });
-      }}
-      style={[styles.container, { backgroundColor: colors.card }]}
-    >
-      <View style={styles.rowHeader}>
-        <ThemedText
-          type="subtitle"
-          numberOfLines={1}
-          ellipsizeMode="tail"
-          style={{ flexShrink: 1 }}
+    <ContextMenuRoot>
+      <ContextMenuTrigger>
+        <Pressable
+          onPress={() => {
+            router.push({
+              pathname: "/(modals)/routine_modal",
+              params: { routineId: routine.id },
+            });
+          }}
+          style={[styles.container, { backgroundColor: colors.card }]}
         >
-          {routine.name}
-        </ThemedText>
+          <View style={styles.rowHeader}>
+            <ThemedText
+              type="subtitle"
+              numberOfLines={1}
+              ellipsizeMode="tail"
+              style={{ flexShrink: 1 }}
+            >
+              {routine.name}
+            </ThemedText>
 
-        <ThemedText
-          type="default"
-          style={{ opacity: 0.6, fontSize: 12 }}
-        ></ThemedText>
-      </View>
+            <ThemedText
+              type="default"
+              style={{ opacity: 0.6, fontSize: 12 }}
+            ></ThemedText>
+          </View>
 
-      <ThemedText type="default" style={{ opacity: 0.6 }}>
-        {exerciseNames}
-      </ThemedText>
-    </Pressable>
+          <ThemedText type="default" style={{ opacity: 0.6 }}>
+            {exerciseNames}
+          </ThemedText>
+        </Pressable>
+      </ContextMenuTrigger>
+      <ContextMenuContent>
+        <ContextMenuItem key="delete" onSelect={handleDelete} destructive>
+          <ContextMenuItemTitle>Delete Routine</ContextMenuItemTitle>
+          <ContextMenuItemIcon ios={{ name: "trash" }} />
+        </ContextMenuItem>
+      </ContextMenuContent>
+    </ContextMenuRoot>
   );
 };
 
