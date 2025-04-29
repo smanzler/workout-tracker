@@ -54,6 +54,26 @@ export const uploadImageAsync = async (
   }
 };
 
+export async function followUser(userId: string) {
+  const { error } = await supabase.rpc("follow_user", {
+    _following_id: userId,
+  });
+
+  console.log("error", error);
+
+  if (error) throw error;
+}
+
+export async function unfollowUser(userId: string) {
+  const { error } = await supabase.rpc("unfollow_user", {
+    _following_id: userId,
+  });
+
+  console.log("error", error);
+
+  if (error) throw error;
+}
+
 export const useProfile = (userId: string | undefined) => {
   return useQuery<ProfileDetails>({
     queryKey: ["profile", userId],
