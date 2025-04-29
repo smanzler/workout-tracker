@@ -1,16 +1,26 @@
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import React, { useState } from "react";
 import { ThemedText } from "./ThemedText";
 import { formatDuration } from "@/utils/format";
 import dayjs from "dayjs";
 import { useTheme } from "@react-navigation/native";
-import { FontAwesome } from "@expo/vector-icons";
+import { Entypo, FontAwesome } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { getProfileImageUrl } from "@/api/profile";
 import { supabase } from "@/lib/supabase";
 import { router } from "expo-router";
 import PagerView from "react-native-pager-view";
-
+import {
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuItemTitle,
+  DropdownMenuItemIcon,
+  DropdownMenuRoot,
+  DropdownMenuTrigger,
+} from "@/zeego/drop-down";
+import { useAuth } from "@/providers/AuthProvider";
+import { useQueryClient } from "@tanstack/react-query";
+import { PostgrestError } from "@supabase/supabase-js";
 interface Post {
   id: string;
   user: User;
@@ -71,6 +81,39 @@ const PostListItem = ({ post }: { post: Post }) => {
   const [liked, setLiked] = useState(post.liked_by_user);
   const [likeCount, setLikeCount] = useState(post.like_count);
   const [currentPage, setCurrentPage] = useState(0);
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+
+  const handleDelete = async () => {
+    try {
+      const { error } = await supabase.from("posts").delete().eq("id", post.id);
+
+      if (error) throw error;
+
+      queryClient.invalidateQueries({ queryKey: ["following-posts"] });
+    } catch (error) {
+      console.error("Failed to delete post:", error);
+    }
+  };
+
+  const handleReport = async () => {
+    try {
+      const { error } = await supabase.from("post_reports").insert({
+        post_id: post.id,
+        reporter_id: user?.id,
+        status: "pending",
+      });
+
+      if (error) throw error;
+      Alert.alert("Report", "Post reported successfully");
+    } catch (error: any) {
+      if (error.code === "23505") {
+        Alert.alert("Report", "You have already reported this post");
+      } else {
+        Alert.alert("Report", "Failed to report post");
+      }
+    }
+  };
 
   const toggleLike = async () => {
     const newLikedState = !liked;
@@ -93,40 +136,80 @@ const PostListItem = ({ post }: { post: Post }) => {
 
   return (
     <View style={{ marginBottom: 20 }}>
-      <TouchableOpacity
-        onPress={() => {
-          router.push({
-            pathname: "/(modals)/profile",
-            params: { userId: post.user.user_id },
-          });
-        }}
+      <View
         style={{
           flexDirection: "row",
-          gap: 10,
+          justifyContent: "space-between",
           alignItems: "center",
           marginBottom: 10,
         }}
       >
-        <View
+        <TouchableOpacity
+          onPress={() => {
+            router.push({
+              pathname: "/(modals)/profile",
+              params: { userId: post.user.user_id },
+            });
+          }}
           style={{
-            width: 50,
-            aspectRatio: 1,
-            borderRadius: 25,
-            overflow: "hidden",
+            flexDirection: "row",
+            gap: 10,
+            alignItems: "center",
           }}
         >
-          <Image
+          <View
             style={{
-              backgroundColor: colors.card,
-              width: "100%",
-              height: "100%",
+              width: 50,
+              aspectRatio: 1,
+              borderRadius: 25,
+              overflow: "hidden",
             }}
-            source={{ uri: getProfileImageUrl(post.user.user_id) }}
-            cachePolicy="memory-disk"
-          />
-        </View>
-        <ThemedText type="defaultSemiBold">{post.user.username}</ThemedText>
-      </TouchableOpacity>
+          >
+            <Image
+              style={{
+                backgroundColor: colors.card,
+                width: "100%",
+                height: "100%",
+              }}
+              source={{ uri: getProfileImageUrl(post.user.user_id) }}
+              cachePolicy="memory-disk"
+            />
+          </View>
+          <ThemedText type="defaultSemiBold">{post.user.username}</ThemedText>
+        </TouchableOpacity>
+
+        <DropdownMenuRoot>
+          <DropdownMenuTrigger>
+            <Entypo
+              name="dots-three-horizontal"
+              size={18}
+              color={colors.text}
+            />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            {user?.id === post.user.user_id && (
+              <DropdownMenuItem
+                key="delete"
+                onSelect={handleDelete}
+                destructive
+              >
+                <DropdownMenuItemIcon ios={{ name: "trash" }} />
+                <DropdownMenuItemTitle>Delete Post</DropdownMenuItemTitle>
+              </DropdownMenuItem>
+            )}
+            {user?.id !== post.user.user_id && (
+              <DropdownMenuItem
+                key="report"
+                onSelect={handleReport}
+                destructive
+              >
+                <DropdownMenuItemIcon ios={{ name: "flag" }} />
+                <DropdownMenuItemTitle>Report Post</DropdownMenuItemTitle>
+              </DropdownMenuItem>
+            )}
+          </DropdownMenuContent>
+        </DropdownMenuRoot>
+      </View>
 
       {(() => {
         const pages = [];
