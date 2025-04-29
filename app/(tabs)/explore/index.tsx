@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { router, Stack } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "@react-navigation/native";
@@ -16,6 +16,7 @@ import { FlatList } from "react-native-gesture-handler";
 import PostListItem from "@/components/PostListItem";
 import { useAuth } from "@/providers/AuthProvider";
 import { ThemedText } from "@/components/ThemedText";
+import { EmptyState } from "@/components/EmptyState";
 import {
   DropdownMenuContent,
   DropdownMenuItem,
@@ -29,6 +30,7 @@ const ExplorePage = () => {
   const { colors } = useTheme();
   const { user } = useAuth();
   const [showExplore, setShowExplore] = useState(false);
+  const isRefreshingRef = useRef(false);
 
   const explore = useExplorePosts(showExplore);
   const following = useFollowingPosts(!showExplore);
@@ -46,12 +48,27 @@ const ExplorePage = () => {
 
   const posts = data?.pages.flat() ?? [];
 
+  const handleRefresh = async () => {
+    if (isRefreshingRef.current) return;
+    isRefreshingRef.current = true;
+    await refetch();
+    isRefreshingRef.current = false;
+  };
+
   if (!user) {
     return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+      <>
         <Stack.Screen options={{ headerRight: () => null }} />
-        <ThemedText>You need to login to see this page</ThemedText>
-      </View>
+        <EmptyState
+          icon="log-in-outline"
+          title="Login Required"
+          description="Please login to view and interact with posts"
+          buttonText="Login"
+          buttonIcon="log-in"
+          // @ts-ignore
+          onButtonPress={() => router.replace("/(tabs)/")}
+        />
+      </>
     );
   }
 
@@ -107,25 +124,24 @@ const ExplorePage = () => {
         }}
       />
       {posts.length === 0 && !isLoading ? (
-        <BodyScrollView
-          refreshControl={
-            <RefreshControl refreshing={isRefetching} onRefresh={refetch} />
+        <EmptyState
+          icon={showExplore ? "globe-outline" : "people-outline"}
+          title={showExplore ? "No Posts Yet" : "No Posts From Following"}
+          description={
+            showExplore
+              ? "Be the first to share your workout! Create a post and inspire others."
+              : "Start following people to see their workout posts here."
           }
-        >
-          <View
-            style={{
-              height: "100%",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <ThemedText type="defaultSemiBold">
-              {showExplore
-                ? "No posts found."
-                : "No posts found. Follow users to see their posts."}
-            </ThemedText>
-          </View>
-        </BodyScrollView>
+          buttonText={showExplore ? "Create Post" : "Find Friends"}
+          buttonIcon={showExplore ? "add" : "person-add"}
+          onButtonPress={() =>
+            router.push(
+              showExplore ? "/(modals)/create_post" : "/(modals)/find_friends"
+            )
+          }
+          isRefetching={isRefetching}
+          onRefresh={handleRefresh}
+        />
       ) : (
         <FlatList
           data={posts}
@@ -139,7 +155,10 @@ const ExplorePage = () => {
             isFetchingNextPage ? <ActivityIndicator /> : null
           }
           refreshControl={
-            <RefreshControl refreshing={isRefetching} onRefresh={refetch} />
+            <RefreshControl
+              refreshing={isRefetching}
+              onRefresh={handleRefresh}
+            />
           }
           automaticallyAdjustsScrollIndicatorInsets
           contentInsetAdjustmentBehavior="automatic"
@@ -154,4 +173,49 @@ const ExplorePage = () => {
 
 export default ExplorePage;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  loginContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
+  },
+  emptyContainer: {
+    flex: 1,
+    minHeight: "100%",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  emptyContent: {
+    alignItems: "center",
+    padding: 20,
+    maxWidth: 300,
+  },
+  emptyIcon: {
+    marginBottom: 16,
+    opacity: 0.8,
+  },
+  emptyTitle: {
+    fontSize: 20,
+    marginBottom: 8,
+    textAlign: "center",
+  },
+  emptyText: {
+    textAlign: "center",
+    opacity: 0.7,
+    marginBottom: 24,
+  },
+  emptyButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderRadius: 25,
+  },
+  buttonIcon: {
+    marginRight: 8,
+  },
+  buttonText: {
+    fontWeight: "600",
+  },
+});
