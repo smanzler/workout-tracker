@@ -91,6 +91,12 @@ const ExplorePage = () => {
               </DropdownMenuRoot>
 
               <TouchableOpacity
+                onPress={() => router.push("/(modals)/find_friends")}
+              >
+                <Ionicons name="person-add" size={22} color={colors.primary} />
+              </TouchableOpacity>
+
+              <TouchableOpacity
                 onPress={() => router.push("/(modals)/create_post")}
               >
                 <Ionicons name="add" color={colors.primary} size={24} />

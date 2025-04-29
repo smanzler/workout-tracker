@@ -274,6 +274,21 @@ function RootLayoutNav() {
         }}
       />
       <Stack.Screen
+        name="(modals)/find_friends"
+        options={{
+          headerTitle: "Find Friends",
+          headerBackVisible: false,
+          headerBlurEffect: "systemChromeMaterial",
+          headerTransparent: true,
+          headerLargeTitle: true,
+          headerLargeTitleShadowVisible: false,
+          headerShadowVisible: true,
+          headerLargeStyle: {
+            backgroundColor: "transparent",
+          },
+        }}
+      />
+      <Stack.Screen
         name="(modals)/info_modal"
         options={{
           presentation: "transparentModal",
