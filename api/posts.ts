@@ -87,11 +87,11 @@ export const postPost = async (
 
       if (storageError) throw storageError;
 
-      const {
-        data: { publicUrl },
-      } = supabase.storage.from("post-images").getPublicUrl(filePath);
+      const { data } = supabase.storage
+        .from("post-images")
+        .getPublicUrl(filePath);
 
-      console.log(publicUrl);
+      publicUrl = data.publicUrl;
     }
 
     const { error: insertError } = await supabase.from("posts").insert({
@@ -99,7 +99,7 @@ export const postPost = async (
       workout_id: workout?.id,
       routine_id: routine?.id,
       caption,
-      image_url: publicUrl || null,
+      image_url: publicUrl,
     });
 
     if (insertError) throw insertError;
