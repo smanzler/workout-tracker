@@ -85,7 +85,6 @@ export default appSchema({
           name: "original_creator_id",
           type: "string",
           isOptional: true,
-          isIndexed: true,
         },
         { name: "created_at", type: "number" },
         { name: "updated_at", type: "number" },
