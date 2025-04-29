@@ -15,6 +15,8 @@ export class Routine extends Model {
 
   @field("user_id") userId?: string;
 
+  @field("original_creator_id") originalCreatorId?: string;
+
   @date("created_at") createdAt!: number;
   @date("updated_at") updatedAt!: number;
 }

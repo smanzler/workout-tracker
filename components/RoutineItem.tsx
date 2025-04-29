@@ -44,7 +44,7 @@ const RoutineItem = ({
           return ex.title;
         })
       );
-      setExerciseNames(names.join(", "));
+      setExerciseNames(names.join(" • "));
     };
 
     fetchNames();
@@ -105,26 +105,15 @@ const RoutineItem = ({
           {routine.name}
         </ThemedText>
 
-        <DropdownMenuRoot>
-          <DropdownMenuTrigger>
-            <ButtonWithIcon>
-              <Entypo
-                name="dots-three-horizontal"
-                size={24}
-                color={colors.text}
-              />
-            </ButtonWithIcon>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuItem destructive key="delete" onSelect={handleDelete}>
-              <DropdownMenuItemTitle>Delete Routine</DropdownMenuItemTitle>
-              <DropdownMenuItemIcon ios={{ name: "trash" }} />
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenuRoot>
+        <ThemedText
+          type="default"
+          style={{ opacity: 0.6, fontSize: 12 }}
+        ></ThemedText>
       </View>
 
-      <ThemedText style={{ opacity: 0.6 }}>{exerciseNames}</ThemedText>
+      <ThemedText type="default" style={{ opacity: 0.6 }}>
+        {exerciseNames}
+      </ThemedText>
     </Pressable>
   );
 };
@@ -146,6 +135,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    marginBottom: 5,
   },
   btn: {
     paddingHorizontal: 5,

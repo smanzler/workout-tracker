@@ -1,7 +1,7 @@
 import { appSchema, tableSchema } from "@nozbe/watermelondb";
 
 export default appSchema({
-  version: 3,
+  version: 2,
   tables: [
     tableSchema({
       name: "exercises",
@@ -24,6 +24,12 @@ export default appSchema({
         { name: "start_time", type: "number" },
         { name: "end_time", type: "number", isOptional: true },
         { name: "user_id", type: "string", isOptional: true },
+        {
+          name: "routine_id",
+          type: "string",
+          isOptional: true,
+          isIndexed: true,
+        },
         { name: "created_at", type: "number" },
         { name: "updated_at", type: "number" },
       ],
@@ -75,6 +81,12 @@ export default appSchema({
         { name: "name", type: "string", isOptional: true },
         { name: "description", type: "string", isOptional: true },
         { name: "user_id", type: "string", isIndexed: true },
+        {
+          name: "original_creator_id",
+          type: "string",
+          isOptional: true,
+          isIndexed: true,
+        },
         { name: "created_at", type: "number" },
         { name: "updated_at", type: "number" },
       ],
