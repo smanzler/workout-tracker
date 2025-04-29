@@ -85,7 +85,7 @@ const WorkoutExerciseListItem = ({
           </DropdownMenuTrigger>
           <DropdownMenuContent>
             <DropdownMenuItem destructive key="delete" onSelect={handleDelete}>
-              <DropdownMenuItemTitle>Delete Exercise</DropdownMenuItemTitle>
+              <DropdownMenuItemTitle>Remove Exercise</DropdownMenuItemTitle>
               <DropdownMenuItemIcon ios={{ name: "trash" }} />
             </DropdownMenuItem>
           </DropdownMenuContent>
