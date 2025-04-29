@@ -1,10 +1,17 @@
-import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  Alert,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  ScrollView,
+} from "react-native";
 import React, { useState } from "react";
 import { ThemedText } from "./ThemedText";
 import { formatDuration } from "@/utils/format";
 import dayjs from "dayjs";
 import { useTheme } from "@react-navigation/native";
-import { Entypo, FontAwesome } from "@expo/vector-icons";
+import { Entypo, FontAwesome, FontAwesome5 } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { getProfileImageUrl } from "@/api/profile";
 import { supabase } from "@/lib/supabase";
@@ -21,6 +28,8 @@ import {
 import { useAuth } from "@/providers/AuthProvider";
 import { useQueryClient } from "@tanstack/react-query";
 import { PostgrestError } from "@supabase/supabase-js";
+import PostWorkoutSummary from "./PostWorkoutSummary";
+
 interface Post {
   id: string;
   user: User;
@@ -32,38 +41,41 @@ interface Post {
   routine_or_workout: Routine | Workout;
 }
 
-interface Routine {
+export interface Routine {
   exercises: RoutineExercise[];
-  start_time: string;
   routine_id: string;
   routine_name: string;
 }
 
-interface Workout {
+export interface Workout {
   exercises: WorkoutExercise[];
   start_time: string;
+  end_time: string;
   workout_id: string;
   workout_name: string;
 }
 
-interface RoutineExercise {
+export interface RoutineExercise {
   sets: RoutineSet[];
   exercise_id: string;
   exercise_title: string;
 }
 
-interface WorkoutExercise {
+export interface WorkoutExercise {
   sets: Set[];
   exericse_id: string;
   exercise_title: string;
 }
 
-interface RoutineSet {
+export interface RoutineSet {
   reps?: number;
   weight?: number;
+  is_1rm_pr?: boolean;
+  is_volume_pr?: boolean;
+  is_weight_pr?: boolean;
 }
 
-interface Set {
+export interface Set {
   reps?: number;
   weight?: number;
   is_1rm_pr?: boolean;
@@ -234,26 +246,10 @@ const PostListItem = ({ post }: { post: Post }) => {
 
         if (post.routine_or_workout.exercises.length > 0) {
           pages.push(
-            <View
+            <PostWorkoutSummary
               key="workout"
-              style={{
-                flex: 1,
-                backgroundColor: colors.card,
-              }}
-            >
-              <View style={{ padding: 12 }}>
-                <ThemedText style={{ marginBottom: 4 }} type="subtitle">
-                  {("workout_id" in post.routine_or_workout
-                    ? post.routine_or_workout.workout_name
-                    : post.routine_or_workout.routine_name) || "Workout"}
-                </ThemedText>
-                {post.routine_or_workout.exercises.map((e, i) => (
-                  <ThemedText numberOfLines={1} key={i}>
-                    {e.exercise_title}
-                  </ThemedText>
-                ))}
-              </View>
-            </View>
+              workout={post.routine_or_workout}
+            />
           );
         }
 
@@ -296,10 +292,8 @@ const PostListItem = ({ post }: { post: Post }) => {
                       width: 6,
                       height: 6,
                       borderRadius: 3,
-                      backgroundColor:
-                        currentPage === index
-                          ? colors.text
-                          : colors.text + "50",
+                      backgroundColor: colors.text,
+                      opacity: currentPage === index ? 1 : 0.6,
                     }}
                   />
                 ))}
