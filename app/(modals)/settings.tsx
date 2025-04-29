@@ -20,10 +20,13 @@ import {
   DropdownMenuRoot,
 } from "@/zeego/drop-down";
 import { DropdownMenuTrigger } from "@/zeego/drop-down";
-import { router, Stack } from "expo-router";
+import { router, Stack, useRouter } from "expo-router";
 import { BlurView } from "expo-blur";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 import React from "react";
+import { updateProfilePrivacy, useProfile } from "@/api/profile";
+import { useQueryClient, useQuery } from "@tanstack/react-query";
+import { useAuth } from "@/providers/AuthProvider";
 
 interface SettingsSectionProps {
   title: string;
@@ -180,6 +183,22 @@ export default function SettingsScreen() {
   const { colors } = useTheme();
   const showExploreTab = useSettings();
   const { setShowExploreTab } = useSettingsActions();
+  const queryClient = useQueryClient();
+  const { user } = useAuth();
+  const { data: profileData } = useProfile(user?.id);
+
+  const handlePrivacyToggle = async (value: boolean) => {
+    if (!user?.id) return;
+    try {
+      await updateProfilePrivacy(value, user?.id);
+
+      if (user?.id) {
+        queryClient.invalidateQueries({ queryKey: ["profile", user.id] });
+      }
+    } catch (error) {
+      console.error("Failed to update privacy setting:", error);
+    }
+  };
 
   return (
     <BodyScrollView style={styles.container}>
@@ -192,6 +211,18 @@ export default function SettingsScreen() {
           ),
         }}
       />
+
+      <SettingsSection title="Privacy">
+        <SettingsItem
+          label="Public Profile"
+          icon="lock-open"
+          iconColor="#32CD32"
+          isToggle
+          toggleValue={profileData?.profile.is_public ?? true}
+          onToggle={handlePrivacyToggle}
+          description="When enabled, your profile and workouts will be visible to everyone. When disabled, only approved followers can see your content."
+        />
+      </SettingsSection>
 
       <SettingsSection title="Features">
         <SettingsItem

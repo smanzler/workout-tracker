@@ -119,3 +119,14 @@ export async function checkUsernameAvailability(username: string) {
 
   return false;
 }
+
+export async function updateProfilePrivacy(isPublic: boolean, userId: string) {
+  if (!userId) throw new Error("No user found");
+
+  const { error } = await supabase
+    .from("profiles")
+    .update({ is_public: isPublic })
+    .eq("id", userId);
+
+  if (error) throw error;
+}
