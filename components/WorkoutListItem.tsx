@@ -19,6 +19,14 @@ import { Q } from "@nozbe/watermelondb";
 import ButtonWithIcon from "./ButtonWithIcon";
 import PostWorkoutSummary, { PostWorkout } from "./PostWorkoutSummary";
 import { Exercise } from "@/models/Exercise";
+import {
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuItemIcon,
+  ContextMenuItemTitle,
+  ContextMenuRoot,
+  ContextMenuTrigger,
+} from "@/zeego/context-menu";
 
 const WorkoutListItem = ({
   workout,
@@ -94,29 +102,21 @@ const WorkoutListItem = ({
   };
 
   return (
-    <>
-      <View style={styles.headerContainer}>
-        <DropdownMenuRoot>
-          <DropdownMenuTrigger>
-            <ButtonWithIcon>
-              <Entypo
-                name="dots-three-horizontal"
-                size={24}
-                color={theme.colors.text}
-              />
-            </ButtonWithIcon>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuItem destructive key="delete" onSelect={handleDelete}>
-              <DropdownMenuItemTitle>Delete Workout</DropdownMenuItemTitle>
-              <DropdownMenuItemIcon ios={{ name: "trash" }} />
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenuRoot>
-      </View>
-
-      <PostWorkoutSummary workout={workoutData} />
-    </>
+    <ContextMenuRoot>
+      <ContextMenuTrigger>
+        <View
+          style={{ borderRadius: 20, marginBottom: 20, overflow: "hidden" }}
+        >
+          <PostWorkoutSummary workout={workoutData} />
+        </View>
+      </ContextMenuTrigger>
+      <ContextMenuContent>
+        <ContextMenuItem destructive key="delete" onSelect={handleDelete}>
+          <ContextMenuItemTitle>Delete Workout</ContextMenuItemTitle>
+          <ContextMenuItemIcon ios={{ name: "trash" }} />
+        </ContextMenuItem>
+      </ContextMenuContent>
+    </ContextMenuRoot>
   );
 };
 
