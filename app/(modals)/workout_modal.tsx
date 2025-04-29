@@ -97,7 +97,7 @@ const WorkoutModal = () => {
   });
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.card }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
       {workout && (
         <Animated.View style={[{ flex: 1, padding: 20 }, animatedStyle]}>
           <View style={styles.headerContainer}>
