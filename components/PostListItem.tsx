@@ -31,6 +31,8 @@ import { useQueryClient } from "@tanstack/react-query";
 import { PostgrestError } from "@supabase/supabase-js";
 import PostWorkoutSummary from "./PostWorkoutSummary";
 
+dayjs.extend(relativeTime);
+
 interface User {
   id: string;
   username: string;
