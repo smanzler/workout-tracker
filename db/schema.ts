@@ -81,11 +81,7 @@ export default appSchema({
         { name: "name", type: "string", isOptional: true },
         { name: "description", type: "string", isOptional: true },
         { name: "user_id", type: "string", isIndexed: true },
-        {
-          name: "original_creator_id",
-          type: "string",
-          isOptional: true,
-        },
+        { name: "original_creator_id", type: "string", isOptional: true },
         { name: "created_at", type: "number" },
         { name: "updated_at", type: "number" },
       ],
