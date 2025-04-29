@@ -1,6 +1,5 @@
 import { mySync } from "@/db/sync";
 import { supabase } from "@/lib/supabase";
-import { Routine } from "@/models/Routine";
 import { Workout } from "@/models/Workout";
 import { useSync } from "@/providers/SyncProvider";
 import { User } from "@supabase/supabase-js";
@@ -64,9 +63,8 @@ export const useFollowingPosts = (enabled = true) => {
 
 export const postPost = async (
   caption: string,
-  user?: User,
-  workout?: Workout,
-  routine?: Routine,
+  user: User,
+  workout_id: string,
   image?: string
 ) => {
   if (!user) return;
@@ -96,8 +94,7 @@ export const postPost = async (
 
     const { error: insertError } = await supabase.from("posts").insert({
       user_id: user.id,
-      workout_id: workout?.id,
-      routine_id: routine?.id,
+      workout_id,
       caption,
       image_url: publicUrl,
     });

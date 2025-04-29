@@ -10,6 +10,7 @@ import React, { useState } from "react";
 import { ThemedText } from "./ThemedText";
 import { formatDuration } from "@/utils/format";
 import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
 import { useTheme } from "@react-navigation/native";
 import { Entypo, FontAwesome, FontAwesome5 } from "@expo/vector-icons";
 import { Image } from "expo-image";
@@ -30,6 +31,34 @@ import { useQueryClient } from "@tanstack/react-query";
 import { PostgrestError } from "@supabase/supabase-js";
 import PostWorkoutSummary from "./PostWorkoutSummary";
 
+interface User {
+  id: string;
+  username: string;
+  full_name: string;
+}
+
+interface Set {
+  reps?: number;
+  weight?: number;
+  is_1rm_pr?: boolean;
+  is_volume_pr?: boolean;
+  is_weight_pr?: boolean;
+}
+
+interface WorkoutExercise {
+  sets: Set[];
+  exercise_id: string;
+  exercise_title: string;
+}
+
+interface Workout {
+  exercises: WorkoutExercise[];
+  start_time: string;
+  end_time: string;
+  workout_id: string;
+  workout_name: string;
+}
+
 interface Post {
   id: string;
   user: User;
@@ -38,54 +67,7 @@ interface Post {
   created_at: string;
   like_count: number;
   liked_by_user: boolean;
-  routine_or_workout: Routine | Workout;
-}
-
-export interface Routine {
-  exercises: RoutineExercise[];
-  routine_id: string;
-  routine_name: string;
-}
-
-export interface Workout {
-  exercises: WorkoutExercise[];
-  start_time: string;
-  end_time: string;
-  workout_id: string;
-  workout_name: string;
-}
-
-export interface RoutineExercise {
-  sets: RoutineSet[];
-  exercise_id: string;
-  exercise_title: string;
-}
-
-export interface WorkoutExercise {
-  sets: Set[];
-  exericse_id: string;
-  exercise_title: string;
-}
-
-export interface RoutineSet {
-  reps?: number;
-  weight?: number;
-  is_1rm_pr?: boolean;
-  is_volume_pr?: boolean;
-  is_weight_pr?: boolean;
-}
-
-export interface Set {
-  reps?: number;
-  weight?: number;
-  is_1rm_pr?: boolean;
-  is_volume_pr?: boolean;
-  is_weight_pr?: boolean;
-}
-
-interface User {
-  user_id: string;
-  username: string;
+  workout: Workout;
 }
 
 const PostListItem = ({ post }: { post: Post }) => {
@@ -160,7 +142,7 @@ const PostListItem = ({ post }: { post: Post }) => {
           onPress={() => {
             router.push({
               pathname: "/(modals)/profile",
-              params: { userId: post.user.user_id },
+              params: { userId: post.user.id },
             });
           }}
           style={{
@@ -183,11 +165,17 @@ const PostListItem = ({ post }: { post: Post }) => {
                 width: "100%",
                 height: "100%",
               }}
-              source={{ uri: getProfileImageUrl(post.user.user_id) }}
+              source={{ uri: getProfileImageUrl(post.user.id) }}
               cachePolicy="memory-disk"
             />
           </View>
-          <ThemedText type="defaultSemiBold">{post.user.username}</ThemedText>
+
+          <View style={{ flexDirection: "column", gap: 2 }}>
+            <ThemedText type="defaultSemiBold">{post.user.username}</ThemedText>
+            <Text style={{ color: colors.text, opacity: 0.7, fontSize: 12 }}>
+              {dayjs(post.created_at).fromNow()}
+            </Text>
+          </View>
         </TouchableOpacity>
 
         <DropdownMenuRoot>
@@ -199,7 +187,7 @@ const PostListItem = ({ post }: { post: Post }) => {
             />
           </DropdownMenuTrigger>
           <DropdownMenuContent>
-            {user?.id === post.user.user_id && (
+            {user?.id === post.user.id && (
               <DropdownMenuItem
                 key="delete"
                 onSelect={handleDelete}
@@ -209,7 +197,7 @@ const PostListItem = ({ post }: { post: Post }) => {
                 <DropdownMenuItemTitle>Delete Post</DropdownMenuItemTitle>
               </DropdownMenuItem>
             )}
-            {user?.id !== post.user.user_id && (
+            {user?.id !== post.user.id && (
               <DropdownMenuItem
                 key="report"
                 onSelect={handleReport}
@@ -244,12 +232,9 @@ const PostListItem = ({ post }: { post: Post }) => {
           );
         }
 
-        if (post.routine_or_workout.exercises.length > 0) {
+        if (post.workout.exercises.length > 0) {
           pages.push(
-            <PostWorkoutSummary
-              key="workout"
-              workout={post.routine_or_workout}
-            />
+            <PostWorkoutSummary key="workout" workout={post.workout} />
           );
         }
 

@@ -58,15 +58,11 @@ const CreatePost = () => {
 
   const handlePost = async () => {
     setLoading(true);
+    if (!user) return;
+    if (!workout) return;
 
     try {
-      await postPost(
-        caption,
-        user || undefined,
-        workout || undefined,
-        undefined,
-        image || undefined
-      );
+      await postPost(caption, user, workout.id, image || undefined);
 
       await queryClient.invalidateQueries({ queryKey: ["following-posts"] });
 
@@ -114,7 +110,7 @@ const CreatePost = () => {
           marginVertical: 20,
         }}
       >
-        <ThemedText type="defaultSemiBold">Workout or Routine</ThemedText>
+        <ThemedText type="defaultSemiBold">Workout</ThemedText>
 
         <TouchableOpacity
           onPress={() => router.push("/(modals)/workout_picker")}
