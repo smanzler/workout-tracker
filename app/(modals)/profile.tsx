@@ -26,7 +26,7 @@ const Profile = () => {
 
   const followMutation = useMutation({
     mutationFn: async () => {
-      if (profile?.profile.is_following) {
+      if (profile?.profile.is_following || profile?.profile.follow_requested) {
         await unfollowUser(userId);
       } else {
         await followUser(userId);
@@ -36,6 +36,22 @@ const Profile = () => {
       queryClient.invalidateQueries({ queryKey: ["profile", userId] });
     },
   });
+
+  const getFollowButtonText = () => {
+    if (profile?.profile.is_following) return "Following";
+    if (profile?.profile.follow_requested) return "Requested";
+    return "Follow";
+  };
+
+  const getFollowButtonVariant = () => {
+    if (profile?.profile.is_following || profile?.profile.follow_requested) {
+      return "outline";
+    }
+    return "filled";
+  };
+
+  const isPrivateAndNotFollowing =
+    profile?.profile.is_public === false && !profile?.profile.is_following;
 
   const chunkedPosts = chunkArray(profile?.posts || [], 3);
   const isOwnProfile = user?.id === userId;
@@ -61,9 +77,19 @@ const Profile = () => {
         />
 
         <View style={styles.bioSection}>
-          <ThemedText type="defaultSemiBold" style={styles.username}>
-            {profile?.profile.username}
-          </ThemedText>
+          <View style={styles.usernameContainer}>
+            <ThemedText type="defaultSemiBold" style={styles.username}>
+              {profile?.profile.username}
+            </ThemedText>
+            {profile?.profile.is_public === false && (
+              <Ionicons
+                name="lock-closed"
+                size={16}
+                color={colors.text}
+                style={styles.lockIcon}
+              />
+            )}
+          </View>
 
           <ThemedText style={styles.bio}>
             {profile?.profile.bio || "No bio yet"}
@@ -73,10 +99,10 @@ const Profile = () => {
             <Button
               onPress={() => followMutation.mutate()}
               loading={followMutation.isPending}
-              variant={profile?.profile.is_following ? "outline" : "filled"}
+              variant={getFollowButtonVariant()}
               style={{ width: "100%" }}
             >
-              {profile?.profile.is_following ? "Following" : "Follow"}
+              {getFollowButtonText()}
             </Button>
           )}
         </View>
@@ -88,7 +114,20 @@ const Profile = () => {
         </ThemedText>
 
         <View style={[styles.postsGrid, { borderTopColor: colors.border }]}>
-          {profile?.posts.length === 0 ? (
+          {isPrivateAndNotFollowing ? (
+            <View style={styles.emptyState}>
+              <Ionicons
+                name="lock-closed"
+                size={24}
+                color={colors.text}
+                style={styles.privateLockIcon}
+              />
+              <ThemedText type="subtitle">This Account is Private</ThemedText>
+              <ThemedText style={styles.privateText}>
+                Follow this account to see their posts
+              </ThemedText>
+            </View>
+          ) : profile?.posts.length === 0 ? (
             <View style={styles.emptyState}>
               <ThemedText type="subtitle">No Posts Yet</ThemedText>
             </View>
@@ -162,8 +201,16 @@ const styles = StyleSheet.create({
     gap: 12,
     width: "100%",
   },
+  usernameContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+  },
   username: {
     fontSize: 18,
+  },
+  lockIcon: {
+    opacity: 0.8,
   },
   bio: {
     textAlign: "center",
@@ -208,5 +255,13 @@ const styles = StyleSheet.create({
   emptyState: {
     paddingTop: 40,
     alignItems: "center",
+    gap: 8,
+  },
+  privateLockIcon: {
+    marginBottom: 8,
+  },
+  privateText: {
+    opacity: 0.6,
+    textAlign: "center",
   },
 });
