@@ -2,32 +2,88 @@ import { View } from "react-native";
 import { useTheme } from "@react-navigation/native";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { ThemedText } from "./ThemedText";
-import { Routine, Workout, RoutineSet, Set } from "./PostListItem";
 import dayjs from "dayjs";
 
-const PostWorkoutSummary = ({ workout }: { workout: Routine | Workout }) => {
-  const { colors } = useTheme();
-  const isWorkout = "workout_id" in workout;
+export interface PostSet {
+  reps?: number;
+  weight?: number;
+  is_1rm_pr?: boolean;
+  is_volume_pr?: boolean;
+  is_weight_pr?: boolean;
+}
 
-  const prCounts = isWorkout
-    ? workout.exercises.reduce(
-        (acc, exercise) => {
-          exercise.sets.forEach((set) => {
-            if ("is_1rm_pr" in set) {
-              if (set.is_1rm_pr) acc.oneRM++;
-              if (set.is_volume_pr) acc.volume++;
-              if (set.is_weight_pr) acc.weight++;
-            }
-          });
-          return acc;
-        },
-        { oneRM: 0, volume: 0, weight: 0 }
-      )
-    : { oneRM: 0, volume: 0, weight: 0 };
+export interface PostExercise {
+  exercise_title: string;
+  sets: PostSet[];
+}
+
+export interface PostWorkout {
+  workout_id: string;
+  workout_name: string;
+  start_time: string;
+  end_time: string;
+  exercises: PostExercise[];
+}
+
+export interface PostRoutine {
+  routine_id: string;
+  routine_name: string;
+  exercises: PostExercise[];
+}
+
+interface WorkoutDisplayData {
+  name: string;
+  id: string;
+  start_time: Date;
+  end_time?: Date | null;
+  exercises: PostExercise[];
+}
+
+const transformToDisplayData = (
+  data: PostRoutine | PostWorkout
+): WorkoutDisplayData => {
+  if ("routine_name" in data) {
+    return {
+      name: data.routine_name,
+      id: data.routine_id,
+      start_time: new Date(),
+      exercises: data.exercises,
+    };
+  } else {
+    return {
+      name: data.workout_name,
+      id: data.workout_id,
+      start_time: new Date(data.start_time),
+      end_time: data.end_time ? new Date(data.end_time) : undefined,
+      exercises: data.exercises,
+    };
+  }
+};
+
+const PostWorkoutSummary = ({
+  workout,
+}: {
+  workout: PostRoutine | PostWorkout;
+}) => {
+  const { colors } = useTheme();
+
+  const workoutData = transformToDisplayData(workout);
+
+  const prCounts = workoutData.exercises.reduce(
+    (acc, exercise) => {
+      exercise.sets.forEach((set) => {
+        if (set.is_1rm_pr) acc.oneRM++;
+        if (set.is_volume_pr) acc.volume++;
+        if (set.is_weight_pr) acc.weight++;
+      });
+      return acc;
+    },
+    { oneRM: 0, volume: 0, weight: 0 }
+  );
 
   const totalPRs = prCounts.oneRM + prCounts.volume + prCounts.weight;
 
-  const getBestSet = (sets: (Set | RoutineSet)[]) => {
+  const getBestSet = (sets: PostSet[]) => {
     if (sets.length === 0) return null;
 
     return [...sets].sort((a, b) => {
@@ -39,9 +95,9 @@ const PostWorkoutSummary = ({ workout }: { workout: Routine | Workout }) => {
   };
 
   const getDuration = () => {
-    if (!isWorkout || !workout.end_time) return null;
-    const start = dayjs(workout.start_time);
-    const end = dayjs(workout.end_time);
+    if (!workoutData.end_time) return null;
+    const start = dayjs(workoutData.start_time);
+    const end = dayjs(workoutData.end_time);
     const minutes = end.diff(start, "minute");
     if (minutes < 60) {
       return `${minutes}m`;
@@ -65,12 +121,10 @@ const PostWorkoutSummary = ({ workout }: { workout: Routine | Workout }) => {
             >
               <View style={{ flex: 1 }}>
                 <ThemedText type="subtitle" numberOfLines={1}>
-                  {isWorkout
-                    ? workout.workout_name
-                    : workout.routine_name || "Workout"}
+                  {workoutData.name}
                 </ThemedText>
               </View>
-              {isWorkout && totalPRs > 0 && (
+              {totalPRs > 0 && (
                 <View
                   style={{
                     flexDirection: "row",
@@ -86,7 +140,7 @@ const PostWorkoutSummary = ({ workout }: { workout: Routine | Workout }) => {
               )}
             </View>
 
-            {isWorkout && (
+            {workoutData.end_time && (
               <View
                 style={{
                   flexDirection: "row",
@@ -104,7 +158,7 @@ const PostWorkoutSummary = ({ workout }: { workout: Routine | Workout }) => {
                     style={{ opacity: 0.7 }}
                   />
                   <ThemedText type="default" style={{ opacity: 0.7 }}>
-                    {dayjs(workout.start_time).format(
+                    {dayjs(workoutData.start_time).format(
                       "MMMM D, YYYY [at] h:mm A"
                     )}
                   </ThemedText>
@@ -152,12 +206,10 @@ const PostWorkoutSummary = ({ workout }: { workout: Routine | Workout }) => {
             </View>
 
             <View style={{ gap: 12 }}>
-              {workout.exercises.map((exercise, i) => {
+              {workoutData.exercises.map((exercise, i) => {
                 const bestSet = getBestSet(exercise.sets);
                 const hasPR =
-                  isWorkout &&
                   bestSet &&
-                  "is_1rm_pr" in bestSet &&
                   (bestSet.is_1rm_pr ||
                     bestSet.is_volume_pr ||
                     bestSet.is_weight_pr);
