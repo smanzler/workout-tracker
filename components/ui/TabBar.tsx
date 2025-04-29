@@ -6,6 +6,7 @@ import { BlurView } from "expo-blur";
 import { useWorkout } from "@/providers/WorkoutProvider";
 import { ThemedText } from "../ThemedText";
 import { router } from "expo-router";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function TabBar({
   state,
@@ -14,22 +15,21 @@ export default function TabBar({
 }: BottomTabBarProps) {
   const { colors } = useTheme();
   const { activeWorkoutId } = useWorkout();
+  const { bottom } = useSafeAreaInsets();
 
   return (
-    <BlurView
-      intensity={80}
-      style={[
-        styles.tabBar,
-        {
-          backgroundColor: colors.text
-            .replace("rgb", "rgba")
-            .replace(")", ", 0.1)"),
-        },
-      ]}
+    <View
+      style={{
+        paddingBottom: Math.max(bottom, 16),
+        backgroundColor: colors.card,
+        borderTopLeftRadius: 25,
+        borderTopRightRadius: 25,
+        overflow: "hidden",
+      }}
     >
       {activeWorkoutId && (
         <Pressable
-          style={styles.resumeContainer}
+          style={[styles.resumeContainer, { backgroundColor: colors.card }]}
           onPress={() => router.push("/(modals)/workout")}
         >
           <ThemedText type="defaultSemiBold">Resume Workout</ThemedText>
@@ -87,6 +87,7 @@ export default function TabBar({
                 style={{
                   color: isFocused ? colors.primary : colors.text,
                   fontWeight: "600",
+                  fontSize: 12,
                 }}
               >
                 {label.toString()}
@@ -95,25 +96,16 @@ export default function TabBar({
           );
         })}
       </View>
-    </BlurView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  tabBar: {
-    position: "absolute",
-    bottom: 25,
-    alignItems: "center",
-    marginHorizontal: 20,
-    borderRadius: 25,
-    overflow: "hidden",
-    borderCurve: "continuous",
-  },
   resumeContainer: {
     height: 50,
     width: "100%",
-    justifyContent: "center",
     alignItems: "center",
+    justifyContent: "center",
   },
   tabContainer: {
     flexDirection: "row",
