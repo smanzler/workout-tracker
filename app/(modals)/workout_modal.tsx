@@ -1,9 +1,10 @@
 import {
-  Modal,
   StyleSheet,
   Text,
   TouchableWithoutFeedback,
   View,
+  ScrollView,
+  SafeAreaView,
   Button as RNButton,
 } from "react-native";
 import { of as of$ } from "rxjs";
@@ -27,6 +28,7 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 import { formatDuration } from "@/utils/format";
+import ButtonWithIcon from "@/components/ButtonWithIcon";
 
 const WorkoutModal = () => {
   const { colors } = useTheme();
@@ -95,30 +97,15 @@ const WorkoutModal = () => {
   });
 
   return (
-    <View style={styles.container}>
-      <TouchableWithoutFeedback onPress={() => router.back()}>
-        <BlurView intensity={40} style={styles.blurView} />
-      </TouchableWithoutFeedback>
-
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.card }}>
       {workout && (
-        <Animated.View
-          style={[styles.card, { backgroundColor: colors.card }, animatedStyle]}
-        >
+        <Animated.View style={[{ flex: 1, padding: 20 }, animatedStyle]}>
           <View style={styles.headerContainer}>
             <ThemedText type="title">{workout.name}</ThemedText>
 
-            <Button
-              style={{
-                height: 26,
-                paddingHorizontal: 10,
-                backgroundColor: colors.text
-                  .replace("rgb", "rgba")
-                  .replace(")", ", 0.1)"),
-              }}
-              onPress={() => router.back()}
-            >
+            <ButtonWithIcon onPress={() => router.back()}>
               <Ionicons name="close" size={24} color={colors.text} />
-            </Button>
+            </ButtonWithIcon>
           </View>
 
           <ThemedText style={{ fontSize: 16, fontWeight: "600", opacity: 0.6 }}>
@@ -166,27 +153,28 @@ const WorkoutModal = () => {
               </Text>
             </View>
           </View>
-          {workoutExercises.map((we) => (
-            <WorkoutModalWorkoutExercise
-              key={we.id}
-              workoutExercise={we}
-              setSetsLoading={setSetsLoading}
-            />
-          ))}
+
+          <ScrollView
+            style={styles.exerciseList}
+            showsVerticalScrollIndicator={false}
+          >
+            {workoutExercises.map((we) => (
+              <WorkoutModalWorkoutExercise
+                key={we.id}
+                workoutExercise={we}
+                setSetsLoading={setSetsLoading}
+              />
+            ))}
+          </ScrollView>
         </Animated.View>
       )}
-    </View>
+    </SafeAreaView>
   );
 };
 
 export default WorkoutModal;
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
   blurView: {
     position: "absolute",
     top: 0,
@@ -194,14 +182,11 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
   },
-  card: {
-    padding: 20,
-    borderRadius: 20,
-    width: "90%",
-  },
   headerContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 10,
   },
   item: {
     flexDirection: "row",
@@ -210,5 +195,9 @@ const styles = StyleSheet.create({
   itemText: {
     fontSize: 16,
     fontWeight: "500",
+  },
+  exerciseList: {
+    flex: 1,
+    marginTop: 10,
   },
 });
