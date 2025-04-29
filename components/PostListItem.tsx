@@ -213,7 +213,7 @@ const PostListItem = ({ post }: { post: Post }) => {
               aspectRatio: 1,
               gap: 15,
               marginBottom: 10,
-              borderRadius: 10,
+              borderRadius: 20,
               overflow: "hidden",
             }}
             initialPage={0}
