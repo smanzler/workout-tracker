@@ -176,11 +176,15 @@ const SetListItem = ({
               },
             ]}
             value={weight}
+            editable={!completed}
             onChangeText={(text) => {
               setWeight(text);
               handleUpdate("weight", text);
             }}
             placeholder="0"
+            placeholderTextColor={colors.text
+              .replace("rgb", "rgba")
+              .replace(")", ", 0.5)")}
             keyboardType="numeric"
             returnKeyType="next"
             submitBehavior="submit"
@@ -208,6 +212,7 @@ const SetListItem = ({
               },
             ]}
             value={reps}
+            editable={!completed}
             onChangeText={(text) => {
               setReps(text);
               handleUpdate("reps", text);
@@ -215,6 +220,9 @@ const SetListItem = ({
             returnKeyType="next"
             keyboardType="number-pad"
             placeholder="0"
+            placeholderTextColor={colors.text
+              .replace("rgb", "rgba")
+              .replace(")", ", 0.5)")}
             submitBehavior="submit"
             onSubmitEditing={handleRepsSubmit}
             onFocus={() => setRepsFocused(true)}
@@ -255,6 +263,7 @@ const styles = StyleSheet.create({
   },
   item: {
     fontSize: 16,
+    fontWeight: "600",
     textAlign: "center",
     borderRadius: 5,
     borderWidth: 2,
