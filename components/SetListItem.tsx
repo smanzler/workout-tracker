@@ -36,7 +36,9 @@ const SetListItem = ({
   const [weight, setWeight] = useState(set.weight?.toString() || "");
   const [reps, setReps] = useState(set.reps?.toString() || "");
   const [completed, setCompleted] = useState(set.completed || false);
-  const theme = useTheme();
+  const [weightFocused, setWeightFocused] = useState(false);
+  const [repsFocused, setRepsFocused] = useState(false);
+  const { colors } = useTheme();
 
   useEffect(() => {
     if (!inputRefs.current[exerciseIndex]) {
@@ -144,14 +146,15 @@ const SetListItem = ({
             styles.item,
             styles.order,
             {
-              backgroundColor: completed ? "" : theme.colors.background,
-              color: theme.colors.text,
+              backgroundColor: completed ? "transparent" : colors.background,
+              borderColor: completed ? "transparent" : colors.background,
+              color: colors.text,
             },
           ]}
         >
           {index}
         </Text>
-        <Text style={{ color: theme.colors.text }}>-</Text>
+        <Text style={{ color: colors.text }}>-</Text>
         <View style={styles.rightContainer}>
           <TextInput
             ref={(ref) => {
@@ -163,8 +166,13 @@ const SetListItem = ({
               styles.item,
               styles.weight,
               {
-                backgroundColor: completed ? "" : theme.colors.background,
-                color: theme.colors.text,
+                backgroundColor: completed ? "transparent" : colors.background,
+                borderColor: weightFocused
+                  ? colors.text
+                  : completed
+                  ? "transparent"
+                  : colors.background,
+                color: colors.text,
               },
             ]}
             value={weight}
@@ -177,6 +185,8 @@ const SetListItem = ({
             returnKeyType="next"
             submitBehavior="submit"
             onSubmitEditing={handleWeightSubmit}
+            onFocus={() => setWeightFocused(true)}
+            onBlur={() => setWeightFocused(false)}
           />
           <TextInput
             ref={(ref) => {
@@ -188,8 +198,13 @@ const SetListItem = ({
               styles.item,
               styles.reps,
               {
-                backgroundColor: completed ? "" : theme.colors.background,
-                color: theme.colors.text,
+                backgroundColor: completed ? "transparent" : colors.background,
+                borderColor: repsFocused
+                  ? colors.text
+                  : completed
+                  ? "transparent"
+                  : colors.background,
+                color: colors.text,
               },
             ]}
             value={reps}
@@ -202,13 +217,15 @@ const SetListItem = ({
             placeholder="0"
             submitBehavior="submit"
             onSubmitEditing={handleRepsSubmit}
+            onFocus={() => setRepsFocused(true)}
+            onBlur={() => setRepsFocused(false)}
           />
           <TouchableOpacity
             style={[
               styles.button,
               completed
                 ? styles.completedButton
-                : { backgroundColor: theme.colors.background },
+                : { backgroundColor: colors.background },
             ]}
             onPress={toggleCompleted}
             disabled={!isCompleteable}
@@ -217,11 +234,7 @@ const SetListItem = ({
               name="check"
               size={16}
               color={
-                completed
-                  ? "white"
-                  : isCompleteable
-                  ? theme.colors.text
-                  : "gray"
+                completed ? "white" : isCompleteable ? colors.text : "gray"
               }
             />
           </TouchableOpacity>
@@ -243,12 +256,13 @@ const styles = StyleSheet.create({
   item: {
     fontSize: 16,
     textAlign: "center",
-    backgroundColor: "#e8e8e8",
     borderRadius: 5,
+    borderWidth: 2,
   },
   button: {
     width: 30,
     alignItems: "center",
+    justifyContent: "center",
     borderRadius: 5,
   },
   order: {
