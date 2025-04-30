@@ -5,19 +5,24 @@ import { WorkoutExercise } from "@/models/WorkoutExercise";
 import WorkoutExerciseListItem from "./WorkoutExerciseListItem";
 import { EmptyState } from "./EmptyState";
 import { router } from "expo-router";
+import { TextInput } from "react-native";
 
 const WorkoutExerciseList = ({
   workoutExercises,
+  inputRefs,
 }: {
   workoutExercises: WorkoutExercise[];
+  inputRefs: React.MutableRefObject<(TextInput | null)[][]>;
 }) => {
   return (
     <>
       {workoutExercises?.length ? (
-        workoutExercises.map((workoutExercise) => (
+        workoutExercises.map((workoutExercise, exerciseIndex) => (
           <WorkoutExerciseListItem
             key={workoutExercise.id}
             workoutExercise={workoutExercise}
+            exerciseIndex={exerciseIndex}
+            inputRefs={inputRefs}
           />
         ))
       ) : (

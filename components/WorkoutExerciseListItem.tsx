@@ -4,6 +4,7 @@ import {
   Text,
   TouchableOpacity,
   View,
+  TextInput,
 } from "react-native";
 import React from "react";
 import { withObservables } from "@nozbe/watermelondb/react";
@@ -29,10 +30,14 @@ const WorkoutExerciseListItem = ({
   workoutExercise,
   exercise,
   sets,
+  exerciseIndex,
+  inputRefs,
 }: {
   workoutExercise: WorkoutExercise;
   exercise: Exercise;
   sets: Set[];
+  exerciseIndex: number;
+  inputRefs: React.MutableRefObject<(TextInput | null)[][]>;
 }) => {
   const theme = useTheme();
   const { user } = useAuth();
@@ -140,6 +145,8 @@ const WorkoutExerciseListItem = ({
           set={set}
           workoutExerciseId={workoutExercise.id}
           index={index + 1}
+          exerciseIndex={exerciseIndex}
+          inputRefs={inputRefs}
         />
       ))}
 

@@ -1,5 +1,15 @@
-import { Alert, ScrollView, StyleSheet, Text, View } from "react-native";
-import React, { useEffect, useState } from "react";
+import {
+  Alert,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+  TextInput,
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+} from "react-native";
+import React, { useEffect, useRef, useState } from "react";
 import { useWorkout } from "@/providers/WorkoutProvider";
 import { router } from "expo-router";
 import database, { workoutsCollection } from "@/db";
@@ -22,7 +32,6 @@ import Animated, {
 import { mySync } from "@/db/sync";
 import { useAuth } from "@/providers/AuthProvider";
 import { useSync } from "@/providers/SyncProvider";
-import { TextInput } from "react-native";
 
 const Workout = () => {
   const { seconds, activeWorkoutId, stopWorkout } = useWorkout();
@@ -31,7 +40,7 @@ const Workout = () => {
   const { colors } = useTheme();
   const { user } = useAuth();
   const { updateLastSync } = useSync();
-
+  const inputRefs = useRef<(TextInput | null)[][]>([]);
   const scrollRef = useAnimatedRef<Animated.ScrollView>();
   const scrollHandler = useScrollViewOffset(scrollRef);
 
@@ -39,7 +48,6 @@ const Workout = () => {
     async function fetchWorkout() {
       if (activeWorkoutId) {
         const workout = await workoutsCollection.find(activeWorkoutId);
-
         setWorkout(workout);
       }
     }
@@ -175,7 +183,10 @@ const Workout = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={styles.container}
+    >
       <ScrollView ref={scrollRef} style={{ paddingHorizontal: 20 }}>
         <View style={{ height: 90 }} />
 
@@ -194,7 +205,9 @@ const Workout = () => {
             .replace(")", ", 0.4)")}
         />
 
-        {workout && <WorkoutExerciseList workout={workout} />}
+        {workout && (
+          <WorkoutExerciseList workout={workout} inputRefs={inputRefs} />
+        )}
 
         <Button
           onPress={() => {
@@ -259,7 +272,7 @@ const Workout = () => {
           ]}
         />
       </BlurView>
-    </View>
+    </KeyboardAvoidingView>
   );
 };
 
@@ -278,6 +291,19 @@ const styles = StyleSheet.create({
     backgroundColor: "#89ba7f",
     padding: 5,
     borderRadius: 5,
+    paddingHorizontal: 10,
+  },
+  keyboardAccessory: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 44,
+    borderTopWidth: 1,
+    borderTopColor: "#ccc",
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    alignItems: "center",
     paddingHorizontal: 10,
   },
 });

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Keyboard,
   StyleSheet,
@@ -24,15 +24,52 @@ const SetListItem = ({
   set,
   workoutExerciseId,
   index,
+  exerciseIndex,
+  inputRefs,
 }: {
   set: Set;
   workoutExerciseId: string;
   index: number;
+  exerciseIndex: number;
+  inputRefs: React.MutableRefObject<(TextInput | null)[][]>;
 }) => {
   const [weight, setWeight] = useState(set.weight?.toString() || "");
   const [reps, setReps] = useState(set.reps?.toString() || "");
   const [completed, setCompleted] = useState(set.completed || false);
   const theme = useTheme();
+
+  useEffect(() => {
+    if (!inputRefs.current[exerciseIndex]) {
+      inputRefs.current[exerciseIndex] = [];
+    }
+    inputRefs.current[exerciseIndex][index * 2] = null;
+    inputRefs.current[exerciseIndex][index * 2 + 1] = null;
+  }, []);
+
+  const handleWeightSubmit = () => {
+    inputRefs.current[exerciseIndex]?.[index * 2 + 1]?.focus();
+  };
+
+  const handleRepsSubmit = async () => {
+    const currentInputs = inputRefs.current;
+
+    if (!completed) {
+      const toggled = await toggleCompleted();
+
+      if (!toggled) {
+        Keyboard.dismiss();
+        return;
+      }
+    }
+
+    if (index * 2 + 2 < (currentInputs[exerciseIndex]?.length || 0)) {
+      currentInputs[exerciseIndex]?.[index * 2 + 2]?.focus();
+    } else if (exerciseIndex + 1 < currentInputs.length) {
+      currentInputs[exerciseIndex + 1]?.[2]?.focus();
+    } else {
+      Keyboard.dismiss();
+    }
+  };
 
   const isCompleteable = weight !== "" && reps !== "";
 
@@ -47,7 +84,7 @@ const SetListItem = ({
   };
 
   const toggleCompleted = async () => {
-    if (!isCompleteable) return;
+    if (!isCompleteable) return false;
 
     Keyboard.dismiss();
 
@@ -59,6 +96,8 @@ const SetListItem = ({
         record.completed = newCompleted;
       });
     });
+
+    return true;
   };
 
   const handleDelete = () => {
@@ -115,6 +154,11 @@ const SetListItem = ({
         <Text style={{ color: theme.colors.text }}>-</Text>
         <View style={styles.rightContainer}>
           <TextInput
+            ref={(ref) => {
+              if (inputRefs.current[exerciseIndex]) {
+                inputRefs.current[exerciseIndex][index * 2] = ref;
+              }
+            }}
             style={[
               styles.item,
               styles.weight,
@@ -128,10 +172,18 @@ const SetListItem = ({
               setWeight(text);
               handleUpdate("weight", text);
             }}
-            keyboardType="numeric"
             placeholder="0"
+            keyboardType="numeric"
+            returnKeyType="next"
+            submitBehavior="submit"
+            onSubmitEditing={handleWeightSubmit}
           />
           <TextInput
+            ref={(ref) => {
+              if (inputRefs.current[exerciseIndex]) {
+                inputRefs.current[exerciseIndex][index * 2 + 1] = ref;
+              }
+            }}
             style={[
               styles.item,
               styles.reps,
@@ -145,8 +197,11 @@ const SetListItem = ({
               setReps(text);
               handleUpdate("reps", text);
             }}
-            keyboardType="numeric"
+            returnKeyType="next"
+            keyboardType="number-pad"
             placeholder="0"
+            submitBehavior="submit"
+            onSubmitEditing={handleRepsSubmit}
           />
           <TouchableOpacity
             style={[
