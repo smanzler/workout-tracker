@@ -2,7 +2,6 @@ import React from "react";
 import {
   View,
   StyleSheet,
-  ScrollView,
   TouchableOpacity,
   Alert,
   Platform,
@@ -13,7 +12,7 @@ import { useTheme } from "@react-navigation/native";
 import { ThemedText } from "./ThemedText";
 import { Ionicons } from "@expo/vector-icons";
 import { Stack } from "expo-router";
-
+import { ScrollView } from "react-native-gesture-handler";
 interface EulaAgreementProps {
   onAgree: () => void;
   onDecline: () => void;

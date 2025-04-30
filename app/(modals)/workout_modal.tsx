@@ -1,22 +1,10 @@
-import {
-  StyleSheet,
-  Text,
-  TouchableWithoutFeedback,
-  View,
-  ScrollView,
-  SafeAreaView,
-  Button as RNButton,
-} from "react-native";
-import { of as of$ } from "rxjs";
+import { StyleSheet, Text, View, SafeAreaView } from "react-native";
 import React, { useEffect, useState } from "react";
 import { Workout } from "@/models/Workout";
-import { BlurView } from "expo-blur";
 import { useTheme } from "@react-navigation/native";
-import { withObservables } from "@nozbe/watermelondb/react";
 import { WorkoutExercise } from "@/models/WorkoutExercise";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { ThemedText } from "@/components/ThemedText";
-import Button from "@/components/Button";
 import { router, useLocalSearchParams } from "expo-router";
 import { workoutsCollection } from "@/db";
 import dayjs from "dayjs";
@@ -29,7 +17,7 @@ import Animated, {
 } from "react-native-reanimated";
 import { formatDuration } from "@/utils/format";
 import ButtonWithIcon from "@/components/ButtonWithIcon";
-
+import { ScrollView } from "react-native-gesture-handler";
 const WorkoutModal = () => {
   const { colors } = useTheme();
   const { workoutId } = useLocalSearchParams<{ workoutId: string }>();

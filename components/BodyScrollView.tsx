@@ -1,5 +1,6 @@
 import { forwardRef } from "react";
-import { ScrollView, ScrollViewProps } from "react-native";
+import { ScrollViewProps } from "react-native";
+import { ScrollView } from "react-native-gesture-handler";
 
 export const BodyScrollView = forwardRef<any, ScrollViewProps>((props, ref) => {
   return (

@@ -3,12 +3,12 @@ import {
   TouchableOpacity,
   View,
   RefreshControl,
-  ScrollView,
 } from "react-native";
 import React from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "@react-navigation/native";
 import { ThemedText } from "./ThemedText";
+import { ScrollView } from "react-native-gesture-handler";
 
 interface EmptyStateProps {
   icon:
@@ -63,7 +63,6 @@ export const EmptyState = ({
     </View>
   );
 
-  // If onRefresh is provided, use ScrollView with RefreshControl
   if (onRefresh) {
     return (
       <ScrollView
