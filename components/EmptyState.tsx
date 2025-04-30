@@ -5,7 +5,7 @@ import {
   RefreshControl,
   ScrollView,
 } from "react-native";
-import React, { useRef } from "react";
+import React from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "@react-navigation/native";
 import { ThemedText } from "./ThemedText";
@@ -36,14 +36,6 @@ export const EmptyState = ({
   onRefresh,
 }: EmptyStateProps) => {
   const { colors } = useTheme();
-  const isRefreshingRef = useRef(false);
-
-  const handleRefresh = async () => {
-    if (!onRefresh || isRefreshingRef.current) return;
-    isRefreshingRef.current = true;
-    await onRefresh();
-    isRefreshingRef.current = false;
-  };
 
   const content = (
     <View style={styles.content}>
@@ -77,10 +69,7 @@ export const EmptyState = ({
       <ScrollView
         contentContainerStyle={styles.container}
         refreshControl={
-          <RefreshControl
-            refreshing={!!isRefetching}
-            onRefresh={handleRefresh}
-          />
+          <RefreshControl refreshing={!!isRefetching} onRefresh={onRefresh} />
         }
         contentInset={{ bottom: 0 }}
         scrollIndicatorInsets={{ bottom: 0 }}
