@@ -121,7 +121,7 @@ const WorkoutExerciseListItem = ({
           <Text
             style={[
               styles.setHeaderText,
-              { width: 40, textAlign: "center", color: theme.colors.text },
+              { width: 60, textAlign: "center", color: theme.colors.text },
             ]}
           >
             lbs
@@ -129,7 +129,7 @@ const WorkoutExerciseListItem = ({
           <Text
             style={[
               styles.setHeaderText,
-              { width: 40, textAlign: "center", color: theme.colors.text },
+              { width: 60, textAlign: "center", color: theme.colors.text },
             ]}
           >
             Reps
@@ -173,16 +173,16 @@ export default enhance(WorkoutExerciseListItem);
 
 const styles = StyleSheet.create({
   container: {
-    paddingVertical: 20,
+    paddingVertical: 16,
     marginBottom: 20,
-    borderRadius: 10,
+    borderRadius: 20,
   },
   headerContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 10,
-    marginHorizontal: 20,
+    marginHorizontal: 16,
     gap: 10,
   },
   btn: {
@@ -200,7 +200,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     marginVertical: 5,
-    marginHorizontal: 20,
+    marginHorizontal: 16,
   },
   rightContainer: {
     flexDirection: "row",
@@ -217,7 +217,7 @@ const styles = StyleSheet.create({
     gap: 5,
     fontWeight: 500,
     padding: 5,
-    marginHorizontal: 20,
+    marginHorizontal: 16,
     borderRadius: 8,
     marginTop: 10,
   },

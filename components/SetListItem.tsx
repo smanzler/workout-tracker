@@ -259,7 +259,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     paddingVertical: 5,
-    paddingHorizontal: 20,
+    paddingHorizontal: 16,
   },
   item: {
     fontSize: 16,
@@ -282,11 +282,11 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   weight: {
-    width: 40,
+    width: 60,
     textAlign: "center",
   },
   reps: {
-    width: 40,
+    width: 60,
     textAlign: "center",
   },
   completedRow: {
