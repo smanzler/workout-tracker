@@ -7,7 +7,7 @@ import {
   Platform,
   SafeAreaView,
 } from "react-native";
-import { EULA, EULA_SUMMARY_POINTS } from "@/app/eula";
+import { EULA, EULA_SUMMARY_POINTS } from "@/utils/eula";
 import { useTheme } from "@react-navigation/native";
 import { ThemedText } from "./ThemedText";
 import { Ionicons } from "@expo/vector-icons";
