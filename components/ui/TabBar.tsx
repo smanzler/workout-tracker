@@ -20,7 +20,10 @@ export default function TabBar({
   const showExploreTab = useSettings();
 
   const visibleRoutes = state.routes.filter((route) => {
-    if (route.name === "explore" && !showExploreTab) {
+    if (
+      (route.name === "explore" && !showExploreTab) ||
+      route.name === "index"
+    ) {
       return false;
     }
     return true;
@@ -55,7 +58,7 @@ export default function TabBar({
               ? options.title
               : route.name;
 
-          const isFocused = state.index === visibleRoutes.indexOf(route);
+          const isFocused = state.routes[state.index].name === route.name;
 
           const onPress = () => {
             const event = navigation.emit({
