@@ -97,13 +97,30 @@ const SetListItem = ({
     return true;
   };
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     try {
-      database.write(async () => {
+      await database.write(async () => {
+        const laterSets = (await database
+          .get("sets")
+          .query(
+            Q.where("workout_exercise_id", workoutExerciseId),
+            Q.where("order", Q.gt(set.order)),
+            Q.sortBy("order", Q.asc)
+          )
+          .fetch()) as Set[];
+
         await set.markAsDeleted();
+
+        await Promise.all(
+          laterSets.map((s) =>
+            s.update((record) => {
+              record.order = record.order - 1;
+            })
+          )
+        );
       });
     } catch (error) {
-      console.error("Failed to delete exercise:", error);
+      console.error("Failed to delete set:", error);
     }
   };
 

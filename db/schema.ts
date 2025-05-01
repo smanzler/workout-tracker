@@ -67,6 +67,7 @@ export default appSchema({
         { name: "reps", type: "number", isOptional: true },
         { name: "weight", type: "number", isOptional: true },
         { name: "completed", type: "boolean" },
+        { name: "order", type: "number" },
         { name: "is_weight_pr", type: "boolean" },
         { name: "is_volume_pr", type: "boolean" },
         { name: "is_1rm_pr", type: "boolean" },
