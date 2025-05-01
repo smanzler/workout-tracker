@@ -36,7 +36,6 @@ const ExerciseSectionList = ({
           </Text>
         </View>
       )}
-      ListFooterComponent={<View style={{ height: 150 }} />}
       keyboardShouldPersistTaps="handled"
       stickySectionHeadersEnabled={true}
       automaticallyAdjustsScrollIndicatorInsets

@@ -21,7 +21,6 @@ const WorkoutList = ({ workouts }: { workouts: Workout[] }) => {
             <WorkoutListItem workout={workout} />
           </Pressable>
         ))}
-      <View style={{ height: 200 }} />
     </>
   );
 };
