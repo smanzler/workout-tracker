@@ -10,15 +10,11 @@ import {
 import { Set } from "@/models/Set";
 import { FontAwesome5 } from "@expo/vector-icons";
 import database from "@/db";
-import { Gesture, GestureDetector } from "react-native-gesture-handler";
-import Animated, {
-  runOnJS,
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
-} from "react-native-reanimated";
+import { RectButton } from "react-native-gesture-handler";
 import { Q } from "@nozbe/watermelondb";
 import { useTheme } from "@react-navigation/native";
+import ReanimatedSwipeable from "react-native-gesture-handler/ReanimatedSwipeable";
+import { SharedValue } from "react-native-reanimated";
 
 const SetListItem = ({
   set,
@@ -124,143 +120,143 @@ const SetListItem = ({
     }
   };
 
-  const translateX = useSharedValue(0);
-
-  const panGesture = Gesture.Pan()
-    .failOffsetY([-5, 5])
-    .activeOffsetX([-10, 10])
-    .onUpdate((event) => {
-      translateX.value = Math.max(-100, event.translationX);
-    })
-    .onEnd(() => {
-      if (translateX.value < -50) {
-        runOnJS(handleDelete)();
-      }
-      translateX.value = withTiming(0);
-    });
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ translateX: translateX.value }],
-    opacity: withTiming(translateX.value < -50 ? 0 : 1),
-  }));
+  const renderRightActions = () => {
+    return (
+      <RectButton style={[styles.deleteButton]} onPress={handleDelete}>
+        <View style={styles.deleteButtonContent}>
+          <FontAwesome5 name="trash-alt" size={20} color="white" />
+        </View>
+      </RectButton>
+    );
+  };
 
   return (
-    <GestureDetector gesture={panGesture}>
-      <Animated.View
-        style={[
-          styles.container,
-          completed && styles.completedRow,
-          animatedStyle,
-        ]}
-      >
-        <Text
+    <ReanimatedSwipeable
+      renderRightActions={renderRightActions}
+      friction={2}
+      containerStyle={{ backgroundColor: "#ff4444" }}
+    >
+      <View style={{ backgroundColor: colors.card }}>
+        <View
           style={[
-            styles.item,
-            styles.order,
-            {
-              backgroundColor: completed ? "transparent" : colors.background,
-              borderColor: completed ? "transparent" : colors.background,
-              color: colors.text,
-            },
+            styles.container,
+            { backgroundColor: colors.card },
+            completed && styles.completedRow,
           ]}
         >
-          {index}
-        </Text>
-        <Text style={{ color: colors.text }}>-</Text>
-        <View style={styles.rightContainer}>
-          <TextInput
-            ref={(ref) => {
-              if (inputRefs.current[exerciseIndex]) {
-                inputRefs.current[exerciseIndex][index * 2] = ref;
-              }
-            }}
+          <Text
             style={[
               styles.item,
-              styles.weight,
+              styles.order,
               {
                 backgroundColor: completed ? "transparent" : colors.background,
-                borderColor: weightFocused
-                  ? colors.text
-                  : completed
-                  ? "transparent"
-                  : colors.background,
+                borderColor: completed ? "transparent" : colors.background,
                 color: colors.text,
               },
             ]}
-            value={weight}
-            editable={!completed}
-            onChangeText={(text) => {
-              setWeight(text);
-              handleUpdate("weight", text);
-            }}
-            placeholder="0"
-            placeholderTextColor={colors.text
-              .replace("rgb", "rgba")
-              .replace(")", ", 0.5)")}
-            keyboardType="numeric"
-            returnKeyType="next"
-            submitBehavior="submit"
-            onSubmitEditing={handleWeightSubmit}
-            onFocus={() => setWeightFocused(true)}
-            onBlur={() => setWeightFocused(false)}
-          />
-          <TextInput
-            ref={(ref) => {
-              if (inputRefs.current[exerciseIndex]) {
-                inputRefs.current[exerciseIndex][index * 2 + 1] = ref;
-              }
-            }}
-            style={[
-              styles.item,
-              styles.reps,
-              {
-                backgroundColor: completed ? "transparent" : colors.background,
-                borderColor: repsFocused
-                  ? colors.text
-                  : completed
-                  ? "transparent"
-                  : colors.background,
-                color: colors.text,
-              },
-            ]}
-            value={reps}
-            editable={!completed}
-            onChangeText={(text) => {
-              setReps(text);
-              handleUpdate("reps", text);
-            }}
-            returnKeyType="next"
-            keyboardType="number-pad"
-            placeholder="0"
-            placeholderTextColor={colors.text
-              .replace("rgb", "rgba")
-              .replace(")", ", 0.5)")}
-            submitBehavior="submit"
-            onSubmitEditing={handleRepsSubmit}
-            onFocus={() => setRepsFocused(true)}
-            onBlur={() => setRepsFocused(false)}
-          />
-          <TouchableOpacity
-            style={[
-              styles.button,
-              completed
-                ? styles.completedButton
-                : { backgroundColor: colors.background },
-            ]}
-            onPress={toggleCompleted}
-            disabled={!isCompleteable}
           >
-            <FontAwesome5
-              name="check"
-              size={16}
-              color={
-                completed ? "white" : isCompleteable ? colors.text : "gray"
-              }
+            {index}
+          </Text>
+          <Text style={{ color: colors.text }}>-</Text>
+          <View style={styles.rightContainer}>
+            <TextInput
+              ref={(ref) => {
+                if (inputRefs.current[exerciseIndex]) {
+                  inputRefs.current[exerciseIndex][index * 2] = ref;
+                }
+              }}
+              style={[
+                styles.item,
+                styles.weight,
+                {
+                  backgroundColor: completed
+                    ? "transparent"
+                    : colors.background,
+                  borderColor: weightFocused
+                    ? colors.text
+                    : completed
+                    ? "transparent"
+                    : colors.background,
+                  color: colors.text,
+                },
+              ]}
+              value={weight}
+              editable={!completed}
+              onChangeText={(text) => {
+                setWeight(text);
+                handleUpdate("weight", text);
+              }}
+              placeholder="0"
+              placeholderTextColor={colors.text
+                .replace("rgb", "rgba")
+                .replace(")", ", 0.5)")}
+              keyboardType="numeric"
+              returnKeyType="next"
+              submitBehavior="submit"
+              onSubmitEditing={handleWeightSubmit}
+              onFocus={() => setWeightFocused(true)}
+              onBlur={() => setWeightFocused(false)}
             />
-          </TouchableOpacity>
+            <TextInput
+              ref={(ref) => {
+                if (inputRefs.current[exerciseIndex]) {
+                  inputRefs.current[exerciseIndex][index * 2 + 1] = ref;
+                }
+              }}
+              style={[
+                styles.item,
+                styles.reps,
+                {
+                  backgroundColor: completed
+                    ? "transparent"
+                    : colors.background,
+                  borderColor: repsFocused
+                    ? colors.text
+                    : completed
+                    ? "transparent"
+                    : colors.background,
+                  color: colors.text,
+                },
+              ]}
+              value={reps}
+              editable={!completed}
+              onChangeText={(text) => {
+                setReps(text);
+                handleUpdate("reps", text);
+              }}
+              returnKeyType="next"
+              keyboardType="number-pad"
+              placeholder="0"
+              placeholderTextColor={colors.text
+                .replace("rgb", "rgba")
+                .replace(")", ", 0.5)")}
+              submitBehavior="submit"
+              onSubmitEditing={handleRepsSubmit}
+              onFocus={() => setRepsFocused(true)}
+              onBlur={() => setRepsFocused(false)}
+            />
+            <TouchableOpacity
+              style={[
+                styles.button,
+                completed
+                  ? styles.completedButton
+                  : { backgroundColor: colors.background },
+              ]}
+              onPress={toggleCompleted}
+              disabled={!isCompleteable}
+            >
+              <FontAwesome5
+                name="check"
+                size={16}
+                color={
+                  completed ? "white" : isCompleteable ? colors.text : "gray"
+                }
+              />
+            </TouchableOpacity>
+          </View>
         </View>
-      </Animated.View>
-    </GestureDetector>
+      </View>
+    </ReanimatedSwipeable>
   );
 };
 
@@ -272,6 +268,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     paddingVertical: 5,
     paddingHorizontal: 16,
+    backgroundColor: "white",
   },
   item: {
     fontSize: 16,
@@ -302,9 +299,18 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   completedRow: {
-    backgroundColor: "rgba(89, 181, 89, 0.2)",
+    backgroundColor: "rgba(35, 183, 35, 0.2)",
   },
   completedButton: {
-    backgroundColor: "#59b559",
+    backgroundColor: "rgb(35, 183, 35)",
+  },
+  deleteButton: {
+    width: 75,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  deleteButtonContent: {
+    flex: 1,
+    justifyContent: "center",
   },
 });
