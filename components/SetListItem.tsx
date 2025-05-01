@@ -56,12 +56,7 @@ const SetListItem = ({
     const currentInputs = inputRefs.current;
 
     if (!completed) {
-      const toggled = await toggleCompleted();
-
-      if (!toggled) {
-        Keyboard.dismiss();
-        return;
-      }
+      await toggleCompleted();
     }
 
     if (index * 2 + 2 < (currentInputs[exerciseIndex]?.length || 0)) {
