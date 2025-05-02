@@ -161,7 +161,7 @@ const Workout = () => {
       console.error("Failed to delete workout:", error);
     }
     await stopWorkout();
-    router.replace("/(tabs)/start_workout");
+    router.back();
   };
 
   const handleCancel = () => {
