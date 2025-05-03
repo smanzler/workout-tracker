@@ -97,7 +97,12 @@ function RootLayoutNav() {
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       <Stack.Screen
         name="(modals)/workout"
-        options={{ presentation: "modal", headerShown: false }}
+        options={{
+          presentation: "modal",
+          headerTransparent: true,
+          headerBlurEffect: "systemChromeMaterial",
+          headerShadowVisible: true,
+        }}
       />
       <Stack.Screen
         name="(modals)/add_exercise"

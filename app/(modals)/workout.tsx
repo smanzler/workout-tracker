@@ -8,27 +8,17 @@ import {
   Keyboard,
   KeyboardAvoidingView,
   Platform,
+  Button as RNButton,
 } from "react-native";
 import React, { useEffect, useRef, useState } from "react";
 import { useWorkout } from "@/providers/WorkoutProvider";
-import { router } from "expo-router";
+import { router, Stack } from "expo-router";
 import database, { workoutsCollection } from "@/db";
 import { Workout as WorkoutModel } from "@/models/Workout";
 import WorkoutExerciseList from "@/components/WorkoutExerciseList";
-import { Entypo, Feather, FontAwesome6 } from "@expo/vector-icons";
 import { useTheme } from "@react-navigation/native";
 import Button from "@/components/Button";
 import { checkPRs } from "@/utils/PRs";
-import { BlurView } from "expo-blur";
-import Animated, {
-  Extrapolation,
-  interpolate,
-  useAnimatedRef,
-  useAnimatedStyle,
-  useScrollViewOffset,
-  useSharedValue,
-  withTiming,
-} from "react-native-reanimated";
 import { mySync } from "@/db/sync";
 import { useAuth } from "@/providers/AuthProvider";
 import { useSync } from "@/providers/SyncProvider";
@@ -41,8 +31,6 @@ const Workout = () => {
   const { user } = useAuth();
   const { updateLastSync } = useSync();
   const inputRefs = useRef<(TextInput | null)[][]>([]);
-  const scrollRef = useAnimatedRef<Animated.ScrollView>();
-  const scrollHandler = useScrollViewOffset(scrollRef);
 
   useEffect(() => {
     async function fetchWorkout() {
@@ -54,10 +42,6 @@ const Workout = () => {
 
     fetchWorkout();
   }, [activeWorkoutId]);
-
-  const borderStyle = useAnimatedStyle(() => {
-    return { opacity: scrollHandler.value > 0 ? withTiming(0) : withTiming(1) };
-  });
 
   const formatTime = (totalSeconds: number): string => {
     const hours = Math.floor(totalSeconds / 3600);
@@ -187,9 +171,14 @@ const Workout = () => {
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={styles.container}
     >
-      <ScrollView ref={scrollRef} style={{ paddingHorizontal: 20 }}>
-        <View style={{ height: 90 }} />
+      <Stack.Screen
+        options={{
+          headerTitle: formatTime(seconds),
+          headerRight: () => <RNButton title="Finish" onPress={finish} />,
+        }}
+      />
 
+      <ScrollView style={{ paddingHorizontal: 20 }}>
         <TextInput
           style={{
             fontSize: 24,
@@ -224,54 +213,7 @@ const Workout = () => {
         >
           Cancel Workout
         </Button>
-
-        <View style={{ height: 50 }} />
       </ScrollView>
-
-      <BlurView
-        style={{
-          position: "absolute",
-          flexDirection: "row",
-          justifyContent: "space-between",
-          alignItems: "center",
-          width: "100%",
-          height: 80,
-          paddingHorizontal: 20,
-        }}
-      >
-        <Text style={[styles.header, { color: colors.text }]}>Workout</Text>
-
-        <Text
-          style={{
-            textAlign: "center",
-            position: "absolute",
-            left: 0,
-            right: 0,
-            fontWeight: "bold",
-            color: colors.text,
-          }}
-        >
-          {formatTime(seconds)}
-        </Text>
-
-        <Button size="sm" onPress={finish}>
-          Finish
-        </Button>
-
-        <Animated.View
-          style={[
-            {
-              backgroundColor: colors.border,
-              position: "absolute",
-              bottom: 0,
-              left: 0,
-              right: 0,
-              height: 1,
-            },
-            borderStyle,
-          ]}
-        />
-      </BlurView>
     </KeyboardAvoidingView>
   );
 };
