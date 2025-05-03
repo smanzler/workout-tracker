@@ -225,28 +225,4 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  header: {
-    flex: 1,
-    fontSize: 24,
-    fontWeight: "bold",
-  },
-  btn: {
-    backgroundColor: "#89ba7f",
-    padding: 5,
-    borderRadius: 5,
-    paddingHorizontal: 10,
-  },
-  keyboardAccessory: {
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: 44,
-    borderTopWidth: 1,
-    borderTopColor: "#ccc",
-    flexDirection: "row",
-    justifyContent: "flex-end",
-    alignItems: "center",
-    paddingHorizontal: 10,
-  },
 });
