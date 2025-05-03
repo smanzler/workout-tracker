@@ -142,7 +142,9 @@ function RootLayoutNav() {
         name="(modals)/workout_modal"
         options={{
           presentation: "modal",
-          headerShown: false,
+          headerTransparent: true,
+          headerBlurEffect: "systemChromeMaterial",
+          headerShadowVisible: true,
         }}
       />
       <Stack.Screen

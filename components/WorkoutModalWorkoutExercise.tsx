@@ -10,10 +10,8 @@ import Animated, { FadeIn, Layout } from "react-native-reanimated";
 
 const WorkoutModalWorkoutExercise = ({
   workoutExercise,
-  setSetsLoading,
 }: {
   workoutExercise: WorkoutExercise;
-  setSetsLoading: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
   const [exercise, setExercise] = useState<Exercise | null>(null);
   const [sets, setSets] = useState<Set[] | null>(null);
@@ -24,7 +22,6 @@ const WorkoutModalWorkoutExercise = ({
   useEffect(() => {
     const fetchExerciseAndSets = async () => {
       if (!workoutExercise) return;
-      setSetsLoading(true);
       setLoading(true);
 
       try {
@@ -39,7 +36,6 @@ const WorkoutModalWorkoutExercise = ({
         console.error("Error fetching exercise data:", error);
       } finally {
         setLoading(false);
-        setSetsLoading(false);
       }
     };
 
@@ -70,7 +66,7 @@ const WorkoutModalWorkoutExercise = ({
   );
 
   return (
-    <View style={[styles.container, { borderColor: colors.border }]}>
+    <View style={[styles.container, { backgroundColor: colors.card }]}>
       <View style={styles.headerContainer}>
         <View style={styles.titleContainer}>
           <ThemedText type="defaultSemiBold" style={styles.exerciseTitle}>
@@ -78,8 +74,8 @@ const WorkoutModalWorkoutExercise = ({
           </ThemedText>
           {totalPRs > 0 && (
             <View style={[styles.prBadge]}>
-              <MaterialCommunityIcons name="trophy" color="#FFD700" size={12} />
-              <ThemedText style={styles.prText}>
+              <MaterialCommunityIcons name="trophy" color="#FFD700" size={16} />
+              <ThemedText type="defaultSemiBold">
                 {totalPRs} PR{totalPRs > 1 ? "s" : ""}
               </ThemedText>
             </View>
@@ -173,19 +169,17 @@ export default WorkoutModalWorkoutExercise;
 
 const styles = StyleSheet.create({
   container: {
-    marginVertical: 8,
-    borderRadius: 12,
-    borderWidth: 1,
-    overflow: "hidden",
-    padding: 12,
+    marginTop: 16,
+    borderRadius: 20,
+    padding: 16,
   },
   headerContainer: {
     marginBottom: 12,
   },
   titleContainer: {
     flexDirection: "row",
+    justifyContent: "space-between",
     alignItems: "center",
-    gap: 8,
     marginBottom: 8,
   },
   exerciseTitle: {
@@ -194,14 +188,9 @@ const styles = StyleSheet.create({
   prBadge: {
     flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 12,
     gap: 4,
-  },
-  prText: {
-    fontSize: 12,
-    fontWeight: "600",
   },
   statsContainer: {
     flexDirection: "row",

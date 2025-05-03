@@ -1,11 +1,17 @@
-import { StyleSheet, Text, View, SafeAreaView } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  SafeAreaView,
+  TouchableOpacity,
+} from "react-native";
 import React, { useEffect, useState } from "react";
 import { Workout } from "@/models/Workout";
 import { useTheme } from "@react-navigation/native";
 import { WorkoutExercise } from "@/models/WorkoutExercise";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { ThemedText } from "@/components/ThemedText";
-import { router, useLocalSearchParams } from "expo-router";
+import { router, Stack, useLocalSearchParams } from "expo-router";
 import { workoutsCollection } from "@/db";
 import dayjs from "dayjs";
 import { Set } from "@/models/Set";
@@ -18,6 +24,7 @@ import Animated, {
 import { formatDuration } from "@/utils/format";
 import ButtonWithIcon from "@/components/ButtonWithIcon";
 import { ScrollView } from "react-native-gesture-handler";
+import { BodyScrollView } from "@/components/BodyScrollView";
 const WorkoutModal = () => {
   const { colors } = useTheme();
   const { workoutId } = useLocalSearchParams<{ workoutId: string }>();
@@ -25,16 +32,10 @@ const WorkoutModal = () => {
   const [workoutExercises, setWorkoutExercises] = useState<WorkoutExercise[]>(
     []
   );
-  const [totalVolume, setTotalVolume] = useState(0);
-  const [totalPRCount, setTotalPRCount] = useState(0);
-  const [loading, setLoading] = useState(true);
-  const [setsLoading, setSetsLoading] = useState(true);
 
   useEffect(() => {
     const loadWorkout = async () => {
       if (!workoutId) return;
-
-      setLoading(true);
 
       const w = await workoutsCollection.find(workoutId);
       setWorkout(w);
@@ -61,118 +62,51 @@ const WorkoutModal = () => {
             (set.is1RMPr ? 1 : 0);
         }
       }
-
-      setTotalVolume(volume);
-      setTotalPRCount(prCount);
-
-      setLoading(false);
     };
 
     loadWorkout();
   }, [workoutId]);
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
-      {workout && (
-        <View style={{ flex: 1, padding: 20 }}>
-          <View style={styles.headerContainer}>
-            <ThemedText type="title">{workout.name}</ThemedText>
-
-            <ButtonWithIcon onPress={() => router.back()}>
+    <BodyScrollView
+      style={{
+        flex: 1,
+        backgroundColor: colors.background,
+        paddingHorizontal: 20,
+      }}
+    >
+      <Stack.Screen
+        options={{
+          headerTitle: workout?.name,
+          headerRight: () => (
+            <TouchableOpacity
+              style={[
+                styles.closeButton,
+                {
+                  backgroundColor: colors.text
+                    .replace("rgb", "rgba")
+                    .replace(")", ", 0.1)"),
+                },
+              ]}
+              onPress={() => router.back()}
+            >
               <Ionicons name="close" size={24} color={colors.text} />
-            </ButtonWithIcon>
-          </View>
-
-          <ThemedText style={{ fontSize: 16, fontWeight: "600", opacity: 0.6 }}>
-            {dayjs(workout.startTime).format("h:mm a, dddd, MMM D YYYY")}
-          </ThemedText>
-
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              marginVertical: 10,
-              opacity: 0.6,
-            }}
-          >
-            <View style={[styles.item]}>
-              <MaterialCommunityIcons
-                name="clock-time-five"
-                color={colors.text}
-                size={18}
-              />
-              <Text style={[styles.itemText, { color: colors.text }]}>
-                {workout.startTime && workout.endTime
-                  ? formatDuration(workout.startTime, workout.endTime)
-                  : "—"}
-              </Text>
-            </View>
-            <View style={[styles.item]}>
-              <MaterialCommunityIcons
-                name="weight"
-                color={colors.text}
-                size={18}
-              />
-              <Text style={[styles.itemText, { color: colors.text }]}>
-                {totalVolume} lb
-              </Text>
-            </View>
-            <View style={[styles.item]}>
-              <MaterialCommunityIcons
-                name="trophy"
-                color={colors.text}
-                size={18}
-              />
-              <Text style={[styles.itemText, { color: colors.text }]}>
-                {totalPRCount} PRs
-              </Text>
-            </View>
-          </View>
-
-          <ScrollView
-            style={styles.exerciseList}
-            showsVerticalScrollIndicator={false}
-          >
-            {workoutExercises.map((we) => (
-              <WorkoutModalWorkoutExercise
-                key={we.id}
-                workoutExercise={we}
-                setSetsLoading={setSetsLoading}
-              />
-            ))}
-          </ScrollView>
-        </View>
-      )}
-    </SafeAreaView>
+            </TouchableOpacity>
+          ),
+        }}
+      />
+      {workoutExercises.map((we) => (
+        <WorkoutModalWorkoutExercise key={we.id} workoutExercise={we} />
+      ))}
+    </BodyScrollView>
   );
 };
 
 export default WorkoutModal;
 
 const styles = StyleSheet.create({
-  blurView: {
-    position: "absolute",
-    top: 0,
-    right: 0,
-    bottom: 0,
-    left: 0,
-  },
-  headerContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 10,
-  },
-  item: {
-    flexDirection: "row",
-    gap: 5,
-  },
-  itemText: {
-    fontSize: 16,
-    fontWeight: "500",
-  },
-  exerciseList: {
-    flex: 1,
-    marginTop: 10,
+  closeButton: {
+    padding: 6,
+    borderRadius: 100,
   },
 });
