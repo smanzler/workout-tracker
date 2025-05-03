@@ -22,6 +22,7 @@ import { checkPRs } from "@/utils/PRs";
 import { mySync } from "@/db/sync";
 import { useAuth } from "@/providers/AuthProvider";
 import { useSync } from "@/providers/SyncProvider";
+import { BodyScrollView } from "@/components/BodyScrollView";
 
 const Workout = () => {
   const { seconds, activeWorkoutId, stopWorkout } = useWorkout();
@@ -178,7 +179,7 @@ const Workout = () => {
         }}
       />
 
-      <ScrollView style={{ paddingHorizontal: 20 }}>
+      <BodyScrollView style={{ paddingHorizontal: 20 }}>
         <TextInput
           style={{
             fontSize: 24,
@@ -213,7 +214,7 @@ const Workout = () => {
         >
           Cancel Workout
         </Button>
-      </ScrollView>
+      </BodyScrollView>
     </KeyboardAvoidingView>
   );
 };
