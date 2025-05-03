@@ -29,7 +29,6 @@ const WorkoutModal = () => {
   const [totalPRCount, setTotalPRCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [setsLoading, setSetsLoading] = useState(true);
-  const opacity = useSharedValue(0);
 
   useEffect(() => {
     const loadWorkout = async () => {
@@ -72,22 +71,10 @@ const WorkoutModal = () => {
     loadWorkout();
   }, [workoutId]);
 
-  useEffect(() => {
-    if (!loading && !setsLoading) {
-      opacity.value = withTiming(1, { duration: 500 });
-    }
-  }, [loading, setsLoading]);
-
-  const animatedStyle = useAnimatedStyle(() => {
-    return {
-      opacity: opacity.value,
-    };
-  });
-
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
       {workout && (
-        <Animated.View style={[{ flex: 1, padding: 20 }, animatedStyle]}>
+        <View style={{ flex: 1, padding: 20 }}>
           <View style={styles.headerContainer}>
             <ThemedText type="title">{workout.name}</ThemedText>
 
@@ -154,7 +141,7 @@ const WorkoutModal = () => {
               />
             ))}
           </ScrollView>
-        </Animated.View>
+        </View>
       )}
     </SafeAreaView>
   );

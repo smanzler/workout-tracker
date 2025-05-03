@@ -141,8 +141,7 @@ function RootLayoutNav() {
       <Stack.Screen
         name="(modals)/workout_modal"
         options={{
-          presentation: "transparentModal",
-          animation: "fade",
+          presentation: "modal",
           headerShown: false,
         }}
       />
