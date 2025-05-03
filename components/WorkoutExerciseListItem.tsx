@@ -25,6 +25,7 @@ import database, { setsCollection } from "@/db";
 import { useTheme } from "@react-navigation/native";
 import { useAuth } from "@/providers/AuthProvider";
 import ButtonWithIcon from "./ButtonWithIcon";
+import WRExerciseItem from "./WRExerciseItem";
 
 const WorkoutExerciseListItem = ({
   workoutExercise,
@@ -39,7 +40,6 @@ const WorkoutExerciseListItem = ({
   exerciseIndex: number;
   inputRefs: React.MutableRefObject<(TextInput | null)[][]>;
 }) => {
-  const theme = useTheme();
   const { user } = useAuth();
 
   const handleDelete = () => {
@@ -69,97 +69,16 @@ const WorkoutExerciseListItem = ({
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.colors.card }]}>
-      <View style={styles.headerContainer}>
-        <Text
-          style={[styles.headerText, { color: theme.colors.text }]}
-          numberOfLines={1}
-          ellipsizeMode="tail"
-        >
-          {exercise.title}
-        </Text>
-        <DropdownMenuRoot>
-          <DropdownMenuTrigger>
-            <ButtonWithIcon>
-              <Entypo
-                name="dots-three-horizontal"
-                size={24}
-                color={theme.colors.text}
-              />
-            </ButtonWithIcon>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuItem destructive key="delete" onSelect={handleDelete}>
-              <DropdownMenuItemTitle>Remove Exercise</DropdownMenuItemTitle>
-              <DropdownMenuItemIcon ios={{ name: "trash" }} />
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenuRoot>
-      </View>
-      <View style={styles.setsHeader}>
-        <Text
-          style={[
-            styles.setHeaderText,
-            {
-              width: 30,
-              textAlign: "center",
-              color: theme.colors.text,
-            },
-          ]}
-        >
-          Set
-        </Text>
-        <Text
-          style={[
-            styles.setHeaderText,
-            { width: 80, textAlign: "center", color: theme.colors.text },
-          ]}
-        >
-          Previous
-        </Text>
-        <View style={styles.rightContainer}>
-          <Text
-            style={[
-              styles.setHeaderText,
-              { width: 60, textAlign: "center", color: theme.colors.text },
-            ]}
-          >
-            lbs
-          </Text>
-          <Text
-            style={[
-              styles.setHeaderText,
-              { width: 60, textAlign: "center", color: theme.colors.text },
-            ]}
-          >
-            Reps
-          </Text>
-          <View style={{ width: 30, alignItems: "center" }}>
-            <FontAwesome5 name="check" size={16} color={theme.colors.text} />
-          </View>
-        </View>
-      </View>
-      {sets.map((set, index) => (
-        <SetListItem
-          key={set.id}
-          set={set}
-          workoutExerciseId={workoutExercise.id}
-          index={index + 1}
-          exerciseIndex={exerciseIndex}
-          inputRefs={inputRefs}
-        />
-      ))}
-
-      <TouchableOpacity
-        style={[styles.addBtn, { backgroundColor: theme.colors.background }]}
-        onPress={handleAddSet}
-      >
-        <Feather name="plus" size={16} color={theme.colors.text} />
-        <Text style={[styles.addBtnText, { color: theme.colors.text }]}>
-          Add Set
-        </Text>
-      </TouchableOpacity>
-    </View>
+    <WRExerciseItem
+      type="workout"
+      exercise={exercise}
+      sets={sets}
+      workoutExercise={workoutExercise}
+      exerciseIndex={exerciseIndex}
+      inputRefs={inputRefs}
+      handleDelete={handleDelete}
+      handleAddSet={handleAddSet}
+    />
   );
 };
 

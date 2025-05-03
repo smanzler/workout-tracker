@@ -5,7 +5,7 @@ import {
   Alert,
   TextInput,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { BodyScrollView } from "@/components/BodyScrollView";
 import RoutineExerciseList from "@/components/RoutineExerciseList";
 import { router, Stack } from "expo-router";
@@ -25,6 +25,7 @@ const AddRoutine = () => {
   const [routineName, setRoutineName] = useState<string>("");
   const exercises = useRoutineExercises();
   const { clearRoutine } = useRoutineActions();
+  const inputRefs = useRef<(TextInput | null)[][]>([]);
 
   const handleSave = async () => {
     if (exercises.length === 0) {
@@ -118,7 +119,7 @@ const AddRoutine = () => {
           .replace(")", ", 0.4)")}
       />
 
-      <RoutineExerciseList exercises={exercises} />
+      <RoutineExerciseList exercises={exercises} inputRefs={inputRefs} />
 
       <Button
         variant="outline"

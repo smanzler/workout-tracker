@@ -1,4 +1,4 @@
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, TextInput, View } from "react-native";
 import React from "react";
 import RoutineExerciseListItem from "./RoutineExerciseListItem";
 import { RoutineExercise } from "@/stores/routineStore";
@@ -7,10 +7,11 @@ import { useTheme } from "@react-navigation/native";
 
 const RoutineExerciseList = ({
   exercises,
+  inputRefs,
 }: {
   exercises: RoutineExercise[];
+  inputRefs: React.MutableRefObject<(TextInput | null)[][]>;
 }) => {
-  const theme = useTheme();
   return (
     <>
       {exercises?.length ? (
@@ -19,6 +20,7 @@ const RoutineExerciseList = ({
             key={index}
             exercise={exercise}
             index={index}
+            inputRefs={inputRefs}
           />
         ))
       ) : (
@@ -33,5 +35,3 @@ const RoutineExerciseList = ({
 };
 
 export default RoutineExerciseList;
-
-const styles = StyleSheet.create({});
