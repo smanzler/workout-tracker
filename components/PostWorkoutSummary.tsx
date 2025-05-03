@@ -1,4 +1,4 @@
-import { View } from "react-native";
+import { StyleProp, View, ViewStyle } from "react-native";
 import { useTheme } from "@react-navigation/native";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { ThemedText } from "./ThemedText";
@@ -25,7 +25,13 @@ export interface PostWorkout {
   exercises: PostExercise[];
 }
 
-const PostWorkoutSummary = ({ workout }: { workout: PostWorkout }) => {
+const PostWorkoutSummary = ({
+  workout,
+  style,
+}: {
+  workout: PostWorkout;
+  style?: StyleProp<ViewStyle>;
+}) => {
   const { colors } = useTheme();
 
   const prCounts = workout.exercises.reduce(
@@ -66,7 +72,7 @@ const PostWorkoutSummary = ({ workout }: { workout: PostWorkout }) => {
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: colors.card }}>
+    <View style={[style, { flex: 1, backgroundColor: colors.card }]}>
       <View style={{ padding: 16, height: "100%" }}>
         <View style={{ gap: 20 }}>
           <View style={{ gap: 4 }}>

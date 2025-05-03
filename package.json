@@ -52,6 +52,7 @@
     "react-native-ios-utilities": "^5.1.2",
     "react-native-pager-view": "6.5.1",
     "react-native-reanimated": "~3.16.7",
+    "react-native-reanimated-carousel": "^4.0.2",
     "react-native-safe-area-context": "~5.1.0",
     "react-native-screens": "~4.8.0",
     "react-native-web": "~0.19.13",

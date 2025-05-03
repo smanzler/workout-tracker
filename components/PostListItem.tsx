@@ -5,8 +5,9 @@ import {
   TouchableOpacity,
   View,
   ScrollView,
+  Dimensions,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { ThemedText } from "./ThemedText";
 import { formatDuration } from "@/utils/format";
 import dayjs from "dayjs";
@@ -17,7 +18,10 @@ import { Image } from "expo-image";
 import { getProfileImageUrl } from "@/api/profile";
 import { supabase } from "@/lib/supabase";
 import { router } from "expo-router";
-import PagerView from "react-native-pager-view";
+import Carousel, {
+  ICarouselInstance,
+  Pagination,
+} from "react-native-reanimated-carousel";
 import {
   DropdownMenuContent,
   DropdownMenuItem,
@@ -30,19 +34,19 @@ import { useAuth } from "@/providers/AuthProvider";
 import { useQueryClient } from "@tanstack/react-query";
 import { PostgrestError } from "@supabase/supabase-js";
 import PostWorkoutSummary from "./PostWorkoutSummary";
-import {
-  TapGestureHandler,
-  State,
-  GestureHandlerStateChangeNativeEvent,
-} from "react-native-gesture-handler";
+import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, {
   withSpring,
   useSharedValue,
   withTiming,
   useAnimatedStyle,
+  interpolate,
+  runOnJS,
 } from "react-native-reanimated";
 
 dayjs.extend(relativeTime);
+
+const { width } = Dimensions.get("window");
 
 interface User {
   id: string;
@@ -92,6 +96,9 @@ const PostListItem = ({ post }: { post: Post }) => {
   const queryClient = useQueryClient();
   const [isLoading, setIsLoading] = useState(false);
   const scale = useSharedValue(0);
+
+  const progress = useSharedValue<number>(0);
+  const ref = useRef<ICarouselInstance>(null);
 
   const handleDelete = async () => {
     try {
@@ -145,28 +152,27 @@ const PostListItem = ({ post }: { post: Post }) => {
     setIsLoading(false);
   };
 
-  const onDoubleTapStateChange = ({
-    nativeEvent,
-  }: {
-    nativeEvent: GestureHandlerStateChangeNativeEvent;
-  }) => {
-    if (nativeEvent.state === State.ACTIVE && !liked && !isLoading) {
-      scale.value = withSpring(
-        1,
-        {
-          mass: 1,
-          damping: 15,
-          stiffness: 200,
-        },
-        (finished) => {
-          if (finished) {
-            scale.value = withTiming(0, { duration: 150 });
+  const doubleTap = Gesture.Tap()
+    .numberOfTaps(2)
+    .maxDuration(250)
+    .onStart(() => {
+      if (!liked && !isLoading) {
+        scale.value = withSpring(
+          1,
+          {
+            mass: 1,
+            damping: 15,
+            stiffness: 200,
+          },
+          (finished) => {
+            if (finished) {
+              scale.value = withTiming(0, { duration: 150 });
+            }
           }
-        }
-      );
-      toggleLike();
-    }
-  };
+        );
+        runOnJS(toggleLike)();
+      }
+    });
 
   const heartAnimatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],
@@ -182,6 +188,8 @@ const PostListItem = ({ post }: { post: Post }) => {
           style={{
             flex: 1,
             aspectRatio: 1,
+            borderRadius: 20,
+            overflow: "hidden",
           }}
         >
           <Image
@@ -195,32 +203,73 @@ const PostListItem = ({ post }: { post: Post }) => {
     }
 
     if (post.workout.exercises.length > 0) {
-      pages.push(<PostWorkoutSummary key="workout" workout={post.workout} />);
+      pages.push(
+        <PostWorkoutSummary
+          key="workout"
+          workout={post.workout}
+          style={{ borderRadius: 20 }}
+        />
+      );
     }
 
     if (pages.length === 0) return null;
 
     return (
-      <TapGestureHandler
-        numberOfTaps={2}
-        onHandlerStateChange={onDoubleTapStateChange}
-        maxDelayMs={250}
-      >
-        <Animated.View style={{ position: "relative" }}>
-          <PagerView
+      <GestureDetector gesture={doubleTap}>
+        <View style={{ position: "relative" }}>
+          <Carousel
+            ref={ref}
+            loop={false}
+            width={width - 40}
+            height={width - 40}
+            data={pages}
+            onProgressChange={progress}
+            onSnapToItem={(index) => setCurrentPage(index)}
+            renderItem={({ item }) => item}
             style={{
-              width: "100%",
-              aspectRatio: 1,
-              gap: 15,
               marginBottom: 10,
               borderRadius: 20,
-              overflow: "hidden",
             }}
-            initialPage={0}
-            onPageSelected={(e) => setCurrentPage(e.nativeEvent.position)}
-          >
-            {pages}
-          </PagerView>
+            onConfigurePanGesture={(g) => {
+              "worklet";
+              g.activeOffsetY([-999999, 999999]);
+              g.activeOffsetX([-20, 20]);
+            }}
+          />
+
+          {pages.length > 1 && (
+            <View
+              style={{
+                position: "absolute",
+                bottom: 20,
+                left: 0,
+                right: 0,
+                alignItems: "center",
+              }}
+            >
+              <Pagination.Basic
+                data={pages}
+                progress={progress}
+                dotStyle={{
+                  backgroundColor: colors.text,
+                  opacity: 0.6,
+                  width: 8,
+                  height: 8,
+                  borderRadius: 4,
+                }}
+                activeDotStyle={{
+                  backgroundColor: colors.text,
+                  width: 8,
+                  height: 8,
+                  borderRadius: 4,
+                }}
+                containerStyle={{
+                  gap: 5,
+                }}
+                horizontal
+              />
+            </View>
+          )}
 
           <Animated.View
             style={[
@@ -252,36 +301,8 @@ const PostListItem = ({ post }: { post: Post }) => {
               }}
             />
           </Animated.View>
-
-          {pages.length > 1 && (
-            <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "center",
-                gap: 4,
-                marginBottom: 10,
-                position: "absolute",
-                bottom: 20,
-                left: 0,
-                right: 0,
-              }}
-            >
-              {pages.map((_, index) => (
-                <View
-                  key={index}
-                  style={{
-                    width: 6,
-                    height: 6,
-                    borderRadius: 3,
-                    backgroundColor: colors.text,
-                    opacity: currentPage === index ? 1 : 0.6,
-                  }}
-                />
-              ))}
-            </View>
-          )}
-        </Animated.View>
-      </TapGestureHandler>
+        </View>
+      </GestureDetector>
     );
   };
 
