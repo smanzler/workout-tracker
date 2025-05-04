@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import { Exercise } from "@/models/Exercise";
 import { WorkoutExercise } from "@/models/WorkoutExercise";
-import { exercisesCollection } from "@/db";
+import { exercisesCollection, workoutExercisesCollection } from "@/db";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "@react-navigation/native";
 import { BodyScrollView } from "@/components/BodyScrollView";
@@ -16,6 +16,7 @@ import Animated, {
 import { getMaxPRBefore } from "@/utils/PRs";
 import dayjs from "dayjs";
 import ExerciseHistoryListItem from "@/components/ExerciseHistoryListItem";
+import { Q } from "@nozbe/watermelondb";
 
 type PRs = {
   weight: {
@@ -56,7 +57,22 @@ const ExerciseHistory = () => {
       const e = await exercisesCollection.find(exerciseId);
       setExercise(e);
 
-      const we = await e.workoutExercises.fetch();
+      const we = await workoutExercisesCollection
+        .query(
+          Q.unsafeSqlQuery(
+            `
+            SELECT workout_exercises.*
+            FROM workout_exercises
+            JOIN workouts ON workout_exercises.workout_id = workouts.id
+            WHERE workout_exercises.exercise_id = ? 
+            AND workouts.end_time IS NOT NULL
+            ORDER BY workouts.start_time DESC
+            `,
+            [exerciseId]
+          )
+        )
+        .fetch();
+
       setWorkoutExercises(we);
 
       if (we.length > 0) {
