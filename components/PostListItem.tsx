@@ -91,7 +91,6 @@ const PostListItem = ({ post }: { post: Post }) => {
   const { colors } = useTheme();
   const [liked, setLiked] = useState(post.liked_by_user);
   const [likeCount, setLikeCount] = useState(post.like_count);
-  const [currentPage, setCurrentPage] = useState(0);
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [isLoading, setIsLoading] = useState(false);
@@ -224,7 +223,6 @@ const PostListItem = ({ post }: { post: Post }) => {
             height={width - 40}
             data={pages}
             onProgressChange={progress}
-            onSnapToItem={(index) => setCurrentPage(index)}
             renderItem={({ item }) => item}
             style={{
               marginBottom: 10,
@@ -251,8 +249,7 @@ const PostListItem = ({ post }: { post: Post }) => {
                 data={pages}
                 progress={progress}
                 dotStyle={{
-                  backgroundColor: colors.text,
-                  opacity: 0.6,
+                  backgroundColor: colors.border,
                   width: 8,
                   height: 8,
                   borderRadius: 4,
