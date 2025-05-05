@@ -1,12 +1,10 @@
-import { StyleSheet, Text, View, ActivityIndicator } from "react-native";
-import React, { useEffect, useState } from "react";
-import { WorkoutExercise } from "@/models/WorkoutExercise";
+import { StyleSheet, View } from "react-native";
+import React from "react";
 import { ThemedText } from "./ThemedText";
 import { Exercise } from "@/models/Exercise";
 import { Set } from "@/models/Set";
-import { MaterialCommunityIcons, Ionicons } from "@expo/vector-icons";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useTheme } from "@react-navigation/native";
-import Animated, { FadeIn, Layout } from "react-native-reanimated";
 
 const WorkoutExerciseItem = ({
   workoutName,
