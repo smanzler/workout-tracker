@@ -22,7 +22,10 @@ import { checkPRs } from "@/utils/PRs";
 import { mySync } from "@/db/sync";
 import { useAuth } from "@/providers/AuthProvider";
 import { useSync } from "@/providers/SyncProvider";
-import { BodyScrollView } from "@/components/BodyScrollView";
+import {
+  KeyboardAwareScrollView,
+  KeyboardToolbar,
+} from "react-native-keyboard-controller";
 
 const Workout = () => {
   const { seconds, activeWorkoutId, stopWorkout } = useWorkout();
@@ -90,6 +93,7 @@ const Workout = () => {
       );
       return;
     }
+
     const allSetsComplete = await Promise.all(
       workoutExercises.map(async (we) => {
         const sets = await we.sets.fetch();
@@ -168,9 +172,11 @@ const Workout = () => {
   };
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
+    <KeyboardAwareScrollView
+      bottomOffset={100}
       style={styles.container}
+      contentInsetAdjustmentBehavior="automatic"
+      showsVerticalScrollIndicator={false}
     >
       <Stack.Screen
         options={{
@@ -178,44 +184,41 @@ const Workout = () => {
           headerRight: () => <RNButton title="Finish" onPress={finish} />,
         }}
       />
+      <TextInput
+        style={{
+          fontSize: 24,
+          fontWeight: "600",
+          color: colors.text,
+          marginVertical: 20,
+        }}
+        value={workoutName}
+        onChangeText={setWorkoutName}
+        placeholder="Workout Name"
+        placeholderTextColor={colors.text
+          .replace("rgb", "rgba")
+          .replace(")", ", 0.4)")}
+      />
 
-      <BodyScrollView style={{ paddingHorizontal: 20 }}>
-        <TextInput
-          style={{
-            fontSize: 24,
-            fontWeight: "600",
-            color: colors.text,
-            marginVertical: 20,
-          }}
-          value={workoutName}
-          onChangeText={setWorkoutName}
-          placeholder="Workout Name"
-          placeholderTextColor={colors.text
-            .replace("rgb", "rgba")
-            .replace(")", ", 0.4)")}
-        />
+      {workout && (
+        <WorkoutExerciseList workout={workout} inputRefs={inputRefs} />
+      )}
 
-        {workout && (
-          <WorkoutExerciseList workout={workout} inputRefs={inputRefs} />
-        )}
+      <Button
+        onPress={() => {
+          router.push("/(modals)/add_exercise");
+        }}
+      >
+        Add Exercises
+      </Button>
 
-        <Button
-          onPress={() => {
-            router.push("/(modals)/add_exercise");
-          }}
-        >
-          Add Exercises
-        </Button>
-
-        <Button
-          style={{ marginTop: 10 }}
-          variant="outline"
-          onPress={handleCancel}
-        >
-          Cancel Workout
-        </Button>
-      </BodyScrollView>
-    </KeyboardAvoidingView>
+      <Button
+        style={{ marginTop: 10 }}
+        variant="outline"
+        onPress={handleCancel}
+      >
+        Cancel Workout
+      </Button>
+    </KeyboardAwareScrollView>
   );
 };
 
@@ -224,5 +227,6 @@ export default Workout;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    paddingHorizontal: 20,
   },
 });

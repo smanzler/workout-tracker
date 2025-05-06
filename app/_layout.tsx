@@ -19,6 +19,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { exercisesCollection, setsCollection } from "@/db";
 import { Q } from "@nozbe/watermelondb";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { KeyboardProvider } from "react-native-keyboard-controller";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -69,23 +70,25 @@ export default function RootLayout() {
 
   return (
     <GestureHandlerRootView>
-      <AuthProvider>
-        <WorkoutProvider>
-          <QueryClientProvider client={queryClient}>
-            <ThemeProvider
-              value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
-            >
-              <SyncProvider>
-                <View style={{ flex: 1 }}>
-                  <RootLayoutNav />
+      <KeyboardProvider>
+        <AuthProvider>
+          <WorkoutProvider>
+            <QueryClientProvider client={queryClient}>
+              <ThemeProvider
+                value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
+              >
+                <SyncProvider>
+                  <View style={{ flex: 1 }}>
+                    <RootLayoutNav />
 
-                  <StatusBar style="auto" />
-                </View>
-              </SyncProvider>
-            </ThemeProvider>
-          </QueryClientProvider>
-        </WorkoutProvider>
-      </AuthProvider>
+                    <StatusBar style="auto" />
+                  </View>
+                </SyncProvider>
+              </ThemeProvider>
+            </QueryClientProvider>
+          </WorkoutProvider>
+        </AuthProvider>
+      </KeyboardProvider>
     </GestureHandlerRootView>
   );
 }
