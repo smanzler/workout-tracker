@@ -79,6 +79,17 @@ export default function SignupScreen() {
     setShowEula(true);
   };
 
+  const isButtonDisabled =
+    loading ||
+    !email ||
+    !password ||
+    !username ||
+    username.length < 4 ||
+    !isUsernameAvailable ||
+    checkingUsername ||
+    isDebouncing ||
+    !isValidUsername(username);
+
   async function signUpWithEmail() {
     setLoading(true);
     setShowEula(false);
@@ -163,22 +174,14 @@ export default function SignupScreen() {
             label="Password"
             autoCapitalize={"none"}
             variant="filled"
+            onSubmitEditing={() => {
+              if (!isButtonDisabled) {
+                handleSignUpPress();
+              }
+            }}
           />
         </View>
-        <Button
-          disabled={
-            loading ||
-            !email ||
-            !password ||
-            !username ||
-            username.length < 4 ||
-            !isUsernameAvailable ||
-            checkingUsername ||
-            isDebouncing ||
-            !isValidUsername(username)
-          }
-          onPress={handleSignUpPress}
-        >
+        <Button disabled={isButtonDisabled} onPress={handleSignUpPress}>
           Sign up
         </Button>
       </View>

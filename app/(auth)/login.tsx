@@ -60,6 +60,7 @@ export default function LoginScreen() {
             label="Password"
             autoCapitalize={"none"}
             variant="filled"
+            onSubmitEditing={() => signInWithEmail()}
           />
         </View>
         <Button
