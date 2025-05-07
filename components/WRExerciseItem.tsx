@@ -1,10 +1,4 @@
-import {
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { StyleSheet, TextInput, View } from "react-native";
 import React from "react";
 import { DropdownMenuItemIcon } from "@/zeego/drop-down";
 import { DropdownMenuItemTitle } from "@/zeego/drop-down";
@@ -20,6 +14,8 @@ import { Set } from "@/models/Set";
 import SetListItem from "./SetListItem";
 import { RoutineExercise, RoutineSet } from "@/stores/routineStore";
 import RoutineSetListItem from "./RoutineSetListItem";
+import { ThemedText } from "./ThemedText";
+import Button from "./Button";
 
 const WRExerciseItem = ({
   type,
@@ -47,13 +43,13 @@ const WRExerciseItem = ({
   return (
     <View style={[styles.container, { backgroundColor: colors.card }]}>
       <View style={styles.headerContainer}>
-        <Text
-          style={[styles.headerText, { color: colors.text }]}
+        <ThemedText
+          style={styles.headerText}
           numberOfLines={1}
           ellipsizeMode="tail"
         >
           {title}
-        </Text>
+        </ThemedText>
         <DropdownMenuRoot>
           <DropdownMenuTrigger>
             <ButtonWithIcon>
@@ -73,43 +69,36 @@ const WRExerciseItem = ({
         </DropdownMenuRoot>
       </View>
       <View style={styles.setsHeader}>
-        <Text
+        <ThemedText
+          type="defaultSemiBold"
           style={[
             styles.setHeaderText,
             {
               width: 30,
-              textAlign: "center",
-              color: colors.text,
             },
           ]}
         >
           Set
-        </Text>
-        <Text
-          style={[
-            styles.setHeaderText,
-            { width: 80, textAlign: "center", color: colors.text },
-          ]}
+        </ThemedText>
+        <ThemedText
+          style={[styles.setHeaderText, { width: 80 }]}
+          type="defaultSemiBold"
         >
           Previous
-        </Text>
+        </ThemedText>
         <View style={styles.rightContainer}>
-          <Text
-            style={[
-              styles.setHeaderText,
-              { width: 60, textAlign: "center", color: colors.text },
-            ]}
+          <ThemedText
+            style={[styles.setHeaderText, { width: 60 }]}
+            type="defaultSemiBold"
           >
             lbs
-          </Text>
-          <Text
-            style={[
-              styles.setHeaderText,
-              { width: 60, textAlign: "center", color: colors.text },
-            ]}
+          </ThemedText>
+          <ThemedText
+            style={[styles.setHeaderText, { width: 60 }]}
+            type="defaultSemiBold"
           >
             Reps
-          </Text>
+          </ThemedText>
           <View style={{ width: 30, alignItems: "center" }}>
             <FontAwesome5
               name={type === "workout" ? "check" : "lock"}
@@ -143,13 +132,18 @@ const WRExerciseItem = ({
           );
         }
       })}
-      <TouchableOpacity
-        style={[styles.addBtn, { backgroundColor: colors.background }]}
+
+      <Button
+        style={{
+          marginHorizontal: 16,
+          marginTop: 10,
+          backgroundColor: colors.background,
+        }}
         onPress={handleAddSet}
+        size="sm"
       >
-        <Feather name="plus" size={16} color={colors.text} />
-        <Text style={[styles.addBtnText, { color: colors.text }]}>Add Set</Text>
-      </TouchableOpacity>
+        Add Set
+      </Button>
     </View>
   );
 };
@@ -192,21 +186,6 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   setHeaderText: {
-    fontWeight: 500,
-    fontSize: 16,
-  },
-  addBtn: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 5,
-    fontWeight: 500,
-    padding: 5,
-    marginHorizontal: 16,
-    borderRadius: 8,
-    marginTop: 10,
-  },
-  addBtnText: {
-    fontWeight: 500,
+    textAlign: "center",
   },
 });
