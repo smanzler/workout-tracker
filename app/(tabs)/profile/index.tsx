@@ -1,20 +1,10 @@
-import React, { useEffect, useState } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  Animated,
-  SafeAreaView,
-  TouchableOpacity,
-  Alert,
-} from "react-native";
+import React, { useState } from "react";
+import { View, StyleSheet, TouchableOpacity, Alert } from "react-native";
 import { useAuth } from "@/providers/AuthProvider";
 import { useTheme } from "@react-navigation/native";
 import { mySync } from "@/db/sync";
 import { useSync } from "@/providers/SyncProvider";
-import database, { resetUserData } from "@/db";
-import Button from "@/components/Button";
+import { resetUserData } from "@/db";
 import { router, Stack } from "expo-router";
 import LoginScreen from "@/app/(auth)/login";
 import { supabase } from "@/lib/supabase";
@@ -24,28 +14,22 @@ import { Image } from "expo-image";
 import { ActionSheetIOS } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import { Ionicons } from "@expo/vector-icons";
-import {
-  useProfile,
-  uploadImageAsync,
-  getProfileImageUrl,
-} from "@/api/profile";
+import { uploadImageAsync, getProfileImageUrl } from "@/api/profile";
 import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuItemIcon,
   DropdownMenuItemTitle,
   DropdownMenuRoot,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/zeego/drop-down";
-
+import { useWorkout } from "@/providers/WorkoutProvider";
 export default function ProfileScreen() {
   const { user } = useAuth();
   const { updateLastSync } = useSync();
   const { colors } = useTheme();
   const [imageVersion, setImageVersion] = useState(Date.now());
+  const { activeWorkoutId } = useWorkout();
 
   if (!user) return <LoginScreen />;
 
@@ -118,6 +102,14 @@ export default function ProfileScreen() {
 
   const handleLogout = async () => {
     try {
+      if (activeWorkoutId) {
+        Alert.alert(
+          "Active workout",
+          "You have an active workout. Please finish it before logging out."
+        );
+        return;
+      }
+
       await mySync(user, updateLastSync, () => {});
 
       await logout();
