@@ -2,6 +2,7 @@ import { TextInput } from "react-native";
 import React from "react";
 import { RoutineExercise, useRoutineActions } from "@/stores/routineStore";
 import WRExerciseItem from "./WRExerciseItem";
+import { randomUUID } from "expo-crypto";
 
 const RoutineExerciseListItem = ({
   exercise,
@@ -22,7 +23,7 @@ const RoutineExerciseListItem = ({
       exerciseIndex={index}
       inputRefs={inputRefs}
       handleDelete={() => removeExercise(index)}
-      handleAddSet={() => addSetToExercise(index, { reps: "", weight: "" })}
+      handleAddSet={() => addSetToExercise(index)}
     />
   );
 };

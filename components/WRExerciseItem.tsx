@@ -117,7 +117,7 @@ const WRExerciseItem = ({
             }
           : undefined;
 
-        if (workoutExercise && "id" in set && "id" in exercise) {
+        if (workoutExercise && "completed" in set && "id" in exercise) {
           return (
             <SetListItem
               key={set.id}
@@ -130,10 +130,10 @@ const WRExerciseItem = ({
               previousSetInExercise={previousSetInExercise}
             />
           );
-        } else if (!("id" in set) && "exercise" in exercise) {
+        } else if ("exercise" in exercise && !("completed" in set)) {
           return (
             <RoutineSetListItem
-              key={`${exerciseIndex}:${index}`}
+              key={set.id}
               exerciseIndex={exerciseIndex}
               exerciseId={exercise.exercise.id}
               set={set}
