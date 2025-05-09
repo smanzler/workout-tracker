@@ -10,7 +10,7 @@ export class Superset extends Model {
   };
 
   @relation("workouts", "workout_id") workout!: Workout;
-  @field("order") order!: number;
+  @field("position") position!: number;
 
   @field("user_id") userId?: string;
 

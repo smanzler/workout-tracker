@@ -38,7 +38,7 @@ export default appSchema({
       name: "supersets",
       columns: [
         { name: "workout_id", type: "string", isIndexed: true },
-        { name: "order", type: "number" },
+        { name: "position", type: "number" },
         { name: "user_id", type: "string", isOptional: true },
         { name: "created_at", type: "number" },
         { name: "updated_at", type: "number" },
@@ -67,7 +67,7 @@ export default appSchema({
         { name: "reps", type: "number", isOptional: true },
         { name: "weight", type: "number", isOptional: true },
         { name: "completed", type: "boolean" },
-        { name: "order", type: "number" },
+        { name: "position", type: "number" },
         { name: "is_weight_pr", type: "boolean" },
         { name: "is_volume_pr", type: "boolean" },
         { name: "is_1rm_pr", type: "boolean" },

@@ -26,7 +26,7 @@ export class RoutineExercise extends Model {
 
   @children("routine_sets") routineSets!: Query<RoutineSet>;
 
-  @field("order") order!: number;
+  @field("position") position!: number;
   @field("user_id") userId?: string;
 
   @date("created_at") createdAt!: number;

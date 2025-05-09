@@ -20,7 +20,7 @@ export class Set extends Model {
   @field("reps") reps?: number;
   @field("weight") weight?: number;
   @field("completed") completed!: boolean;
-  @field("order") order!: number;
+  @field("position") position!: number;
 
   @field("is_volume_pr") isVolumePr!: boolean;
   @field("is_1rm_pr") is1RMPr!: boolean;
