@@ -7,6 +7,7 @@ import { Set } from "@/models/Set";
 import database, { setsCollection } from "@/db";
 import { useAuth } from "@/providers/AuthProvider";
 import WRExerciseItem from "./WRExerciseItem";
+import { Q } from "@nozbe/watermelondb";
 
 const WorkoutExerciseListItem = ({
   workoutExercise,
@@ -40,6 +41,7 @@ const WorkoutExerciseListItem = ({
       await setsCollection.create((set) => {
         // @ts-ignore
         set.workoutExercise.set(workoutExercise);
+        set.position = sets.length + 1;
         user && (set.userId = user.id);
       });
     });

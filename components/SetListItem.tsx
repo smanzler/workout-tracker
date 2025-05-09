@@ -69,10 +69,18 @@ const SetListItem = ({
 
         await set.markAsDeleted();
 
+        const allSets = (await database
+          .get("sets")
+          .query(
+            Q.where("workout_exercise_id", workoutExerciseId),
+            Q.sortBy("position", Q.asc)
+          )
+          .fetch()) as Set[];
+
         await Promise.all(
-          laterSets.map((s) =>
+          allSets.map((s, index) =>
             s.update((record) => {
-              record.position = record.position - 1;
+              record.position = index + 1;
             })
           )
         );
