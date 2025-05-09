@@ -119,7 +119,6 @@ function Exercises({
         )
         .unsafeFetchRaw();
 
-      console.log(set);
       return set;
     } catch (error) {
       console.log(error);

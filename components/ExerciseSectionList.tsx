@@ -36,7 +36,9 @@ const ExerciseSectionList = ({
           </Text>
         </View>
       )}
+      keyboardDismissMode="on-drag"
       keyboardShouldPersistTaps="handled"
+      automaticallyAdjustKeyboardInsets={true}
       stickySectionHeadersEnabled={true}
       automaticallyAdjustsScrollIndicatorInsets
       contentInsetAdjustmentBehavior="automatic"
