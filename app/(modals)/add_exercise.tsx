@@ -60,6 +60,7 @@ function AddExercise() {
           set.workoutExercise.set(workoutExercise);
           set.reps = undefined;
           set.weight = undefined;
+          set.position = 1;
           user && (set.userId = user.id);
         });
 

@@ -78,7 +78,7 @@ const WRSetItem = ({
               AND sets._status != 'deleted'
             ORDER BY workouts.start_time DESC LIMIT 1
             `,
-          [exerciseId, index - 1]
+          [exerciseId, index]
         )
       )
       .unsafeFetchRaw();
