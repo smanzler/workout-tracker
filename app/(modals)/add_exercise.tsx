@@ -77,31 +77,8 @@ function AddExercise() {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <ExerciseList
-        renderItem={({ item }: { item: Exercise }) => (
-          <TouchableOpacity onPress={() => handleItemPress(item)}>
-            <View
-              style={[
-                styles.item,
-                selectedItems.some((i) => i.id === item.id) && {
-                  backgroundColor: theme.colors.primary
-                    .replace("rgb", "rgba")
-                    .replace(")", ", 0.2)"),
-                },
-                { borderBottomColor: theme.colors.border },
-              ]}
-            >
-              <ThemedText style={{ fontSize: 16, fontWeight: 600 }}>
-                {item.title}
-              </ThemedText>
-
-              <View style={styles.row}>
-                <ThemedText style={styles.mgText}>
-                  {item.muscleGroup}
-                </ThemedText>
-              </View>
-            </View>
-          </TouchableOpacity>
-        )}
+        onPress={handleItemPress}
+        selectedItems={selectedItems}
         topBar={
           <View style={styles.topBar}>
             <TouchableOpacity

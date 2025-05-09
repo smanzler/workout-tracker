@@ -1,28 +1,16 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
-  TextInput,
-  Text,
   View,
   Button,
-  Alert,
   StyleSheet,
   Pressable,
   TouchableOpacity,
 } from "react-native";
-import { Gesture, GestureDetector } from "react-native-gesture-handler";
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
-  runOnJS,
-} from "react-native-reanimated";
 import { withObservables } from "@nozbe/watermelondb/react";
 import { Exercise } from "@/models/Exercise";
-import database, { exercisesCollection } from "@/db";
+import { exercisesCollection, setsCollection } from "@/db";
 import { useTheme } from "@react-navigation/native";
-import { useAuth } from "@/providers/AuthProvider";
-import { BodyScrollView } from "@/components/BodyScrollView";
-import { router, Stack } from "expo-router";
+import { Stack } from "expo-router";
 import { ThemedText } from "@/components/ThemedText";
 import ExerciseModal from "@/components/ExerciseModal";
 import {
@@ -39,6 +27,8 @@ import {
 } from "@/zeego/drop-down";
 import { Ionicons } from "@expo/vector-icons";
 import ExerciseSectionList from "./ExerciseSectionList";
+import { Set } from "@/models/Set";
+import { Q } from "@nozbe/watermelondb";
 
 interface Section {
   title: string;
@@ -64,11 +54,13 @@ const groupData = (data: Exercise[]): Section[] => {
 
 function Exercises({
   exercises,
-  renderItem,
+  onPress,
+  selectedItems,
   topBar,
 }: {
   exercises: Exercise[];
-  renderItem: ({ item }: { item: Exercise }) => React.JSX.Element;
+  onPress: (item: Exercise) => void;
+  selectedItems?: Exercise[];
   topBar?: React.JSX.Element;
 }) {
   const [searchQuery, setSearchQuery] = useState("");
@@ -104,6 +96,31 @@ function Exercises({
       setFn(current.filter((v) => v !== value));
     } else {
       setFn([...current, value]);
+    }
+  };
+
+  const fetchPreviousBestSet = async (exerciseId: string) => {
+    try {
+      const set = await setsCollection
+        .query(
+          Q.unsafeSqlQuery(
+            `
+              SELECT * FROM sets
+              JOIN workout_exercises ON sets.workout_exercise_id = workout_exercises.id
+              WHERE workout_exercises.exercise_id = ?
+              ORDER BY sets.weight DESC
+              LIMIT 1
+            `,
+            [exerciseId]
+          )
+        )
+        .unsafeFetchRaw();
+
+      console.log(set);
+      return set;
+    } catch (error) {
+      console.log(error);
+      return null;
     }
   };
 
@@ -227,7 +244,49 @@ function Exercises({
 
       {topBar}
 
-      <ExerciseSectionList sections={sections} renderItem={renderItem} />
+      <ExerciseSectionList
+        sections={sections}
+        renderItem={({ item }: { item: Exercise }) => {
+          const [previousSet, setPreviousSet] = useState<Set | null>(null);
+
+          useEffect(() => {
+            fetchPreviousBestSet(item.id).then((set) =>
+              setPreviousSet(set?.[0] ?? null)
+            );
+          }, []);
+
+          return (
+            <TouchableOpacity onPress={() => onPress(item)}>
+              <View
+                style={[
+                  styles.item,
+                  selectedItems?.some((i) => i.id === item.id) && {
+                    backgroundColor: theme.colors.primary
+                      .replace("rgb", "rgba")
+                      .replace(")", ", 0.2)"),
+                  },
+                  { borderBottomColor: theme.colors.border },
+                ]}
+              >
+                <ThemedText style={{ fontSize: 16, fontWeight: 600 }}>
+                  {item.title}
+                </ThemedText>
+
+                <View style={styles.row}>
+                  <ThemedText style={styles.mgText}>
+                    {item.muscleGroup}
+                  </ThemedText>
+
+                  <ThemedText style={styles.mgText}>
+                    {previousSet &&
+                      `${previousSet.weight} lb x ${previousSet.reps}`}
+                  </ThemedText>
+                </View>
+              </View>
+            </TouchableOpacity>
+          );
+        }}
+      />
 
       <ExerciseModal visible={visible} setVisible={setVisible} />
     </>
@@ -252,13 +311,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     borderRadius: 10,
   },
-  itemContainer: {
+  item: {
     padding: 10,
     paddingLeft: 20,
     borderBottomWidth: 1,
   },
   row: {
     flexDirection: "row",
+    justifyContent: "space-between",
   },
   mgText: {
     fontWeight: 600,
