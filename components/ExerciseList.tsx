@@ -107,7 +107,10 @@ function Exercises({
             `
               SELECT * FROM sets
               JOIN workout_exercises ON sets.workout_exercise_id = workout_exercises.id
+              JOIN workouts ON workout_exercises.workout_id = workouts.id
               WHERE workout_exercises.exercise_id = ?
+                AND sets._status != 'deleted'
+                AND workouts.end_time IS NOT NULL
               ORDER BY sets.weight DESC
               LIMIT 1
             `,
