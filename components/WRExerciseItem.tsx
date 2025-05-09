@@ -109,6 +109,14 @@ const WRExerciseItem = ({
         </View>
       </View>
       {sets.map((set, index) => {
+        const previousSet = index > 0 ? sets[index - 1] : undefined;
+        const previousSetInExercise = previousSet
+          ? {
+              weight: previousSet.weight?.toString(),
+              reps: previousSet.reps?.toString(),
+            }
+          : undefined;
+
         if (workoutExercise && "id" in set && "id" in exercise) {
           return (
             <SetListItem
@@ -119,6 +127,7 @@ const WRExerciseItem = ({
               index={index + 1}
               exerciseIndex={exerciseIndex}
               inputRefs={inputRefs}
+              previousSetInExercise={previousSetInExercise}
             />
           );
         } else if (!("id" in set) && "exercise" in exercise) {
@@ -130,6 +139,7 @@ const WRExerciseItem = ({
               set={set}
               index={index + 1}
               inputRefs={inputRefs}
+              previousSetInExercise={previousSetInExercise}
             />
           );
         }

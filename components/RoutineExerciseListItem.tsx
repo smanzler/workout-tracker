@@ -1,29 +1,5 @@
-import {
-  Keyboard,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-  TextInput,
-} from "react-native";
+import { TextInput } from "react-native";
 import React from "react";
-import { withObservables } from "@nozbe/watermelondb/react";
-import { Exercise } from "@/models/Exercise";
-import { Entypo, Feather, FontAwesome5 } from "@expo/vector-icons";
-import {
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuItemIcon,
-  DropdownMenuItemTitle,
-  DropdownMenuRoot,
-  DropdownMenuTrigger,
-} from "@/zeego/drop-down";
-import database, { routineSetsCollection, setsCollection } from "@/db";
-import { useTheme } from "@react-navigation/native";
-import { useAuth } from "@/providers/AuthProvider";
-import RoutineSetListItem from "./RoutineSetListItem";
-import { RoutineSet } from "@/models/RoutineSets";
-import ButtonWithIcon from "./ButtonWithIcon";
 import { RoutineExercise, useRoutineActions } from "@/stores/routineStore";
 import WRExerciseItem from "./WRExerciseItem";
 

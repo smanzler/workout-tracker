@@ -26,12 +26,17 @@ const RoutineSetListItem = ({
   index,
   exerciseId,
   inputRefs,
+  previousSetInExercise,
 }: {
   exerciseIndex: number;
   set: RoutineSet;
   index: number;
   exerciseId: string;
   inputRefs: React.MutableRefObject<(TextInput | null)[][]>;
+  previousSetInExercise?: {
+    weight?: string;
+    reps?: string;
+  };
 }) => {
   const { updateSetReps, updateSetWeight, removeSetAtIndex } =
     useRoutineActions();
@@ -52,6 +57,7 @@ const RoutineSetListItem = ({
           updateSetReps(exerciseIndex, index, value);
         }
       }}
+      previousSetInExercise={previousSetInExercise}
     />
   );
 };

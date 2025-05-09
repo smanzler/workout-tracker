@@ -24,6 +24,7 @@ const SetListItem = ({
   index,
   exerciseIndex,
   inputRefs,
+  previousSetInExercise,
 }: {
   set: Set;
   workoutExerciseId: string;
@@ -31,6 +32,10 @@ const SetListItem = ({
   index: number;
   exerciseIndex: number;
   inputRefs: React.MutableRefObject<(TextInput | null)[][]>;
+  previousSetInExercise?: {
+    weight?: string;
+    reps?: string;
+  };
 }) => {
   const handleUpdate = async (field: "weight" | "reps", value: string) => {
     const newValue = value === "" ? undefined : parseInt(value);
@@ -88,6 +93,7 @@ const SetListItem = ({
       handleDelete={handleDelete}
       handleUpdate={handleUpdate}
       toggleCompleted={toggleCompleted}
+      previousSetInExercise={previousSetInExercise}
     />
   );
 };

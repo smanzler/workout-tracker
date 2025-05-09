@@ -1,30 +1,11 @@
-import {
-  Keyboard,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-  TextInput,
-} from "react-native";
+import { Keyboard, StyleSheet, TextInput } from "react-native";
 import React from "react";
 import { withObservables } from "@nozbe/watermelondb/react";
 import { WorkoutExercise } from "@/models/WorkoutExercise";
 import { Exercise } from "@/models/Exercise";
 import { Set } from "@/models/Set";
-import SetListItem from "./SetListItem";
-import { Entypo, Feather, FontAwesome5 } from "@expo/vector-icons";
-import {
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuItemIcon,
-  DropdownMenuItemTitle,
-  DropdownMenuRoot,
-  DropdownMenuTrigger,
-} from "@/zeego/drop-down";
 import database, { setsCollection } from "@/db";
-import { useTheme } from "@react-navigation/native";
 import { useAuth } from "@/providers/AuthProvider";
-import ButtonWithIcon from "./ButtonWithIcon";
 import WRExerciseItem from "./WRExerciseItem";
 
 const WorkoutExerciseListItem = ({
@@ -56,13 +37,9 @@ const WorkoutExerciseListItem = ({
     Keyboard.dismiss();
 
     await database.write(async () => {
-      const previousSet = sets.length > 0 ? sets[sets.length - 1] : null;
-
       await setsCollection.create((set) => {
         // @ts-ignore
         set.workoutExercise.set(workoutExercise);
-        set.weight = previousSet ? previousSet.weight : undefined;
-        set.reps = previousSet ? previousSet.reps : undefined;
         user && (set.userId = user.id);
       });
     });

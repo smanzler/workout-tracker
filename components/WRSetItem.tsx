@@ -27,6 +27,7 @@ const WRSetItem = ({
   handleDelete,
   handleUpdate,
   toggleCompleted,
+  previousSetInExercise,
 }: {
   type: "workout" | "routine";
   set: Set | RoutineSet;
@@ -37,6 +38,10 @@ const WRSetItem = ({
   handleDelete: () => void;
   handleUpdate: (field: "weight" | "reps", value: string) => void;
   toggleCompleted?: (newCompleted: boolean) => Promise<void>;
+  previousSetInExercise?: {
+    weight?: string;
+    reps?: string;
+  };
 }) => {
   const [weight, setWeight] = useState(set.weight?.toString() || "");
   const [reps, setReps] = useState(set.reps?.toString() || "");
@@ -52,7 +57,11 @@ const WRSetItem = ({
 
   const { colors } = useTheme();
 
-  const isCompleteable = (weight !== "" && reps !== "") || previousSet !== null;
+  const isCompleteable =
+    (weight !== "" && reps !== "") ||
+    (previousSet?.weight !== undefined && previousSet?.reps !== undefined) ||
+    (previousSetInExercise?.weight !== undefined &&
+      previousSetInExercise?.reps !== undefined);
 
   const fetchPreviousSet = async () => {
     const previousSet = await setsCollection
@@ -102,14 +111,22 @@ const WRSetItem = ({
     if (toggleCompleted) {
       await toggleCompleted(newCompleted);
 
-      if (weight === "" && previousSet) {
-        setWeight(previousSet.weight.toString());
-        handleUpdate("weight", previousSet.weight.toString());
+      if (weight === "") {
+        const newWeight =
+          previousSet?.weight?.toString() || previousSetInExercise?.weight;
+        if (newWeight) {
+          setWeight(newWeight);
+          handleUpdate("weight", newWeight);
+        }
       }
 
-      if (reps === "" && previousSet) {
-        setReps(previousSet.reps.toString());
-        handleUpdate("reps", previousSet.reps.toString());
+      if (reps === "") {
+        const newReps =
+          previousSet?.reps?.toString() || previousSetInExercise?.reps;
+        if (newReps) {
+          setReps(newReps);
+          handleUpdate("reps", newReps);
+        }
       }
     }
 
@@ -202,7 +219,9 @@ const WRSetItem = ({
                 setWeight(text);
                 handleUpdate("weight", text);
               }}
-              placeholder={previousSet?.weight?.toString()}
+              placeholder={
+                previousSet?.weight?.toString() || previousSetInExercise?.weight
+              }
               placeholderTextColor={colors.text
                 .replace("rgb", "rgba")
                 .replace(")", ", 0.5)")}
@@ -242,7 +261,9 @@ const WRSetItem = ({
               }}
               returnKeyType="next"
               keyboardType="number-pad"
-              placeholder={previousSet?.reps?.toString()}
+              placeholder={
+                previousSet?.reps?.toString() || previousSetInExercise?.reps
+              }
               placeholderTextColor={colors.text
                 .replace("rgb", "rgba")
                 .replace(")", ", 0.5)")}
