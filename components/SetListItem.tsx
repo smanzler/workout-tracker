@@ -20,12 +20,14 @@ import WRSetItem from "./WRSetItem";
 const SetListItem = ({
   set,
   workoutExerciseId,
+  exerciseId,
   index,
   exerciseIndex,
   inputRefs,
 }: {
   set: Set;
   workoutExerciseId: string;
+  exerciseId: string;
   index: number;
   exerciseIndex: number;
   inputRefs: React.MutableRefObject<(TextInput | null)[][]>;
@@ -55,8 +57,8 @@ const SetListItem = ({
           .get("sets")
           .query(
             Q.where("workout_exercise_id", workoutExerciseId),
-            Q.where("order", Q.gt(set.order)),
-            Q.sortBy("order", Q.asc)
+            Q.where("position", Q.gt(set.position)),
+            Q.sortBy("position", Q.asc)
           )
           .fetch()) as Set[];
 
@@ -65,7 +67,7 @@ const SetListItem = ({
         await Promise.all(
           laterSets.map((s) =>
             s.update((record) => {
-              record.order = record.order - 1;
+              record.position = record.position - 1;
             })
           )
         );
@@ -79,6 +81,7 @@ const SetListItem = ({
     <WRSetItem
       type="workout"
       set={set}
+      exerciseId={exerciseId}
       index={index}
       exerciseIndex={exerciseIndex}
       inputRefs={inputRefs}

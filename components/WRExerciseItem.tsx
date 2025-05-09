@@ -109,22 +109,24 @@ const WRExerciseItem = ({
         </View>
       </View>
       {sets.map((set, index) => {
-        if (workoutExercise && "id" in set) {
+        if (workoutExercise && "id" in set && "id" in exercise) {
           return (
             <SetListItem
               key={set.id}
               set={set}
               workoutExerciseId={workoutExercise.id}
+              exerciseId={exercise.id}
               index={index + 1}
               exerciseIndex={exerciseIndex}
               inputRefs={inputRefs}
             />
           );
-        } else if (!("id" in set)) {
+        } else if (!("id" in set) && "exercise" in exercise) {
           return (
             <RoutineSetListItem
               key={`${exerciseIndex}:${index}`}
               exerciseIndex={exerciseIndex}
+              exerciseId={exercise.exercise.id}
               set={set}
               index={index + 1}
               inputRefs={inputRefs}

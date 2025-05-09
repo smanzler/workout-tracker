@@ -24,11 +24,13 @@ const RoutineSetListItem = ({
   exerciseIndex,
   set,
   index,
+  exerciseId,
   inputRefs,
 }: {
   exerciseIndex: number;
   set: RoutineSet;
   index: number;
+  exerciseId: string;
   inputRefs: React.MutableRefObject<(TextInput | null)[][]>;
 }) => {
   const { updateSetReps, updateSetWeight, removeSetAtIndex } =
@@ -40,6 +42,7 @@ const RoutineSetListItem = ({
       set={set}
       index={index}
       exerciseIndex={exerciseIndex}
+      exerciseId={exerciseId}
       inputRefs={inputRefs}
       handleDelete={() => removeSetAtIndex(exerciseIndex, index)}
       handleUpdate={(field, value) => {

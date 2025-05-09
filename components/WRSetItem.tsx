@@ -13,11 +13,15 @@ import ReanimatedSwipeable from "react-native-gesture-handler/ReanimatedSwipeabl
 import { useTheme } from "@react-navigation/native";
 import { Set } from "@/models/Set";
 import { RoutineSet } from "@/stores/routineStore";
+import { setsCollection } from "@/db";
+import { Q } from "@nozbe/watermelondb";
+import { ThemedText } from "./ThemedText";
 
 const WRSetItem = ({
   type,
   set,
   index,
+  exerciseId,
   exerciseIndex,
   inputRefs,
   handleDelete,
@@ -27,6 +31,7 @@ const WRSetItem = ({
   type: "workout" | "routine";
   set: Set | RoutineSet;
   index: number;
+  exerciseId: string;
   exerciseIndex: number;
   inputRefs: React.MutableRefObject<(TextInput | null)[][]>;
   handleDelete: () => void;
@@ -40,10 +45,37 @@ const WRSetItem = ({
   );
   const [weightFocused, setWeightFocused] = useState(false);
   const [repsFocused, setRepsFocused] = useState(false);
+  const [previousSet, setPreviousSet] = useState<{
+    weight: number;
+    reps: number;
+  } | null>(null);
 
   const { colors } = useTheme();
 
-  const isCompleteable = weight !== "" && reps !== "";
+  const isCompleteable = (weight !== "" && reps !== "") || previousSet !== null;
+
+  const fetchPreviousSet = async () => {
+    const previousSet = await setsCollection
+      .query(
+        Q.unsafeSqlQuery(
+          `
+            SELECT sets.weight, sets.reps
+            FROM sets
+            JOIN workout_exercises ON sets.workout_exercise_id = workout_exercises.id
+            JOIN workouts ON workout_exercises.workout_id = workouts.id
+            WHERE workout_exercises.exercise_id = ?
+              AND sets.position = ?
+              AND workouts.end_time IS NOT NULL
+              AND sets._status != 'deleted'
+            ORDER BY workouts.start_time DESC LIMIT 1
+            `,
+          [exerciseId, index - 1]
+        )
+      )
+      .unsafeFetchRaw();
+
+    setPreviousSet(previousSet[0]);
+  };
 
   useEffect(() => {
     if (!inputRefs.current[exerciseIndex]) {
@@ -51,6 +83,8 @@ const WRSetItem = ({
     }
     inputRefs.current[exerciseIndex][index * 2] = null;
     inputRefs.current[exerciseIndex][index * 2 + 1] = null;
+
+    fetchPreviousSet();
   }, []);
 
   const handleWeightSubmit = () => {
@@ -67,6 +101,16 @@ const WRSetItem = ({
 
     if (toggleCompleted) {
       await toggleCompleted(newCompleted);
+
+      if (weight === "" && previousSet) {
+        setWeight(previousSet.weight.toString());
+        handleUpdate("weight", previousSet.weight.toString());
+      }
+
+      if (reps === "" && previousSet) {
+        setReps(previousSet.reps.toString());
+        handleUpdate("reps", previousSet.reps.toString());
+      }
     }
 
     return true;
@@ -125,7 +169,11 @@ const WRSetItem = ({
           >
             {index}
           </Text>
-          <Text style={{ color: colors.text }}>-</Text>
+          <ThemedText type="defaultSemiBold">
+            {previousSet
+              ? `${previousSet.weight} lb x ${previousSet.reps}`
+              : "-"}
+          </ThemedText>
           <View style={styles.rightContainer}>
             <TextInput
               ref={(ref) => {
@@ -154,7 +202,7 @@ const WRSetItem = ({
                 setWeight(text);
                 handleUpdate("weight", text);
               }}
-              placeholder="0"
+              placeholder={previousSet?.weight?.toString()}
               placeholderTextColor={colors.text
                 .replace("rgb", "rgba")
                 .replace(")", ", 0.5)")}
@@ -194,7 +242,7 @@ const WRSetItem = ({
               }}
               returnKeyType="next"
               keyboardType="number-pad"
-              placeholder="0"
+              placeholder={previousSet?.reps?.toString()}
               placeholderTextColor={colors.text
                 .replace("rgb", "rgba")
                 .replace(")", ", 0.5)")}
