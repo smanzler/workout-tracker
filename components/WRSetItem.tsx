@@ -215,6 +215,7 @@ const WRSetItem = ({
               ]}
               value={weight}
               editable={!completed}
+              selectTextOnFocus
               onChangeText={(text) => {
                 setWeight(text);
                 handleUpdate("weight", text);
@@ -255,6 +256,7 @@ const WRSetItem = ({
               ]}
               value={reps}
               editable={!completed}
+              selectTextOnFocus
               onChangeText={(text) => {
                 setReps(text);
                 handleUpdate("reps", text);
