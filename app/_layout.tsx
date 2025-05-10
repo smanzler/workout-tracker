@@ -20,6 +20,7 @@ import { exercisesCollection, setsCollection } from "@/db";
 import { Q } from "@nozbe/watermelondb";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { KeyboardProvider } from "react-native-keyboard-controller";
+import SummaryHeader from "@/components/ui/SummaryHeader";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -123,6 +124,8 @@ function RootLayoutNav() {
         name="(modals)/summary"
         options={{
           presentation: "fullScreenModal",
+          headerTransparent: true,
+          header: () => <SummaryHeader handleShare={() => {}} />,
         }}
       />
       <Stack.Screen

@@ -6,6 +6,7 @@ import {
   View,
   ActivityIndicator,
   ScrollView,
+  Share,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { useTheme } from "@react-navigation/native";
@@ -18,7 +19,8 @@ import PostWorkoutSummary, {
 } from "@/components/PostWorkoutSummary";
 import { Q } from "@nozbe/watermelondb";
 import { BodyScrollView } from "@/components/BodyScrollView";
-import { CelebrationAnimation } from "@/components/CelebrationAnimation";
+import SummaryHeader from "@/components/ui/SummaryHeader";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const Summary = () => {
   const theme = useTheme();
@@ -26,6 +28,8 @@ const Summary = () => {
   const [workoutData, setWorkoutData] = useState<PostWorkout>();
   const [error, setError] = useState<string>();
   const [isLoading, setIsLoading] = useState(true);
+
+  const { top } = useSafeAreaInsets();
 
   useEffect(() => {
     const loadWorkoutData = async () => {
@@ -75,20 +79,50 @@ const Summary = () => {
     loadWorkoutData();
   }, [workoutId]);
 
+  const formatDuration = (milliseconds: number): string => {
+    const minutes = Math.floor(milliseconds / (1000 * 60));
+    const hours = Math.floor(minutes / 60);
+
+    if (hours > 0) {
+      const remainingMinutes = minutes % 60;
+      return `${hours}h ${remainingMinutes}m`;
+    }
+    return `${minutes}m`;
+  };
+
+  const handleShare = async () => {
+    if (!workoutData) return;
+
+    const duration =
+      workoutData.end_time && workoutData.start_time
+        ? formatDuration(
+            new Date(workoutData.end_time).getTime() -
+              new Date(workoutData.start_time).getTime()
+          )
+        : "0m";
+
+    try {
+      const message = `🏋️‍♂️ Just crushed a workout on Rep!\n\n🎯 ${workoutData.workout_name}\n⏱️ ${duration}\n💪 ${workoutData.exercises.length} exercises completed\n\nFeeling stronger every day! 💪`;
+
+      await Share.share({
+        message,
+      });
+    } catch (error) {
+      console.error("Error sharing:", error);
+    }
+  };
+
   return (
     <>
       <Stack.Screen
         options={{
-          headerTitle: "Congratulations!",
-          headerLeft: () => (
-            <TouchableOpacity onPress={() => router.back()}>
-              <Ionicons name="close" size={24} color={theme.colors.primary} />
-            </TouchableOpacity>
-          ),
+          presentation: "fullScreenModal",
+          headerTransparent: true,
+          header: () => <SummaryHeader handleShare={handleShare} />,
         }}
       />
 
-      <BodyScrollView style={{ padding: 20 }}>
+      <BodyScrollView style={{ padding: 20, paddingTop: 120 }}>
         <TouchableOpacity
           onPress={() =>
             router.push({
@@ -101,7 +135,6 @@ const Summary = () => {
           {workoutData && <PostWorkoutSummary workout={workoutData} />}
         </TouchableOpacity>
       </BodyScrollView>
-      <CelebrationAnimation />
     </>
   );
 };
