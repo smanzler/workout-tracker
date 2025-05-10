@@ -119,12 +119,13 @@ export const WorkoutProvider = ({
                 }
               );
 
-              const setOps = routineSets.map((routineSet) => {
+              const setOps = routineSets.map((routineSet, index) => {
                 return setsCollection.prepareCreate((set) => {
                   // @ts-ignore
                   set.workoutExercise.set(workoutExercise);
                   set.reps = routineSet.reps;
                   set.weight = routineSet.weight;
+                  set.position = index + 1;
                   user && (set.userId = user.id);
                 });
               });
