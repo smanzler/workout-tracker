@@ -123,7 +123,6 @@ function RootLayoutNav() {
         name="(modals)/summary"
         options={{
           presentation: "fullScreenModal",
-          headerShown: false,
         }}
       />
       <Stack.Screen

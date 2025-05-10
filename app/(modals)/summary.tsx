@@ -4,44 +4,105 @@ import {
   Text,
   TouchableOpacity,
   View,
+  ActivityIndicator,
+  ScrollView,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { useTheme } from "@react-navigation/native";
-import WorkoutListItem from "@/components/WorkoutListItem";
-import { workoutsCollection } from "@/db";
-import { useWorkout } from "@/providers/WorkoutProvider";
-import { router, useLocalSearchParams } from "expo-router";
+import { workoutsCollection, setsCollection } from "@/db";
+import { router, Stack, useLocalSearchParams } from "expo-router";
 import { Workout } from "@/models/Workout";
 import { Ionicons } from "@expo/vector-icons";
+import PostWorkoutSummary, {
+  PostWorkout,
+} from "@/components/PostWorkoutSummary";
+import { Q } from "@nozbe/watermelondb";
+import { BodyScrollView } from "@/components/BodyScrollView";
+import { CelebrationAnimation } from "@/components/CelebrationAnimation";
 
 const Summary = () => {
   const theme = useTheme();
   const { workoutId } = useLocalSearchParams<{ workoutId: string }>();
-  const [workout, setWorkout] = useState<Workout>();
+  const [workoutData, setWorkoutData] = useState<PostWorkout>();
+  const [error, setError] = useState<string>();
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const loadWorkout = async () => {
-      if (workoutId) {
-        setWorkout(await workoutsCollection.find(workoutId));
+    const loadWorkoutData = async () => {
+      try {
+        if (!workoutId) {
+          setError("No workout found");
+          return;
+        }
+
+        const workout = await workoutsCollection.find(workoutId);
+        const workoutExercises = await workout.workoutExercises.fetch();
+
+        const exercises = await Promise.all(
+          workoutExercises.map(async (we) => {
+            const exercise = await we.exercise;
+            const sets = await setsCollection
+              .query(Q.where("workout_exercise_id", we.id))
+              .fetch();
+
+            return {
+              exercise_title: exercise.title,
+              sets: sets.map((set) => ({
+                reps: set.reps,
+                weight: set.weight,
+                is_1rm_pr: set.is1RMPr,
+                is_volume_pr: set.isVolumePr,
+                is_weight_pr: set.isWeightPr,
+              })),
+            };
+          })
+        );
+
+        setWorkoutData({
+          workout_id: workout.id,
+          workout_name: workout.name,
+          start_time: workout.startTime.toString(),
+          end_time: workout.endTime ? workout.endTime.toString() : "",
+          exercises,
+        });
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to load workout");
+      } finally {
+        setIsLoading(false);
       }
     };
 
-    loadWorkout();
+    loadWorkoutData();
   }, [workoutId]);
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <View style={styles.container}>
-        <TouchableOpacity onPress={() => router.back()}>
-          <Ionicons name="close" size={24} color={theme.colors.text} />
-        </TouchableOpacity>
-        <Text style={[styles.headerText, { color: theme.colors.text }]}>
-          Congratulations!
-        </Text>
+    <>
+      <Stack.Screen
+        options={{
+          headerTitle: "Congratulations!",
+          headerLeft: () => (
+            <TouchableOpacity onPress={() => router.back()}>
+              <Ionicons name="close" size={24} color={theme.colors.primary} />
+            </TouchableOpacity>
+          ),
+        }}
+      />
 
-        {workout && <WorkoutListItem workout={workout} />}
-      </View>
-    </SafeAreaView>
+      <BodyScrollView style={{ padding: 20 }}>
+        <TouchableOpacity
+          onPress={() =>
+            router.push({
+              pathname: "/(modals)/workout_modal",
+              params: { workoutId },
+            })
+          }
+          style={styles.summaryContainer}
+        >
+          {workoutData && <PostWorkoutSummary workout={workoutData} />}
+        </TouchableOpacity>
+      </BodyScrollView>
+      <CelebrationAnimation />
+    </>
   );
 };
 
@@ -50,12 +111,12 @@ export default Summary;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  contentContainer: {
     padding: 20,
   },
-  headerText: {
-    textAlign: "center",
-    fontSize: 30,
-    fontWeight: "bold",
-    margin: 20,
+  summaryContainer: {
+    borderRadius: 20,
+    overflow: "hidden",
   },
 });
