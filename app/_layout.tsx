@@ -168,6 +168,12 @@ function RootLayoutNav() {
         }}
       />
       <Stack.Screen
+        name="(modals)/add_edit_exercises"
+        options={{
+          headerTitle: "Add Exercises",
+        }}
+      />
+      <Stack.Screen
         name="(modals)/add_routine"
         options={{
           headerTitle: "New Routine",

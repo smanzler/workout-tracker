@@ -9,7 +9,7 @@ import React, { useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
-  Button,
+  Button as RNButton,
   StyleSheet,
   TextInput,
   TouchableOpacity,
@@ -21,7 +21,7 @@ import { useTheme } from "@react-navigation/native";
 import { Q } from "@nozbe/watermelondb";
 import { useAuth } from "@/providers/AuthProvider";
 import { checkPRs } from "@/utils/PRs";
-
+import { Button } from "@/components/Button";
 const EditWorkout = () => {
   const { workoutId } = useLocalSearchParams<{ workoutId: string }>();
   const [workoutName, setWorkoutName] = useState("");
@@ -88,6 +88,7 @@ const EditWorkout = () => {
 
     try {
       const workout = await workoutsCollection.find(workoutId);
+      const workoutExercises = await workout.workoutExercises.fetch();
       const batchOps: any[] = [];
       const usedWorkoutExerciseIds: string[] = [];
       const usedSetIds: string[] = [];
@@ -100,8 +101,6 @@ const EditWorkout = () => {
         we = weResults[0];
 
         if (we) {
-          console.log("we id", we.id);
-
           batchOps.push(
             we.prepareUpdate((rec: any) => {
               // @ts-ignore
@@ -109,7 +108,6 @@ const EditWorkout = () => {
             })
           );
         } else {
-          console.log("we not found creating we");
           we = workoutExercisesCollection.prepareCreate((rec) => {
             // @ts-ignore
             rec.workout.set(workout);
@@ -129,7 +127,6 @@ const EditWorkout = () => {
 
           const set = setResults[0];
           if (set) {
-            console.log("set found updating set", set.id);
             batchOps.push(
               set.prepareUpdate((rec) => {
                 rec.reps = draftSet.reps ? parseInt(draftSet.reps) : undefined;
@@ -141,7 +138,6 @@ const EditWorkout = () => {
             );
             usedSetIds.push(set.id);
           } else {
-            console.log("set not found creating set", draftSet.id);
             const newSet = setsCollection.prepareCreate((rec) => {
               // @ts-ignore
               rec.workoutExercise.set(we);
@@ -158,24 +154,16 @@ const EditWorkout = () => {
         }
       }
 
-      const existingWEs = await workoutExercisesCollection
-        .query(Q.where("workout_id", workoutId))
-        .fetch();
-
-      for (const we of existingWEs) {
+      for (const we of workoutExercises) {
         if (!usedWorkoutExerciseIds.includes(we.id)) {
-          const sets = await setsCollection
-            .query(Q.where("workout_exercise_id", we.id))
-            .fetch();
-          batchOps.push(...sets.map((s) => s.markAsDeleted()));
-          batchOps.push(we.markAsDeleted());
+          const sets = await we.sets.fetch();
+          batchOps.push(...sets.map((s) => s.prepareMarkAsDeleted()));
+          batchOps.push(we.prepareMarkAsDeleted());
         } else {
-          const sets = await setsCollection
-            .query(Q.where("workout_exercise_id", we.id))
-            .fetch();
+          const sets = await we.sets.fetch();
           for (const set of sets) {
             if (!usedSetIds.includes(set.id)) {
-              batchOps.push(set.markAsDeleted());
+              batchOps.push(set.prepareMarkAsDeleted());
             }
           }
         }
@@ -185,7 +173,7 @@ const EditWorkout = () => {
         await database.batch(...batchOps);
       });
 
-      await checkPRs(workout, await workout.workoutExercises.fetch());
+      await checkPRs(workout, workoutExercises);
 
       router.back();
     } catch (error) {
@@ -226,7 +214,7 @@ const EditWorkout = () => {
             loading ? (
               <ActivityIndicator />
             ) : (
-              <Button title="Save" onPress={handleSave}></Button>
+              <RNButton title="Save" onPress={handleSave}></RNButton>
             ),
         }}
       />
@@ -247,6 +235,10 @@ const EditWorkout = () => {
         />
 
         <EditWorkoutExerciseList exercises={exercises} inputRefs={inputRefs} />
+
+        <Button onPress={() => router.push("/(modals)/add_edit_exercises")}>
+          Add Exercises
+        </Button>
       </BodyScrollView>
     </>
   );
