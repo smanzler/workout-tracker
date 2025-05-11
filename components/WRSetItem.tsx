@@ -37,7 +37,7 @@ const WRSetItem = ({
   inputRefs: React.MutableRefObject<(TextInput | null)[][]>;
   handleDelete: () => void;
   handleUpdate: (field: "weight" | "reps", value: string) => void;
-  toggleCompleted?: (newCompleted: boolean) => Promise<void>;
+  toggleCompleted?: (newCompleted: boolean) => Promise<void> | void;
   previousSetInExercise?: {
     weight?: string;
     reps?: string;

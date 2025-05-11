@@ -16,6 +16,11 @@ import { RoutineExercise, RoutineSet } from "@/stores/routineStore";
 import RoutineSetListItem from "./RoutineSetListItem";
 import { ThemedText } from "./ThemedText";
 import Button from "./Button";
+import EditWorkoutSetListItem from "./EditWorkoutSetListItem";
+import {
+  WorkoutSet,
+  WorkoutExercise as EditWorkoutExercise,
+} from "@/stores/workoutStore";
 
 const WRExerciseItem = ({
   type,
@@ -28,8 +33,8 @@ const WRExerciseItem = ({
   handleAddSet,
 }: {
   type: "workout" | "routine";
-  exercise: Exercise | RoutineExercise;
-  sets: Set[] | RoutineSet[];
+  exercise: Exercise | RoutineExercise | EditWorkoutExercise;
+  sets: Set[] | RoutineSet[] | WorkoutSet[];
   workoutExercise?: WorkoutExercise;
   exerciseIndex: number;
   inputRefs: React.MutableRefObject<(TextInput | null)[][]>;
@@ -43,6 +48,7 @@ const WRExerciseItem = ({
   return (
     <View style={[styles.container, { backgroundColor: colors.card }]}>
       <View style={styles.headerContainer}>
+        <ThemedText>{"id" in exercise ? exercise.id : "no id"}</ThemedText>
         <ThemedText
           style={styles.headerText}
           numberOfLines={1}
@@ -117,7 +123,12 @@ const WRExerciseItem = ({
             }
           : undefined;
 
-        if (workoutExercise && "completed" in set && "id" in exercise) {
+        if (
+          workoutExercise &&
+          "completed" in set &&
+          "id" in exercise &&
+          "workoutExercise" in set
+        ) {
           return (
             <SetListItem
               key={set.id}
@@ -133,6 +144,22 @@ const WRExerciseItem = ({
         } else if ("exercise" in exercise && !("completed" in set)) {
           return (
             <RoutineSetListItem
+              key={set.id}
+              exerciseIndex={exerciseIndex}
+              exerciseId={exercise.exercise.id}
+              set={set}
+              index={index + 1}
+              inputRefs={inputRefs}
+              previousSetInExercise={previousSetInExercise}
+            />
+          );
+        } else if (
+          "exercise" in exercise &&
+          "completed" in set &&
+          !("workoutExercise" in set)
+        ) {
+          return (
+            <EditWorkoutSetListItem
               key={set.id}
               exerciseIndex={exerciseIndex}
               exerciseId={exercise.exercise.id}

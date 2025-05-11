@@ -158,6 +158,16 @@ function RootLayoutNav() {
         }}
       />
       <Stack.Screen
+        name="(modals)/edit_workout"
+        options={{
+          presentation: "modal",
+          headerTitle: "Edit Workout",
+          headerBackVisible: false,
+          headerTransparent: true,
+          headerBlurEffect: "systemChromeMaterial",
+        }}
+      />
+      <Stack.Screen
         name="(modals)/add_routine"
         options={{
           headerTitle: "New Routine",

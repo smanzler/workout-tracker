@@ -27,6 +27,7 @@ import {
   ContextMenuRoot,
   ContextMenuTrigger,
 } from "@/zeego/context-menu";
+import { router } from "expo-router";
 
 const WorkoutListItem = ({
   workout,
@@ -114,6 +115,18 @@ const WorkoutListItem = ({
         <ContextMenuItem destructive key="delete" onSelect={handleDelete}>
           <ContextMenuItemTitle>Delete Workout</ContextMenuItemTitle>
           <ContextMenuItemIcon ios={{ name: "trash" }} />
+        </ContextMenuItem>
+        <ContextMenuItem
+          key="edit"
+          onSelect={() => {
+            router.push({
+              pathname: "/(modals)/edit_workout",
+              params: { workoutId: workout.id },
+            });
+          }}
+        >
+          <ContextMenuItemTitle>Edit Workout</ContextMenuItemTitle>
+          <ContextMenuItemIcon ios={{ name: "pencil" }} />
         </ContextMenuItem>
       </ContextMenuContent>
     </ContextMenuRoot>
