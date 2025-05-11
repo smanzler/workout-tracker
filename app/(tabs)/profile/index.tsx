@@ -1,5 +1,11 @@
 import React, { useState } from "react";
-import { View, StyleSheet, TouchableOpacity, Alert } from "react-native";
+import {
+  View,
+  StyleSheet,
+  TouchableOpacity,
+  Alert,
+  Linking,
+} from "react-native";
 import { useAuth } from "@/providers/AuthProvider";
 import { useTheme } from "@react-navigation/native";
 import { mySync } from "@/db/sync";
@@ -24,12 +30,15 @@ import {
   DropdownMenuTrigger,
 } from "@/zeego/drop-down";
 import { useWorkout } from "@/providers/WorkoutProvider";
+
 export default function ProfileScreen() {
   const { user } = useAuth();
   const { updateLastSync } = useSync();
   const { colors } = useTheme();
   const [imageVersion, setImageVersion] = useState(Date.now());
   const { activeWorkoutId } = useWorkout();
+
+  const [status, requestPermission] = ImagePicker.useCameraPermissions();
 
   if (!user) return <LoginScreen />;
 
@@ -48,15 +57,48 @@ export default function ProfileScreen() {
   };
 
   const takePhoto = async () => {
-    const result = await ImagePicker.launchCameraAsync({
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 0.1,
-    });
+    if (
+      status?.status !== ImagePicker.PermissionStatus.GRANTED &&
+      status?.canAskAgain === true
+    ) {
+      const { status } = await requestPermission();
+      if (status !== ImagePicker.PermissionStatus.GRANTED) {
+        Alert.alert("Permission not granted");
+        return;
+      }
+    } else {
+      Alert.alert(
+        "Alert",
+        "Permission not granted, please go to settings and grant permission",
+        [
+          {
+            text: "Go to Settings",
+            onPress: () => {
+              Linking.openSettings();
+            },
+          },
+          {
+            text: "Cancel",
+            style: "cancel",
+          },
+        ]
+      );
+      return;
+    }
 
-    if (!result.canceled && result.assets.length > 0) {
-      const uri = result.assets[0].uri;
-      await uploadImageAsync(uri, user.id, setImageVersion);
+    try {
+      const result = await ImagePicker.launchCameraAsync({
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 0.1,
+      });
+
+      if (!result.canceled && result.assets.length > 0) {
+        const uri = result.assets[0].uri;
+        await uploadImageAsync(uri, user.id, setImageVersion);
+      }
+    } catch (error) {
+      Alert.alert("Error taking photo:", (error as Error).message);
     }
   };
 

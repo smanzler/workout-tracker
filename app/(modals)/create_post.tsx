@@ -8,6 +8,8 @@ import {
   TouchableOpacity,
   View,
   ActionSheetIOS,
+  Linking,
+  Alert,
 } from "react-native";
 import React, { useState } from "react";
 import { router, Stack } from "expo-router";
@@ -33,26 +35,64 @@ const CreatePost = () => {
   const { setWorkout } = usePostActions();
   const { user } = useAuth();
 
+  const [status, requestPermission] = ImagePicker.useCameraPermissions();
+
   const queryClient = useQueryClient();
 
   const handlePickImage = async (type: "pick" | "take") => {
-    let result =
-      type === "pick"
-        ? await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ["images"],
-            allowsEditing: true,
-            aspect: [1, 1],
-            quality: 0,
-          })
-        : await ImagePicker.launchCameraAsync({
-            mediaTypes: ["images"],
-            allowsEditing: true,
-            aspect: [1, 1],
-            quality: 0,
-          });
+    if (type === "take") {
+      console.log("status", status);
+      if (status?.status !== ImagePicker.PermissionStatus.GRANTED) {
+        if (status?.canAskAgain === true) {
+          const { status } = await requestPermission();
+          if (status !== ImagePicker.PermissionStatus.GRANTED) {
+            Alert.alert("Permission not granted");
+            return;
+          }
+        } else {
+          Alert.alert(
+            "Alert",
+            "Permission not granted, please go to settings and grant permission",
+            [
+              {
+                text: "Go to Settings",
+                onPress: () => {
+                  Linking.openSettings();
+                },
+              },
+              {
+                text: "Cancel",
+                style: "cancel",
+              },
+            ]
+          );
+          return;
+        }
+      }
+    }
 
-    if (!result.canceled) {
-      setImage(result.assets[0].uri);
+    try {
+      let result =
+        type === "pick"
+          ? await ImagePicker.launchImageLibraryAsync({
+              mediaTypes: ["images"],
+              allowsEditing: true,
+              aspect: [1, 1],
+              quality: 0,
+            })
+          : await ImagePicker.launchCameraAsync({
+              mediaTypes: ["images"],
+              allowsEditing: true,
+              aspect: [1, 1],
+              quality: 0,
+            });
+
+      if (!result.canceled) {
+        setImage(result.assets[0].uri);
+      }
+    } catch (error) {
+      Alert.alert("Error picking image:", (error as Error).message);
+      console.log("Error picking image:", error);
     }
   };
 
