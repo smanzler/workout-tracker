@@ -48,7 +48,6 @@ const WRExerciseItem = ({
   return (
     <View style={[styles.container, { backgroundColor: colors.card }]}>
       <View style={styles.headerContainer}>
-        <ThemedText>{"id" in exercise ? exercise.id : "no id"}</ThemedText>
         <ThemedText
           style={styles.headerText}
           numberOfLines={1}
