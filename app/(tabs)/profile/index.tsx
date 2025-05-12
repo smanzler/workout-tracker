@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   Alert,
   Linking,
+  Button,
 } from "react-native";
 import { useAuth } from "@/providers/AuthProvider";
 import { useTheme } from "@react-navigation/native";
@@ -30,6 +31,7 @@ import {
   DropdownMenuTrigger,
 } from "@/zeego/drop-down";
 import { useWorkout } from "@/providers/WorkoutProvider";
+import { removePushTokenFromServer } from "@/api/notifications";
 
 export default function ProfileScreen() {
   const { user } = useAuth();
@@ -37,7 +39,6 @@ export default function ProfileScreen() {
   const { colors } = useTheme();
   const [imageVersion, setImageVersion] = useState(Date.now());
   const { activeWorkoutId } = useWorkout();
-
   const [status, requestPermission] = ImagePicker.useCameraPermissions();
 
   if (!user) return <LoginScreen />;
@@ -151,9 +152,10 @@ export default function ProfileScreen() {
         return;
       }
 
-      await mySync(user, updateLastSync, () => {});
+      await removePushTokenFromServer(user.id);
 
-      await logout();
+      try {
+      await mySync(user, updateLastSync, () => {});
     } catch (error) {
       console.error("Failed to logout:", error);
       Alert.alert(
@@ -177,6 +179,12 @@ export default function ProfileScreen() {
           },
         ]
       );
+        throw error;
+      }
+
+      await logout();
+    } catch (error) {
+      console.error("Failed to logout:", error);
     }
   };
 
