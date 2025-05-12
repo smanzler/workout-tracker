@@ -57,33 +57,32 @@ export default function ProfileScreen() {
   };
 
   const takePhoto = async () => {
-    if (
-      status?.status !== ImagePicker.PermissionStatus.GRANTED &&
-      status?.canAskAgain === true
-    ) {
-      const { status } = await requestPermission();
-      if (status !== ImagePicker.PermissionStatus.GRANTED) {
-        Alert.alert("Permission not granted");
+    if (status?.status !== ImagePicker.PermissionStatus.GRANTED) {
+      if (status?.canAskAgain === true) {
+        const { status } = await requestPermission();
+        if (status !== ImagePicker.PermissionStatus.GRANTED) {
+          Alert.alert("Permission not granted");
+          return;
+        }
+      } else {
+        Alert.alert(
+          "Alert",
+          "Permission not granted, please go to settings and grant permission",
+          [
+            {
+              text: "Go to Settings",
+              onPress: () => {
+                Linking.openSettings();
+              },
+            },
+            {
+              text: "Cancel",
+              style: "cancel",
+            },
+          ]
+        );
         return;
       }
-    } else {
-      Alert.alert(
-        "Alert",
-        "Permission not granted, please go to settings and grant permission",
-        [
-          {
-            text: "Go to Settings",
-            onPress: () => {
-              Linking.openSettings();
-            },
-          },
-          {
-            text: "Cancel",
-            style: "cancel",
-          },
-        ]
-      );
-      return;
     }
 
     try {
