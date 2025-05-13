@@ -1,8 +1,7 @@
 import { getProfileImageUrl, useProfile } from "@/api/profile";
-import { NotificationType } from "@/app/(modals)/notifications";
 import { useTheme } from "@react-navigation/native";
 import { useEffect } from "react";
-import { StyleSheet, Text, View, Dimensions } from "react-native";
+import { StyleSheet, View, Dimensions, Pressable } from "react-native";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -13,8 +12,10 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { ThemedText } from "./ThemedText";
 import { Image } from "expo-image";
 import { useToast } from "@/hooks/useToast";
+import { router } from "expo-router";
 
 const { width } = Dimensions.get("window");
+const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 export const Toast = () => {
   const { isVisible, message, hide } = useToast();
@@ -65,7 +66,10 @@ export const Toast = () => {
   });
 
   return (
-    <Animated.View style={[styles.container, animatedStyle]}>
+    <AnimatedPressable
+      style={[styles.container, animatedStyle]}
+      onPress={() => router.push("/(modals)/notifications")}
+    >
       <View style={[styles.toast, { backgroundColor: colors.card }]}>
         {actorProfile?.profile.id && (
           <Image
@@ -85,7 +89,7 @@ export const Toast = () => {
             : " sent you a follow request!"}
         </ThemedText>
       </View>
-    </Animated.View>
+    </AnimatedPressable>
   );
 };
 
