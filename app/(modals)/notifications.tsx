@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   View,
   StyleSheet,
@@ -24,7 +24,7 @@ export type NotificationType = {
   recipient_id: string;
   actor_id: string;
   created_at: string;
-  postId?: string;
+  post_id?: string;
   read_at: string | null;
 };
 
@@ -74,11 +74,11 @@ const NotificationItem: React.FC<{ notification: NotificationType }> = ({
         },
       });
     } else if (notification.type === "like") {
-      console.log("pushing post", notification.postId);
+      console.log("pushing post", notification.post_id);
       router.push({
         pathname: "/(modals)/post",
         params: {
-          postId: notification.postId,
+          postId: notification.post_id,
         },
       });
     }
@@ -94,12 +94,7 @@ const NotificationItem: React.FC<{ notification: NotificationType }> = ({
         style={styles.avatar}
         cachePolicy="memory-disk"
       />
-      <View style={styles.contentContainer}>
-        <View style={styles.textContainer}>{renderNotificationContent()}</View>
-        <ThemedText style={styles.timestamp}>
-          {new Date(notification.created_at).toLocaleString()}
-        </ThemedText>
-      </View>
+      <View style={styles.textContainer}>{renderNotificationContent()}</View>
     </TouchableOpacity>
   );
 };
@@ -109,9 +104,12 @@ export default function NotificationsScreen() {
   const { data: notifications, isLoading } = useNotifications(user?.id);
 
   return isLoading ? (
-    <ActivityIndicator />
+    <View style={styles.loadingContainer}>
+      <ActivityIndicator />
+    </View>
   ) : (
     <FlatList
+      contentContainerStyle={styles.container}
       data={notifications}
       keyExtractor={(item) => item.id}
       renderItem={({ item }) => <NotificationItem notification={item} />}
@@ -121,26 +119,29 @@ export default function NotificationsScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: 20,
+    paddingHorizontal: 12,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
   notificationItem: {
+    marginTop: 12,
     flexDirection: "row",
-    padding: 15,
-    marginVertical: 5,
-    borderRadius: 10,
+    alignItems: "center",
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 16,
   },
   avatar: {
-    width: 50,
-    height: 50,
+    width: 40,
+    height: 40,
     borderRadius: 25,
     marginRight: 15,
   },
-  contentContainer: {
-    flex: 1,
-  },
   textContainer: {
     flexDirection: "row",
-    flexWrap: "wrap",
   },
   username: {
     marginRight: 5,

@@ -342,6 +342,12 @@ function RootLayoutNav() {
         name="(modals)/notifications"
         options={{
           headerTitle: "Notifications",
+          headerBackVisible: false,
+          headerLeft: () => (
+            <TouchableOpacity onPress={() => router.back()}>
+              <Ionicons name="chevron-back" size={28} color={colors.primary} />
+            </TouchableOpacity>
+          ),
         }}
       />
     </Stack>
