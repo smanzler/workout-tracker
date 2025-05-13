@@ -155,30 +155,30 @@ export default function ProfileScreen() {
       await removePushTokenFromServer(user.id);
 
       try {
-      await mySync(user, updateLastSync, () => {});
-    } catch (error) {
-      console.error("Failed to logout:", error);
-      Alert.alert(
-        "Error",
-        "Failed to sync data. If you still want to logout, you could lose data.",
-        [
-          {
-            text: "Cancel",
-            style: "cancel",
-          },
-          {
-            text: "Logout",
-            onPress: async () => {
-              try {
-                await logout();
-              } catch (error) {
-                console.error("Failed to logout:", error);
-              }
+        await mySync(user, updateLastSync, () => {});
+      } catch (error) {
+        console.error("Failed to logout:", error);
+        Alert.alert(
+          "Error",
+          "Failed to sync data. If you still want to logout, you could lose data.",
+          [
+            {
+              text: "Cancel",
+              style: "cancel",
             },
-            style: "destructive",
-          },
-        ]
-      );
+            {
+              text: "Logout",
+              onPress: async () => {
+                try {
+                  await logout();
+                } catch (error) {
+                  console.error("Failed to logout:", error);
+                }
+              },
+              style: "destructive",
+            },
+          ]
+        );
         throw error;
       }
 
@@ -210,49 +210,65 @@ export default function ProfileScreen() {
         options={{
           headerTitle: user.user_metadata.username || "Profile",
           headerRight: () => (
-            <DropdownMenuRoot>
-              <DropdownMenuTrigger>
-                <TouchableOpacity>
-                  <Ionicons
-                    name="ellipsis-horizontal-sharp"
-                    size={24}
-                    color={colors.primary}
-                  />
-                </TouchableOpacity>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuItem
-                  key="settings"
-                  onSelect={() => router.push("/(modals)/settings")}
-                >
-                  <DropdownMenuItemTitle>Settings</DropdownMenuItemTitle>
-                  <DropdownMenuItemIcon ios={{ name: "gear" }} />
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  key="sync"
-                  onSelect={() => mySync(user, updateLastSync, () => {})}
-                >
-                  <DropdownMenuItemTitle>Sync</DropdownMenuItemTitle>
-                  <DropdownMenuItemIcon ios={{ name: "arrow.2.circlepath" }} />
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  destructive
-                  key="logout"
-                  onSelect={handleLogout}
-                >
-                  <DropdownMenuItemTitle>Logout</DropdownMenuItemTitle>
-                  <DropdownMenuItemIcon ios={{ name: "arrow.left.square" }} />
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  destructive
-                  key="delete-account"
-                  onSelect={showDeleteAccountAlert}
-                >
-                  <DropdownMenuItemTitle>Delete account</DropdownMenuItemTitle>
-                  <DropdownMenuItemIcon ios={{ name: "trash" }} />
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenuRoot>
+            <View style={{ flexDirection: "row", gap: 10 }}>
+              <TouchableOpacity
+                onPress={() => router.push("/(modals)/notifications")}
+              >
+                <Ionicons
+                  name="notifications"
+                  size={24}
+                  color={colors.primary}
+                />
+              </TouchableOpacity>
+
+              <DropdownMenuRoot>
+                <DropdownMenuTrigger>
+                  <TouchableOpacity>
+                    <Ionicons
+                      name="ellipsis-horizontal-sharp"
+                      size={24}
+                      color={colors.primary}
+                    />
+                  </TouchableOpacity>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuItem
+                    key="settings"
+                    onSelect={() => router.push("/(modals)/settings")}
+                  >
+                    <DropdownMenuItemTitle>Settings</DropdownMenuItemTitle>
+                    <DropdownMenuItemIcon ios={{ name: "gear" }} />
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    key="sync"
+                    onSelect={() => mySync(user, updateLastSync, () => {})}
+                  >
+                    <DropdownMenuItemTitle>Sync</DropdownMenuItemTitle>
+                    <DropdownMenuItemIcon
+                      ios={{ name: "arrow.2.circlepath" }}
+                    />
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    destructive
+                    key="logout"
+                    onSelect={handleLogout}
+                  >
+                    <DropdownMenuItemTitle>Logout</DropdownMenuItemTitle>
+                    <DropdownMenuItemIcon ios={{ name: "arrow.left.square" }} />
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    destructive
+                    key="delete-account"
+                    onSelect={showDeleteAccountAlert}
+                  >
+                    <DropdownMenuItemTitle>
+                      Delete account
+                    </DropdownMenuItemTitle>
+                    <DropdownMenuItemIcon ios={{ name: "trash" }} />
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenuRoot>
+            </View>
           ),
         }}
       />

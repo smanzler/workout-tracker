@@ -8,6 +8,7 @@ import {
 import { supabase } from "../lib/supabase";
 import { Session, User } from "@supabase/supabase-js";
 import { usePushNotifications } from "@/hooks/usePushNotifications";
+import { useLiveNotifications } from "@/hooks/useLiveNotifications";
 
 type AuthContext = {
   session: Session | null;
@@ -27,6 +28,7 @@ export default function AuthProvider({ children }: PropsWithChildren) {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const { registerForPushNotificationsAsync } = usePushNotifications();
+  useLiveNotifications(session?.user?.id);
 
   useEffect(() => {
     supabase.auth.getSession().then(async ({ data: { session } }) => {

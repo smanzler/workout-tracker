@@ -95,9 +95,9 @@ export default function RootLayout() {
   return (
     <GestureHandlerRootView>
       <KeyboardProvider>
-        <AuthProvider>
-          <WorkoutProvider>
-            <QueryClientProvider client={queryClient}>
+        <QueryClientProvider client={queryClient}>
+          <AuthProvider>
+            <WorkoutProvider>
               <ThemeProvider
                 value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
               >
@@ -109,9 +109,9 @@ export default function RootLayout() {
                   </View>
                 </SyncProvider>
               </ThemeProvider>
-            </QueryClientProvider>
-          </WorkoutProvider>
-        </AuthProvider>
+            </WorkoutProvider>
+          </AuthProvider>
+        </QueryClientProvider>
       </KeyboardProvider>
     </GestureHandlerRootView>
   );
@@ -335,6 +335,12 @@ function RootLayoutNav() {
           presentation: "transparentModal",
           animation: "fade",
           headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="(modals)/notifications"
+        options={{
+          headerTitle: "Notifications",
         }}
       />
     </Stack>
