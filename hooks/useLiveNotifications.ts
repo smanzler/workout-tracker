@@ -1,14 +1,11 @@
 import { useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { ToastAndroid, Platform, Alert } from "react-native";
 import { supabase } from "@/lib/supabase";
+import { useToast } from "./useToast";
+import { NotificationType } from "@/app/(modals)/notifications";
 
-function showToast(message: string) {
-  if (Platform.OS === "android") {
-    ToastAndroid.show(message, ToastAndroid.SHORT);
-  } else {
-    Alert.alert("Notification", message);
-  }
+function showToast(notification: NotificationType) {
+  useToast.getState().show(notification);
 }
 
 export function useNotifications(userId?: string) {
@@ -48,15 +45,14 @@ export function useLiveNotifications(userId?: string) {
           filter: `recipient_id=eq.${userId}`,
         },
         (payload) => {
-          const newNotification = payload.new;
+          const newNotification = payload.new as NotificationType;
 
           queryClient.setQueryData(
             ["notifications", userId],
             (old: any[] = []) => [newNotification, ...old]
           );
 
-          const message = getNotificationMessage(newNotification);
-          showToast(message);
+          showToast(newNotification);
         }
       )
       .subscribe();

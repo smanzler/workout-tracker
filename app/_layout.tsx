@@ -21,6 +21,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { KeyboardProvider } from "react-native-keyboard-controller";
 import SummaryHeader from "@/components/ui/SummaryHeader";
 import * as Notifications from "expo-notifications";
+import { Toast } from "@/components/Toast";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -93,7 +94,7 @@ export default function RootLayout() {
   }
 
   return (
-    <GestureHandlerRootView>
+    <GestureHandlerRootView style={{ flex: 1 }}>
       <KeyboardProvider>
         <QueryClientProvider client={queryClient}>
           <AuthProvider>
@@ -104,7 +105,7 @@ export default function RootLayout() {
                 <SyncProvider>
                   <View style={{ flex: 1 }}>
                     <RootLayoutNav />
-
+                    <Toast />
                     <StatusBar style="auto" />
                   </View>
                 </SyncProvider>

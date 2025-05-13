@@ -18,7 +18,7 @@ import {
 } from "@/hooks/useLiveNotifications";
 import { useAuth } from "@/providers/AuthProvider";
 
-type NotificationType = {
+export type NotificationType = {
   id: string;
   type: "follow" | "follow_request" | "like";
   recipient_id: string;
@@ -92,6 +92,7 @@ const NotificationItem: React.FC<{ notification: NotificationType }> = ({
       <Image
         source={{ uri: getProfileImageUrl(notification.actor_id) }}
         style={styles.avatar}
+        cachePolicy="memory-disk"
       />
       <View style={styles.contentContainer}>
         <View style={styles.textContainer}>{renderNotificationContent()}</View>
