@@ -18,11 +18,11 @@ import { getProfileImageUrl } from "@/api/profile";
 import { Ionicons } from "@expo/vector-icons";
 
 async function searchUsers(query: string) {
-  if (!query) return [];
+  if (!query) return null;
 
   const { data, error } = await supabase
     .from("profiles")
-    .select("id, username")
+    .select("id, username, follower_count")
     .ilike("username", `%${query}%`)
     .limit(20);
 
@@ -34,16 +34,85 @@ async function searchUsers(query: string) {
   return data;
 }
 
+async function getMostFollowedUsers() {
+  const { data, error } = await supabase
+    .from("profiles")
+    .select(
+      `
+      id,
+      username,
+      follower_count
+    `
+    )
+    .order("follower_count", { ascending: false })
+    .limit(20);
+
+  if (error) {
+    console.error("Error fetching most followed users:", error);
+    return [];
+  }
+
+  return data;
+}
+
+interface UserItemProps {
+  user: {
+    id: string;
+    username: string;
+    follower_count?: number;
+  };
+  colors: any;
+}
+
+const UserItem = ({ user, colors }: UserItemProps) => (
+  <TouchableOpacity
+    key={user.id}
+    style={[styles.userItem, { borderBottomColor: colors.border }]}
+    onPress={() => {
+      router.push({
+        pathname: "/(modals)/profile",
+        params: { userId: user.id },
+      });
+    }}
+  >
+    <View style={styles.userContent}>
+      <View style={styles.avatarContainer}>
+        <Image
+          style={[styles.avatar, { backgroundColor: colors.card }]}
+          source={{ uri: getProfileImageUrl(user.id) }}
+          cachePolicy="memory-disk"
+        />
+      </View>
+      <View style={styles.userInfo}>
+        <ThemedText type="defaultSemiBold">{user.username}</ThemedText>
+        {user.follower_count !== undefined && (
+          <ThemedText style={styles.followerCount}>
+            {user.follower_count} followers
+          </ThemedText>
+        )}
+      </View>
+    </View>
+  </TouchableOpacity>
+);
+
 export default function FindFriendsScreen() {
   const { colors } = useTheme();
   const [searchQuery, setSearchQuery] = useState("");
   const debouncedQuery = useDebounce(searchQuery, 300);
 
-  const { data: users, isLoading } = useQuery({
+  const { data: searchResults, isLoading: isSearching } = useQuery({
     queryKey: ["users", debouncedQuery],
     queryFn: () => searchUsers(debouncedQuery),
     enabled: debouncedQuery.length > 0,
   });
+
+  const { data: popularUsers, isLoading: isLoadingPopular } = useQuery({
+    queryKey: ["popular-users"],
+    queryFn: getMostFollowedUsers,
+  });
+
+  const isLoading = debouncedQuery ? isSearching : isLoadingPopular;
+  const users = debouncedQuery ? searchResults : popularUsers;
 
   return (
     <BodyScrollView style={styles.container}>
@@ -67,40 +136,14 @@ export default function FindFriendsScreen() {
       <View style={styles.content}>
         {isLoading ? (
           <ActivityIndicator style={{ marginTop: 20 }} />
-        ) : !searchQuery ? (
-          <ThemedText type="defaultSemiBold" style={{ textAlign: "center" }}>
-            Search for users to connect with
-          </ThemedText>
-        ) : users?.length === 0 ? (
+        ) : !searchQuery && !users?.length ? (
           <ThemedText type="defaultSemiBold" style={{ textAlign: "center" }}>
             No users found
           </ThemedText>
         ) : (
           <View style={styles.results}>
             {users?.map((user) => (
-              <TouchableOpacity
-                key={user.id}
-                style={[styles.userItem, { borderBottomColor: colors.border }]}
-                onPress={() => {
-                  router.push({
-                    pathname: "/(modals)/profile",
-                    params: { userId: user.id },
-                  });
-                }}
-              >
-                <View style={styles.userContent}>
-                  <View style={styles.avatarContainer}>
-                    <Image
-                      style={[styles.avatar, { backgroundColor: colors.card }]}
-                      source={{ uri: getProfileImageUrl(user.id) }}
-                      cachePolicy="memory-disk"
-                    />
-                  </View>
-                  <ThemedText type="defaultSemiBold">
-                    {user.username}
-                  </ThemedText>
-                </View>
-              </TouchableOpacity>
+              <UserItem key={user.id} user={user} colors={colors} />
             ))}
           </View>
         )}
@@ -138,5 +181,16 @@ const styles = StyleSheet.create({
   avatar: {
     width: "100%",
     height: "100%",
+  },
+  userInfo: {
+    flex: 1,
+  },
+  followerCount: {
+    fontSize: 13,
+    opacity: 0.7,
+  },
+  sectionTitle: {
+    fontSize: 20,
+    marginBottom: 8,
   },
 });
