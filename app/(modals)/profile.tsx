@@ -77,23 +77,34 @@ const Profile = () => {
         />
 
         <View style={styles.bioSection}>
-          <View style={styles.usernameContainer}>
-            <ThemedText type="defaultSemiBold" style={styles.username}>
-              {profile?.profile.username}
+          <View style={styles.followersContainer}>
+            <ThemedText type="subtitle">
+              {profile?.profile.follower_count}
             </ThemedText>
-            {profile?.profile.is_public === false && (
-              <Ionicons
-                name="lock-closed"
-                size={16}
-                color={colors.text}
-                style={styles.lockIcon}
-              />
-            )}
+            <ThemedText type="small" style={{ opacity: 0.8 }}>
+              Followers
+            </ThemedText>
           </View>
 
-          <ThemedText style={styles.bio}>
-            {profile?.profile.bio || "No bio yet"}
-          </ThemedText>
+          <View style={styles.bioContainer}>
+            <View style={styles.usernameContainer}>
+              <ThemedText type="subtitle" style={styles.username}>
+                {profile?.profile.username}
+              </ThemedText>
+              {profile?.profile.is_public === false && (
+                <Ionicons
+                  name="lock-closed"
+                  size={16}
+                  color={colors.text}
+                  style={styles.lockIcon}
+                />
+              )}
+            </View>
+
+            <ThemedText style={styles.bio}>
+              {profile?.profile.bio || "No bio yet"}
+            </ThemedText>
+          </View>
 
           {!isOwnProfile && (
             <Button
@@ -201,6 +212,10 @@ const styles = StyleSheet.create({
     gap: 12,
     width: "100%",
   },
+  followersContainer: {
+    alignItems: "center",
+    gap: 2,
+  },
   usernameContainer: {
     flexDirection: "row",
     alignItems: "center",
@@ -216,6 +231,10 @@ const styles = StyleSheet.create({
     textAlign: "center",
     opacity: 0.8,
     marginBottom: 8,
+  },
+  bioContainer: {
+    alignItems: "center",
+    gap: 2,
   },
   postsSection: {
     flex: 1,
