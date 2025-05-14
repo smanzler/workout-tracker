@@ -106,16 +106,24 @@ const Workout = () => {
       return;
     }
 
-    await checkPRs(workout, workoutExercises);
+    try {
+      await checkPRs(workout, workoutExercises);
 
-    await stopWorkout(workoutName);
+      await stopWorkout(workoutName);
 
-    await mySync(user, updateLastSync, () => {});
+      await mySync(user, updateLastSync, () => {});
 
-    router.replace({
-      pathname: "/(modals)/summary",
-      params: { workoutId: workout.id },
-    });
+      router.replace({
+        pathname: "/(modals)/summary",
+        params: { workoutId: workout.id },
+      });
+    } catch (error) {
+      console.error("Failed to finish workout:", error);
+      Alert.alert(
+        "Error",
+        `Failed to finish workout. Please try again. ${error}`
+      );
+    }
   };
 
   const cancelWorkout = async () => {
