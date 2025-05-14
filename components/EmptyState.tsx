@@ -15,7 +15,8 @@ interface EmptyStateProps {
     | "globe-outline"
     | "people-outline"
     | "log-in-outline"
-    | "create-outline";
+    | "create-outline"
+    | "notifications-outline";
   title: string;
   description: string;
   buttonText?: string;

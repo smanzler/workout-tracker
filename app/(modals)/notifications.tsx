@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   FlatList,
   ActivityIndicator,
+  Text,
 } from "react-native";
 import { router, Stack } from "expo-router";
 import { BodyScrollView } from "@/components/BodyScrollView";
@@ -17,6 +18,9 @@ import {
   useNotifications,
 } from "@/hooks/useLiveNotifications";
 import { useAuth } from "@/providers/AuthProvider";
+import { Ionicons } from "@expo/vector-icons";
+import { supabase } from "@/lib/supabase";
+import { EmptyState } from "@/components/EmptyState";
 
 export type NotificationType = {
   id: string;
@@ -28,31 +32,98 @@ export type NotificationType = {
   read_at: string | null;
 };
 
-const NotificationItem: React.FC<{ notification: NotificationType }> = ({
-  notification,
-}) => {
+const NotificationItem: React.FC<{
+  notification: NotificationType;
+  refetch: () => void;
+}> = ({ notification, refetch }) => {
   const { colors } = useTheme();
   const { data: actor } = useProfile(notification.actor_id);
+
+  const handleFollowRequest = async (type: "accept" | "reject") => {
+    try {
+      const { error } = await supabase.rpc(
+        type === "accept" ? "accept_follow_request" : "reject_follow_request",
+        {
+          _follower_id: notification.actor_id,
+        }
+      );
+
+      if (error) throw error;
+
+      refetch();
+    } catch (error) {
+      console.error("Error handling follow request:", error);
+    }
+  };
 
   const renderNotificationContent = () => {
     switch (notification.type) {
       case "follow_request":
         return (
-          <>
-            <ThemedText type="defaultSemiBold" style={styles.username}>
-              {actor?.profile.username}
-            </ThemedText>
-            <ThemedText>sent you a friend request</ThemedText>
-          </>
+          <View style={styles.rowContainer}>
+            <View style={styles.textContainer}>
+              <Text numberOfLines={2}>
+                <ThemedText type="defaultSemiBold" style={styles.username}>
+                  {actor?.profile.username + " "}
+                </ThemedText>
+                <ThemedText style={styles.text}>
+                  sent you a friend request
+                </ThemedText>
+              </Text>
+            </View>
+
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity
+                style={[styles.button, { backgroundColor: colors.primary }]}
+                onPress={() => handleFollowRequest("accept")}
+              >
+                <Ionicons name="checkmark" size={24} color={colors.text} />
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[
+                  styles.button,
+                  {
+                    backgroundColor: colors.text
+                      .replace("rgb", "rgba")
+                      .replace(")", ", 0.2)"),
+                  },
+                ]}
+                onPress={() => handleFollowRequest("reject")}
+              >
+                <Ionicons name="close" size={24} color={colors.primary} />
+              </TouchableOpacity>
+            </View>
+          </View>
         );
       case "like":
         return (
-          <>
-            <ThemedText type="defaultSemiBold" style={styles.username}>
+          <View style={styles.textContainer}>
+            <ThemedText
+              type="defaultSemiBold"
+              numberOfLines={1}
+              style={styles.username}
+            >
               {actor?.profile.username}
             </ThemedText>
-            <ThemedText>liked your post </ThemedText>
-          </>
+            <ThemedText numberOfLines={1} style={styles.text}>
+              liked your post
+            </ThemedText>
+          </View>
+        );
+      case "follow":
+        return (
+          <View style={styles.textContainer}>
+            <ThemedText
+              type="defaultSemiBold"
+              numberOfLines={1}
+              style={styles.username}
+            >
+              {actor?.profile.username}
+            </ThemedText>
+            <ThemedText numberOfLines={1} style={styles.text}>
+              started following you
+            </ThemedText>
+          </View>
         );
       default:
         return null;
@@ -94,25 +165,49 @@ const NotificationItem: React.FC<{ notification: NotificationType }> = ({
         style={styles.avatar}
         cachePolicy="memory-disk"
       />
-      <View style={styles.textContainer}>{renderNotificationContent()}</View>
+      {renderNotificationContent()}
     </TouchableOpacity>
   );
 };
 
 export default function NotificationsScreen() {
   const { user } = useAuth();
-  const { data: notifications, isLoading } = useNotifications(user?.id);
+  const {
+    data: notifications,
+    isLoading,
+    refetch,
+  } = useNotifications(user?.id);
 
-  return isLoading ? (
-    <View style={styles.loadingContainer}>
-      <ActivityIndicator />
-    </View>
-  ) : (
+  if (isLoading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator />
+      </View>
+    );
+  }
+
+  if (!notifications?.length) {
+    return (
+      <EmptyState
+        icon="notifications-outline"
+        title="No Notifications"
+        description="When someone interacts with you, you'll see it here"
+        isRefetching={isLoading}
+        onRefresh={refetch}
+      />
+    );
+  }
+
+  return (
     <FlatList
       contentContainerStyle={styles.container}
       data={notifications}
       keyExtractor={(item) => item.id}
-      renderItem={({ item }) => <NotificationItem notification={item} />}
+      renderItem={({ item }) => (
+        <NotificationItem notification={item} refetch={refetch} />
+      )}
+      refreshing={isLoading}
+      onRefresh={refetch}
     />
   );
 }
@@ -140,11 +235,32 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     marginRight: 15,
   },
-  textContainer: {
+  rowContainer: {
+    flex: 1,
     flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  textContainer: {
+    flex: 1,
+    flexDirection: "row",
+  },
+  buttonContainer: {
+    flexDirection: "row",
+    gap: 8,
+    marginLeft: 8,
+  },
+  button: {
+    borderRadius: 8,
+    padding: 3,
   },
   username: {
     marginRight: 5,
+    flexShrink: 1,
+  },
+  text: {
+    flex: 1,
+    flexShrink: 1,
   },
   timestamp: {
     fontSize: 12,
