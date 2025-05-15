@@ -7,7 +7,6 @@ import {
   TextInput,
   TouchableOpacity,
   View,
-  ActionSheetIOS,
   Linking,
   Alert,
 } from "react-native";
@@ -25,6 +24,7 @@ import { postPost } from "@/api/posts";
 import { useAuth } from "@/providers/AuthProvider";
 import { useWorkout } from "@/providers/WorkoutProvider";
 import { useQueryClient } from "@tanstack/react-query";
+import { useActionSheet } from "@expo/react-native-action-sheet";
 
 const CreatePost = () => {
   const { colors } = useTheme();
@@ -34,6 +34,7 @@ const CreatePost = () => {
   const workout = usePostWorkout();
   const { setWorkout } = usePostActions();
   const { user } = useAuth();
+  const { showActionSheetWithOptions } = useActionSheet();
 
   const [status, requestPermission] = ImagePicker.useCameraPermissions();
 
@@ -117,7 +118,7 @@ const CreatePost = () => {
   };
 
   const showImagePickerOptions = () => {
-    ActionSheetIOS.showActionSheetWithOptions(
+    showActionSheetWithOptions(
       {
         options: ["Cancel", "Choose image from library", "Take a photo"],
         cancelButtonIndex: 0,

@@ -18,7 +18,6 @@ import { supabase } from "@/lib/supabase";
 import { BodyScrollView } from "@/components/BodyScrollView";
 import { ThemedText } from "@/components/ThemedText";
 import { Image } from "expo-image";
-import { ActionSheetIOS } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import * as DocumentPicker from "expo-document-picker";
 import { Ionicons } from "@expo/vector-icons";
@@ -34,6 +33,7 @@ import {
 import { useWorkout } from "@/providers/WorkoutProvider";
 import { removePushTokenFromServer } from "@/api/notifications";
 import { importStrongCSV } from "@/utils/csvImport";
+import { useActionSheet } from "@expo/react-native-action-sheet";
 
 export default function ProfileScreen() {
   const { user } = useAuth();
@@ -43,6 +43,7 @@ export default function ProfileScreen() {
   const { activeWorkoutId } = useWorkout();
   const [status, requestPermission] = ImagePicker.useCameraPermissions();
   const [importing, setImporting] = useState(false);
+  const { showActionSheetWithOptions } = useActionSheet();
 
   if (!user) return <LoginScreen />;
 
@@ -192,7 +193,7 @@ export default function ProfileScreen() {
   };
 
   const showImagePickerOptions = () => {
-    ActionSheetIOS.showActionSheetWithOptions(
+    showActionSheetWithOptions(
       {
         options: ["Cancel", "Choose image from library", "Take a photo"],
         cancelButtonIndex: 0,

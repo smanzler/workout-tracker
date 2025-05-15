@@ -22,6 +22,7 @@ import { KeyboardProvider } from "react-native-keyboard-controller";
 import SummaryHeader from "@/components/ui/SummaryHeader";
 import * as Notifications from "expo-notifications";
 import { Toast } from "@/components/Toast";
+import { ActionSheetProvider } from "@expo/react-native-action-sheet";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -96,23 +97,25 @@ export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <KeyboardProvider>
-        <QueryClientProvider client={queryClient}>
-          <AuthProvider>
-            <WorkoutProvider>
-              <ThemeProvider
-                value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
-              >
-                <SyncProvider>
-                  <View style={{ flex: 1 }}>
-                    <RootLayoutNav />
-                    <Toast />
-                    <StatusBar style="auto" />
-                  </View>
-                </SyncProvider>
-              </ThemeProvider>
-            </WorkoutProvider>
-          </AuthProvider>
-        </QueryClientProvider>
+        <ActionSheetProvider>
+          <QueryClientProvider client={queryClient}>
+            <AuthProvider>
+              <WorkoutProvider>
+                <ThemeProvider
+                  value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
+                >
+                  <SyncProvider>
+                    <View style={{ flex: 1 }}>
+                      <RootLayoutNav />
+                      <Toast />
+                      <StatusBar style="auto" />
+                    </View>
+                  </SyncProvider>
+                </ThemeProvider>
+              </WorkoutProvider>
+            </AuthProvider>
+          </QueryClientProvider>
+        </ActionSheetProvider>
       </KeyboardProvider>
     </GestureHandlerRootView>
   );
