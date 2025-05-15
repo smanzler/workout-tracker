@@ -15,10 +15,9 @@ import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 const MODAL_WIDTH = 280;
 const MODAL_MARGIN = 16;
 const SCREEN_WIDTH = Dimensions.get("window").width;
-const SCREEN_HEIGHT = Dimensions.get("window").height;
 
 export default function InfoModal() {
-  const { colors, dark } = useTheme();
+  const { colors } = useTheme();
   const { description, title, x, y } = useLocalSearchParams<{
     description: string;
     title: string;
@@ -26,18 +25,15 @@ export default function InfoModal() {
     y: string;
   }>();
 
-  // Convert string coordinates to numbers
   const xPos = Number(x);
   const yPos = Number(y);
 
-  // Calculate modal position
-  // Keep modal within screen bounds
   const modalX = Math.min(
     Math.max(MODAL_MARGIN, xPos - MODAL_WIDTH / 2),
     SCREEN_WIDTH - MODAL_WIDTH - MODAL_MARGIN
   );
 
-  const modalY = yPos + 20; // Add some offset from the icon
+  const modalY = yPos + 20;
 
   return (
     <Animated.View
@@ -46,11 +42,11 @@ export default function InfoModal() {
       style={StyleSheet.absoluteFill}
     >
       <Pressable style={StyleSheet.absoluteFill} onPress={() => router.back()}>
-        <BlurView style={StyleSheet.absoluteFill} intensity={30} tint="dark" />
+        <BlurView style={StyleSheet.absoluteFill} intensity={30} />
       </Pressable>
       <BlurView
-        intensity={50}
-        tint={dark ? "light" : "dark"}
+        intensity={100}
+        tint="systemChromeMaterial"
         style={[
           styles.container,
           {
