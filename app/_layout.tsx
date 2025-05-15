@@ -11,7 +11,7 @@ import AuthProvider from "@/providers/AuthProvider";
 import { SyncProvider } from "@/providers/SyncProvider";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { WorkoutProvider } from "@/providers/WorkoutProvider";
-import { TouchableOpacity, View } from "react-native";
+import { Platform, TouchableOpacity, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { DarkTheme, DefaultTheme } from "@/constants/Colors";
 import { pullDefaultExercises } from "@/api";
@@ -127,7 +127,7 @@ function RootLayoutNav() {
         name="(modals)/workout"
         options={{
           presentation: "modal",
-          headerTransparent: true,
+          headerTransparent: Platform.OS === "ios" ? true : false,
           headerBlurEffect: "systemChromeMaterial",
           headerShadowVisible: true,
         }}
@@ -158,7 +158,7 @@ function RootLayoutNav() {
           headerShown: true,
           headerTitle: "Sign Up",
           headerBackTitle: "Log In",
-          ...(process.env.EXPO_OS !== "ios"
+          ...(Platform.OS !== "ios"
             ? {}
             : {
                 headerLargeTitle: true,
@@ -176,9 +176,13 @@ function RootLayoutNav() {
         name="(modals)/workout_modal"
         options={{
           presentation: "modal",
-          headerTransparent: true,
-          headerBlurEffect: "systemChromeMaterial",
-          headerShadowVisible: true,
+          ...(Platform.OS !== "ios"
+            ? {}
+            : {
+                headerTransparent: true,
+                headerBlurEffect: "systemChromeMaterial",
+                headerShadowVisible: true,
+              }),
         }}
       />
       <Stack.Screen
@@ -187,8 +191,13 @@ function RootLayoutNav() {
           presentation: "modal",
           headerTitle: "Edit Workout",
           headerBackVisible: false,
-          headerTransparent: true,
-          headerBlurEffect: "systemChromeMaterial",
+          ...(Platform.OS !== "ios"
+            ? {}
+            : {
+                headerTransparent: true,
+                headerBlurEffect: "systemChromeMaterial",
+                headerShadowVisible: true,
+              }),
         }}
       />
       <Stack.Screen
@@ -202,22 +211,31 @@ function RootLayoutNav() {
         options={{
           headerTitle: "New Routine",
           headerBackVisible: false,
-          headerTransparent: true,
-          headerBlurEffect: "systemChromeMaterial",
+          ...(Platform.OS !== "ios"
+            ? {}
+            : {
+                headerTransparent: true,
+                headerBlurEffect: "systemChromeMaterial",
+                headerShadowVisible: true,
+              }),
         }}
       />
       <Stack.Screen
         name="(modals)/add_routine_exercises"
         options={{
           headerTitle: "New Routine",
-          headerTransparent: true,
-          headerBlurEffect: "systemChromeMaterial",
-          headerLargeTitle: true,
-          headerLargeTitleShadowVisible: false,
-          headerShadowVisible: true,
-          headerLargeStyle: {
-            backgroundColor: "transparent",
-          },
+          ...(Platform.OS !== "ios"
+            ? {}
+            : {
+                headerTransparent: true,
+                headerBlurEffect: "systemChromeMaterial",
+                headerLargeTitle: true,
+                headerLargeTitleShadowVisible: false,
+                headerShadowVisible: true,
+                headerLargeStyle: {
+                  backgroundColor: "transparent",
+                },
+              }),
         }}
       />
       <Stack.Screen
@@ -233,14 +251,18 @@ function RootLayoutNav() {
         options={{
           headerTitle: "Exercise",
           headerBackVisible: false,
-          headerTransparent: true,
-          headerBlurEffect: "systemChromeMaterial",
-          headerLargeTitle: true,
-          headerLargeTitleShadowVisible: false,
-          headerShadowVisible: true,
-          headerLargeStyle: {
-            backgroundColor: "transparent",
-          },
+          ...(Platform.OS !== "ios"
+            ? {}
+            : {
+                headerTransparent: true,
+                headerBlurEffect: "systemChromeMaterial",
+                headerLargeTitle: true,
+                headerLargeTitleShadowVisible: false,
+                headerShadowVisible: true,
+                headerLargeStyle: {
+                  backgroundColor: "transparent",
+                },
+              }),
         }}
       />
       <Stack.Screen
@@ -248,14 +270,18 @@ function RootLayoutNav() {
         options={{
           headerTitle: "Post",
           headerBackVisible: false,
-          headerBlurEffect: "systemChromeMaterial",
-          headerTransparent: true,
-          headerLargeTitle: true,
-          headerLargeTitleShadowVisible: false,
-          headerShadowVisible: true,
-          headerLargeStyle: {
-            backgroundColor: "transparent",
-          },
+          ...(Platform.OS !== "ios"
+            ? {}
+            : {
+                headerTransparent: true,
+                headerBlurEffect: "systemChromeMaterial",
+                headerLargeTitle: true,
+                headerLargeTitleShadowVisible: false,
+                headerShadowVisible: true,
+                headerLargeStyle: {
+                  backgroundColor: "transparent",
+                },
+              }),
         }}
       />
       <Stack.Screen
@@ -263,14 +289,18 @@ function RootLayoutNav() {
         options={{
           headerTitle: "Profile",
           headerBackVisible: false,
-          headerBlurEffect: "systemChromeMaterial",
-          headerTransparent: true,
-          headerLargeTitle: true,
-          headerLargeTitleShadowVisible: false,
-          headerShadowVisible: true,
-          headerLargeStyle: {
-            backgroundColor: "transparent",
-          },
+          ...(Platform.OS !== "ios"
+            ? {}
+            : {
+                headerBlurEffect: "systemChromeMaterial",
+                headerTransparent: true,
+                headerLargeTitle: true,
+                headerLargeTitleShadowVisible: false,
+                headerShadowVisible: true,
+                headerLargeStyle: {
+                  backgroundColor: "transparent",
+                },
+              }),
         }}
       />
       <Stack.Screen
@@ -278,8 +308,12 @@ function RootLayoutNav() {
         options={{
           headerTitle: "Friends",
           headerBackVisible: false,
-          headerBlurEffect: "systemChromeMaterial",
-          headerTransparent: true,
+          ...(Platform.OS !== "ios"
+            ? {}
+            : {
+                headerBlurEffect: "systemChromeMaterial",
+                headerTransparent: true,
+              }),
         }}
       />
       <Stack.Screen
@@ -287,8 +321,12 @@ function RootLayoutNav() {
         options={{
           headerTitle: "Create Post",
           headerBackVisible: false,
-          headerBlurEffect: "systemChromeMaterial",
-          headerTransparent: true,
+          ...(Platform.OS !== "ios"
+            ? {}
+            : {
+                headerBlurEffect: "systemChromeMaterial",
+                headerTransparent: true,
+              }),
         }}
       />
       <Stack.Screen
@@ -296,8 +334,12 @@ function RootLayoutNav() {
         options={{
           headerTitle: "Choose Workout to Add",
           headerBackVisible: false,
-          headerBlurEffect: "systemChromeMaterial",
-          headerTransparent: true,
+          ...(Platform.OS !== "ios"
+            ? {}
+            : {
+                headerBlurEffect: "systemChromeMaterial",
+                headerTransparent: true,
+              }),
         }}
       />
       <Stack.Screen
@@ -305,14 +347,18 @@ function RootLayoutNav() {
         options={{
           headerTitle: "Settings",
           headerBackVisible: false,
-          headerBlurEffect: "systemChromeMaterial",
-          headerTransparent: true,
-          headerLargeTitle: true,
-          headerLargeTitleShadowVisible: false,
-          headerShadowVisible: true,
-          headerLargeStyle: {
-            backgroundColor: "transparent",
-          },
+          ...(Platform.OS !== "ios"
+            ? {}
+            : {
+                headerBlurEffect: "systemChromeMaterial",
+                headerTransparent: true,
+                headerLargeTitle: true,
+                headerLargeTitleShadowVisible: false,
+                headerShadowVisible: true,
+                headerLargeStyle: {
+                  backgroundColor: "transparent",
+                },
+              }),
         }}
       />
       <Stack.Screen
@@ -320,14 +366,18 @@ function RootLayoutNav() {
         options={{
           headerTitle: "Find Friends",
           headerBackVisible: false,
-          headerBlurEffect: "systemChromeMaterial",
-          headerTransparent: true,
-          headerLargeTitle: true,
-          headerLargeTitleShadowVisible: false,
-          headerShadowVisible: true,
-          headerLargeStyle: {
-            backgroundColor: "transparent",
-          },
+          ...(Platform.OS !== "ios"
+            ? {}
+            : {
+                headerBlurEffect: "systemChromeMaterial",
+                headerTransparent: true,
+                headerLargeTitle: true,
+                headerLargeTitleShadowVisible: false,
+                headerShadowVisible: true,
+                headerLargeStyle: {
+                  backgroundColor: "transparent",
+                },
+              }),
         }}
       />
       <Stack.Screen
