@@ -41,38 +41,47 @@ function AddExercise() {
 
   const handleAddToWorkout = async () => {
     if (selectedItems.length === 0 || !activeWorkoutId) return;
-    await database.write(async () => {
-      const workout = await workoutsCollection.find(activeWorkoutId);
 
-      const batchOps = selectedItems.flatMap((exercise) => {
-        const workoutExercise = workoutExercisesCollection.prepareCreate(
-          (workoutExercise) => {
-            // @ts-ignore
-            workoutExercise.exercise.set(exercise);
-            // @ts-ignore
-            workoutExercise.workout.set(workout);
-            user && (workoutExercise.userId = user.id);
-          }
-        );
+    try {
+      await database.write(async () => {
+        const workout = await workoutsCollection.find(activeWorkoutId);
 
-        const set = setsCollection.prepareCreate((set) => {
-          // @ts-ignore
-          set.workoutExercise.set(workoutExercise);
-          set.reps = undefined;
-          set.weight = undefined;
-          set.position = 1;
-          user && (set.userId = user.id);
+        const batchOps = selectedItems.flatMap((exercise) => {
+          const workoutExercise = workoutExercisesCollection.prepareCreate(
+            (workoutExercise) => {
+              // @ts-ignore
+              workoutExercise.exercise.set(exercise);
+              // @ts-ignore
+              workoutExercise.workout.set(workout);
+              user && (workoutExercise.userId = user.id);
+            }
+          );
+
+          const set = setsCollection.prepareCreate((set) => {
+            // @ts-ignore
+            set.workoutExercise.set(workoutExercise);
+            set.reps = undefined;
+            set.weight = undefined;
+            set.position = 1;
+            user && (set.userId = user.id);
+          });
+
+          return [workoutExercise, set];
         });
 
-        return [workoutExercise, set];
+        await database.batch(...batchOps);
       });
 
-      await database.batch(...batchOps);
-    });
+      router.back();
 
-    router.back();
-
-    setSelectedItems([]);
+      setSelectedItems([]);
+    } catch (error) {
+      console.error("Failed to add exercises to workout:", error);
+      Alert.alert(
+        "Error",
+        "Failed to add exercises to workout. Please try again."
+      );
+    }
   };
 
   return (
