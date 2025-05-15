@@ -21,6 +21,7 @@ export async function getMaxPRBefore(startTime: number, exerciseId: string) {
       WHERE workout_exercises.exercise_id = ?
         AND sets.is_weight_pr = 1
         AND workouts.start_time < ?
+        AND sets._status is not 'deleted'
       ORDER BY workouts.start_time DESC
       LIMIT 1
     `,
@@ -42,6 +43,7 @@ export async function getMaxPRBefore(startTime: number, exerciseId: string) {
       WHERE workout_exercises.exercise_id = ?
         AND sets.is_volume_pr = 1
         AND workouts.start_time < ?
+        AND sets._status is not 'deleted'
       ORDER BY workouts.start_time DESC
       LIMIT 1
     `,
@@ -63,6 +65,7 @@ export async function getMaxPRBefore(startTime: number, exerciseId: string) {
       WHERE workout_exercises.exercise_id = ?
         AND sets.is_weight_pr = 1
         AND workouts.start_time < ?
+        AND sets._status is not 'deleted'
       ORDER BY workouts.start_time DESC
       LIMIT 1
     `,

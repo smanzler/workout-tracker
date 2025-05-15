@@ -11,7 +11,7 @@ import { useAuth } from "@/providers/AuthProvider";
 import { useTheme } from "@react-navigation/native";
 import { mySync } from "@/db/sync";
 import { useSync } from "@/providers/SyncProvider";
-import { resetUserData } from "@/db";
+import database, { resetUserData } from "@/db";
 import { router, Stack } from "expo-router";
 import LoginScreen from "@/app/(auth)/login";
 import { supabase } from "@/lib/supabase";
@@ -20,6 +20,7 @@ import { ThemedText } from "@/components/ThemedText";
 import { Image } from "expo-image";
 import { ActionSheetIOS } from "react-native";
 import * as ImagePicker from "expo-image-picker";
+import * as DocumentPicker from "expo-document-picker";
 import { Ionicons } from "@expo/vector-icons";
 import { uploadImageAsync, getProfileImageUrl } from "@/api/profile";
 import {
@@ -32,6 +33,7 @@ import {
 } from "@/zeego/drop-down";
 import { useWorkout } from "@/providers/WorkoutProvider";
 import { removePushTokenFromServer } from "@/api/notifications";
+import { importStrongCSV } from "@/utils/csvImport";
 
 export default function ProfileScreen() {
   const { user } = useAuth();
@@ -40,6 +42,7 @@ export default function ProfileScreen() {
   const [imageVersion, setImageVersion] = useState(Date.now());
   const { activeWorkoutId } = useWorkout();
   const [status, requestPermission] = ImagePicker.useCameraPermissions();
+  const [importing, setImporting] = useState(false);
 
   if (!user) return <LoginScreen />;
 
@@ -204,6 +207,31 @@ export default function ProfileScreen() {
     );
   };
 
+  const handleImportCSV = async () => {
+    try {
+      setImporting(true);
+
+      const result = await DocumentPicker.getDocumentAsync({
+        type: "text/csv",
+        copyToCacheDirectory: true,
+      });
+
+      if (!result.canceled && result.assets?.[0]) {
+        const response = await fetch(result.assets[0].uri);
+        const csvContent = await response.text();
+        await importStrongCSV(database, csvContent);
+        Alert.alert("Success", "Workout data imported successfully");
+      }
+    } catch (err) {
+      Alert.alert(
+        "Error",
+        err instanceof Error ? err.message : "An error occurred during import"
+      );
+    } finally {
+      setImporting(false);
+    }
+  };
+
   return (
     <BodyScrollView style={{ paddingHorizontal: 20 }}>
       <Stack.Screen
@@ -246,6 +274,18 @@ export default function ProfileScreen() {
                     <DropdownMenuItemTitle>Sync</DropdownMenuItemTitle>
                     <DropdownMenuItemIcon
                       ios={{ name: "arrow.2.circlepath" }}
+                    />
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    key="import"
+                    onSelect={handleImportCSV}
+                    disabled={importing}
+                  >
+                    <DropdownMenuItemTitle>
+                      {importing ? "Importing..." : "Import Strong CSV"}
+                    </DropdownMenuItemTitle>
+                    <DropdownMenuItemIcon
+                      ios={{ name: "square.and.arrow.down" }}
                     />
                   </DropdownMenuItem>
                   <DropdownMenuItem
