@@ -73,7 +73,7 @@ const Profile = () => {
         <Image
           style={[styles.profileImage, { backgroundColor: colors.card }]}
           source={{ uri: getProfileImageUrl(userId) }}
-          cachePolicy="memory-disk"
+          cachePolicy="memory"
         />
 
         <View style={styles.bioSection}>

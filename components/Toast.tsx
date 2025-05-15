@@ -75,7 +75,7 @@ export const Toast = () => {
           <Image
             source={{ uri: getProfileImageUrl(actorProfile.profile.id) }}
             style={styles.avatar}
-            cachePolicy="memory-disk"
+            cachePolicy="memory"
           />
         )}
         <ThemedText type="defaultSemiBold">

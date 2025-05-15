@@ -80,7 +80,7 @@ const UserItem = ({ user, colors }: UserItemProps) => (
         <Image
           style={[styles.avatar, { backgroundColor: colors.card }]}
           source={{ uri: getProfileImageUrl(user.id) }}
-          cachePolicy="memory-disk"
+          cachePolicy="memory"
         />
       </View>
       <View style={styles.userInfo}>

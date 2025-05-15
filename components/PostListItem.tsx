@@ -341,7 +341,7 @@ const PostListItem = ({ post }: { post: Post }) => {
                 height: "100%",
               }}
               source={{ uri: getProfileImageUrl(post.user.id) }}
-              cachePolicy="memory-disk"
+              cachePolicy="memory"
             />
           </View>
 

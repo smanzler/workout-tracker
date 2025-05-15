@@ -163,7 +163,7 @@ const NotificationItem: React.FC<{
       <Image
         source={{ uri: getProfileImageUrl(notification.actor_id) }}
         style={styles.avatar}
-        cachePolicy="memory-disk"
+        cachePolicy="memory"
       />
       {renderNotificationContent()}
     </TouchableOpacity>
