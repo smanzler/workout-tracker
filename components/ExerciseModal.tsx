@@ -336,7 +336,6 @@ const styles = StyleSheet.create({
     right: 0,
     fontSize: 20,
     fontWeight: "bold",
-    marginBottom: 12,
   },
   input: {
     borderWidth: 1,
