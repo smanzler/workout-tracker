@@ -80,7 +80,8 @@ const ExerciseModal = ({
         </TouchableWithoutFeedback>
 
         <BlurView
-          intensity={60}
+          intensity={100}
+          tint="systemChromeMaterial"
           style={[
             styles.card,
             {
