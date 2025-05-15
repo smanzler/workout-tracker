@@ -174,6 +174,7 @@ export const WorkoutProvider = ({
       setSeconds(0);
     } catch (error) {
       console.error("Failed to stop workout", error);
+      throw error;
     }
   };
 
