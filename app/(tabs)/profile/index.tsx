@@ -219,7 +219,7 @@ export default function ProfileScreen() {
       if (!result.canceled && result.assets?.[0]) {
         const response = await fetch(result.assets[0].uri);
         const csvContent = await response.text();
-        await importStrongCSV(database, csvContent);
+        await importStrongCSV(database, csvContent, user.id);
         Alert.alert("Success", "Workout data imported successfully");
       }
     } catch (err) {

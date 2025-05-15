@@ -181,3 +181,31 @@ export async function checkPRs(
     })
   );
 }
+
+export async function recalculateAllPRs() {
+  const workouts = await workoutsCollection
+    .query(Q.sortBy("start_time", Q.asc))
+    .fetch();
+
+  await database.write(async () => {
+    const allSets = await setsCollection.query().fetch();
+    await Promise.all(
+      allSets.map((set) =>
+        set.update((s) => {
+          s.isWeightPr = false;
+          s.isVolumePr = false;
+          s.is1RMPr = false;
+        })
+      )
+    );
+  });
+
+  // Process each workout
+  for (const workout of workouts) {
+    const workoutExercises = await workoutExercisesCollection
+      .query(Q.where("workout_id", workout.id))
+      .fetch();
+
+    await checkPRs(workout, workoutExercises);
+  }
+}

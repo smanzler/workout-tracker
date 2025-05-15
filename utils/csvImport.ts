@@ -5,7 +5,7 @@ import { WorkoutExercise } from "../models/WorkoutExercise";
 import { Set } from "../models/Set";
 import Papa from "papaparse";
 import { Q } from "@nozbe/watermelondb";
-import { checkPRs } from "./PRs";
+import { recalculateAllPRs } from "./PRs";
 
 interface StrongCSVRow {
   Date: string;
@@ -22,25 +22,11 @@ interface StrongCSVRow {
   RPE: string;
 }
 
-async function recalculateAllPRs(database: Database) {
-  // Get all workouts ordered by start time
-  const workouts = await database.collections
-    .get<Workout>("workouts")
-    .query(Q.sortBy("start_time", Q.asc))
-    .fetch();
-
-  // Process each workout
-  for (const workout of workouts) {
-    const workoutExercises = await database.collections
-      .get<WorkoutExercise>("workout_exercises")
-      .query(Q.where("workout_id", workout.id))
-      .fetch();
-
-    await checkPRs(workout, workoutExercises);
-  }
-}
-
-export async function importStrongCSV(database: Database, csvContent: string) {
+export async function importStrongCSV(
+  database: Database,
+  csvContent: string,
+  userId?: string
+) {
   await database.write(async () => {
     const { data } = Papa.parse<StrongCSVRow>(csvContent, {
       header: true,
@@ -76,6 +62,7 @@ export async function importStrongCSV(database: Database, csvContent: string) {
           workout.name = firstRow["Workout Name"];
           workout.startTime = startTime;
           workout.endTime = endTime;
+          workout.userId = userId;
         });
 
       // Group exercises within workout
@@ -107,6 +94,7 @@ export async function importStrongCSV(database: Database, csvContent: string) {
             .create((exercise) => {
               exercise.title = exerciseName;
               exercise.isDefault = false;
+              exercise.userId = userId;
             });
         }
 
@@ -117,6 +105,7 @@ export async function importStrongCSV(database: Database, csvContent: string) {
             (we as any).workout.id = workout.id;
             (we as any).exercise.id = exercise.id;
             we.notes = exerciseRows[0].Notes || undefined;
+            we.userId = userId;
           });
 
         // Create sets
@@ -133,13 +122,14 @@ export async function importStrongCSV(database: Database, csvContent: string) {
             set.isVolumePr = false;
             set.is1RMPr = false;
             set.isWeightPr = false;
+            set.userId = userId;
           });
         }
       }
     }
   });
 
-  await recalculateAllPRs(database);
+  await recalculateAllPRs();
 }
 
 function parseDuration(duration: string): number {
