@@ -128,6 +128,10 @@ const WorkoutListItem = ({
           <ContextMenuItemTitle>Edit Workout</ContextMenuItemTitle>
           <ContextMenuItemIcon ios={{ name: "pencil" }} />
         </ContextMenuItem>
+        <ContextMenuItem key="add_exercise" onSelect={() => {}}>
+          <ContextMenuItemTitle>Share Workout</ContextMenuItemTitle>
+          <ContextMenuItemIcon ios={{ name: "square.and.arrow.up" }} />
+        </ContextMenuItem>
       </ContextMenuContent>
     </ContextMenuRoot>
   );

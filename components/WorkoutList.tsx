@@ -17,6 +17,7 @@ const WorkoutList = ({ workouts }: { workouts: Workout[] }) => {
                 params: { workoutId: workout.id },
               })
             }
+            onLongPress={() => {}}
           >
             <WorkoutListItem workout={workout} />
           </Pressable>
