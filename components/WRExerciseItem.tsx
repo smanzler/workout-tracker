@@ -177,6 +177,7 @@ const WRExerciseItem = ({
           marginTop: 10,
           backgroundColor: colors.background,
         }}
+        textStyle={{ color: colors.text }}
         onPress={handleAddSet}
         size="sm"
       >
