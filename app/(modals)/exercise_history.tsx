@@ -65,7 +65,8 @@ const ExerciseHistory = () => {
             FROM workout_exercises
             JOIN workouts ON workout_exercises.workout_id = workouts.id
             WHERE workout_exercises.exercise_id = ? 
-            AND workouts.end_time IS NOT NULL
+              AND workouts.end_time IS NOT NULL
+              AND workout_exercises._status is not 'deleted'
             ORDER BY workouts.start_time DESC
             `,
             [exerciseId]
