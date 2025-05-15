@@ -233,7 +233,7 @@ export default function ProfileScreen() {
   };
 
   return (
-    <BodyScrollView style={{ paddingHorizontal: 20 }}>
+    <BodyScrollView style={{ padding: 20 }}>
       <Stack.Screen
         options={{
           headerTitle: user.user_metadata.username || "Profile",

@@ -57,7 +57,7 @@ const Profile = () => {
   const isOwnProfile = user?.id === userId;
 
   return (
-    <BodyScrollView>
+    <BodyScrollView style={{ padding: 20 }}>
       <Stack.Screen
         options={{
           headerTitle: profile?.profile.username,

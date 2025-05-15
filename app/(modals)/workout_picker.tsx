@@ -10,7 +10,7 @@ const WorkoutPicker = () => {
   const { colors } = useTheme();
 
   return (
-    <BodyScrollView style={{ paddingHorizontal: 20 }}>
+    <BodyScrollView style={{ padding: 20 }}>
       <Stack.Screen
         options={{
           headerLeft: () => (

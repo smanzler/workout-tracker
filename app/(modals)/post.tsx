@@ -15,7 +15,7 @@ const Post = () => {
   console.log(post);
 
   return (
-    <BodyScrollView style={{ paddingHorizontal: 20 }}>
+    <BodyScrollView style={{ padding: 20 }}>
       <Stack.Screen
         options={{
           headerLeft: () => (

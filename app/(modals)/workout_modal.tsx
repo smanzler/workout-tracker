@@ -72,7 +72,7 @@ const WorkoutModal = () => {
       style={{
         flex: 1,
         backgroundColor: colors.background,
-        paddingHorizontal: 20,
+        padding: 20,
       }}
     >
       <Stack.Screen

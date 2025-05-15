@@ -97,7 +97,7 @@ const AddRoutine = () => {
   };
 
   return (
-    <BodyScrollView style={{ paddingHorizontal: 20 }}>
+    <BodyScrollView style={{ padding: 20 }}>
       <Stack.Screen
         options={{
           headerRight: () => <RNButton title="Cancel" onPress={handleBack} />,

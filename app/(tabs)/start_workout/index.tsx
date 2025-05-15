@@ -96,7 +96,7 @@ function StartWorkoutScreen({ routines }: { routines: Routine[] }) {
   };
 
   return (
-    <BodyScrollView style={{ paddingHorizontal: 20 }}>
+    <BodyScrollView style={{ padding: 20 }}>
       <Button onPress={start} size="md">
         Start Workout
       </Button>

@@ -100,7 +100,7 @@ const ExerciseHistory = () => {
   });
 
   return (
-    <BodyScrollView style={{ paddingHorizontal: 20 }}>
+    <BodyScrollView style={{ padding: 20 }}>
       <Stack.Screen
         options={{
           headerTitle: title,

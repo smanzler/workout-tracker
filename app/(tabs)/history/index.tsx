@@ -11,7 +11,7 @@ import { router } from "expo-router";
 
 const History = ({ workouts }: { workouts: Workout[] }) => {
   return workouts.length !== 0 ? (
-    <BodyScrollView style={{ paddingHorizontal: 20 }}>
+    <BodyScrollView style={{ padding: 20 }}>
       <WorkoutList workouts={workouts} />
     </BodyScrollView>
   ) : (

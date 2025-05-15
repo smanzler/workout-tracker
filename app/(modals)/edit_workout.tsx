@@ -248,7 +248,7 @@ export default EditWorkout;
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: 20,
+    padding: 20,
   },
   closeButton: {
     padding: 6,

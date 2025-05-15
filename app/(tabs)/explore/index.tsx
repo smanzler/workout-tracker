@@ -164,7 +164,7 @@ const ExplorePage = () => {
           contentInsetAdjustmentBehavior="automatic"
           contentInset={{ bottom: 0 }}
           scrollIndicatorInsets={{ bottom: 0 }}
-          style={{ paddingHorizontal: 20 }}
+          style={{ padding: 20 }}
         />
       )}
     </>
