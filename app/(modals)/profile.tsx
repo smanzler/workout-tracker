@@ -1,4 +1,9 @@
-import { StyleSheet, TouchableOpacity, View } from "react-native";
+import {
+  StyleSheet,
+  TouchableOpacity,
+  View,
+  ActivityIndicator,
+} from "react-native";
 import React from "react";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import {
@@ -37,6 +42,14 @@ const Profile = () => {
     },
   });
 
+  if (isLoading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color={colors.primary} />
+      </View>
+    );
+  }
+
   const getFollowButtonText = () => {
     if (profile?.profile.is_following) return "Following";
     if (profile?.profile.follow_requested) return "Requested";
@@ -60,12 +73,12 @@ const Profile = () => {
     <BodyScrollView style={{ padding: 20 }}>
       <Stack.Screen
         options={{
-          headerTitle: profile?.profile.username,
           headerLeft: () => (
             <TouchableOpacity onPress={() => router.back()}>
               <Ionicons name="chevron-back" size={28} color={colors.primary} />
             </TouchableOpacity>
           ),
+          ...(profile && { headerTitle: profile?.profile.username }),
         }}
       />
 
@@ -282,5 +295,10 @@ const styles = StyleSheet.create({
   privateText: {
     opacity: 0.6,
     textAlign: "center",
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
