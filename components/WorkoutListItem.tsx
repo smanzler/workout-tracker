@@ -1,22 +1,12 @@
 import { StyleSheet, View } from "react-native";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Workout } from "@/models/Workout";
 import { withObservables } from "@nozbe/watermelondb/react";
 import { WorkoutExercise } from "@/models/WorkoutExercise";
-import {
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuItemIcon,
-  DropdownMenuItemTitle,
-  DropdownMenuRoot,
-  DropdownMenuTrigger,
-} from "@/zeego/drop-down";
-import { Entypo } from "@expo/vector-icons";
 import database, { setsCollection } from "@/db";
 import { useTheme } from "@react-navigation/native";
 import { Set } from "@/models/Set";
 import { Q } from "@nozbe/watermelondb";
-import ButtonWithIcon from "./ButtonWithIcon";
 import PostWorkoutSummary, { PostWorkout } from "./PostWorkoutSummary";
 import { Exercise } from "@/models/Exercise";
 import {
@@ -33,30 +23,25 @@ const WorkoutListItem = ({
   workout,
   workoutExercises,
   sets,
+  exercises,
 }: {
   workout: Workout;
   workoutExercises: WorkoutExercise[];
   sets: Set[];
+  exercises: Exercise[];
 }) => {
   const theme = useTheme();
-  const [exerciseTitles, setExerciseTitles] = useState<Record<string, string>>(
-    {}
-  );
 
-  useEffect(() => {
-    const loadExerciseTitles = async () => {
-      const titles: Record<string, string> = {};
-      await Promise.all(
-        workoutExercises.map(async (we) => {
-          const exercise = await we.exercise;
-          titles[we.id] = exercise.title;
-        })
-      );
-      setExerciseTitles(titles);
-    };
-
-    loadExerciseTitles();
-  }, [workoutExercises]);
+  // Create a map of exercise titles
+  const exerciseTitles = exercises.reduce((acc, exercise) => {
+    const workoutExercise = workoutExercises.find(
+      (we) => we.exercise.id === exercise.id
+    );
+    if (workoutExercise) {
+      acc[workoutExercise.id] = exercise.title;
+    }
+    return acc;
+  }, {} as Record<string, string>);
 
   const handleDelete = () => {
     try {
@@ -145,10 +130,17 @@ const enhance = withObservables(
       .query(Q.on("workout_exercises", "workout_id", workout.id))
       .observe();
 
+    // Observe exercises related to this workout's workout exercises
+    const exercises = workout.collections
+      .get<Exercise>("exercises")
+      .query(Q.on("workout_exercises", "workout_id", workout.id))
+      .observe();
+
     return {
       workout,
       workoutExercises,
       sets,
+      exercises,
     };
   }
 );
