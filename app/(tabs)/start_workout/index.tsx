@@ -24,7 +24,7 @@ import { Q } from "@nozbe/watermelondb";
 import { EmptyState } from "@/components/EmptyState";
 
 function StartWorkoutScreen({ routines }: { routines: Routine[] }) {
-  const { activeWorkoutId, startWorkout } = useWorkout();
+  const { activeWorkoutId, startWorkout, isLoading } = useWorkout();
   const { colors } = useTheme();
 
   const handleDelete = async () => {
@@ -97,7 +97,7 @@ function StartWorkoutScreen({ routines }: { routines: Routine[] }) {
 
   return (
     <BodyScrollView style={{ padding: 20 }}>
-      <Button onPress={start} size="md">
+      <Button onPress={start} size="md" loading={isLoading}>
         Start Workout
       </Button>
 

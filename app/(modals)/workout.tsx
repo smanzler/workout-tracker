@@ -9,6 +9,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   Button as RNButton,
+  ActivityIndicator,
 } from "react-native";
 import React, { useEffect, useRef, useState } from "react";
 import { useWorkout } from "@/providers/WorkoutProvider";
@@ -28,7 +29,7 @@ import {
 } from "react-native-keyboard-controller";
 
 const Workout = () => {
-  const { seconds, activeWorkoutId, stopWorkout } = useWorkout();
+  const { seconds, activeWorkoutId, stopWorkout, isLoading } = useWorkout();
   const [workout, setWorkout] = useState<WorkoutModel | undefined>(undefined);
   const [workoutName, setWorkoutName] = useState<string>("");
   const { colors } = useTheme();
@@ -106,17 +107,17 @@ const Workout = () => {
       return;
     }
 
+    router.replace({
+      pathname: "/(modals)/summary",
+      params: { workoutId: workout.id },
+    });
+
     try {
       await checkPRs(workout, workoutExercises);
 
       await stopWorkout(workoutName);
 
       await mySync(user, updateLastSync, () => {});
-
-      router.replace({
-        pathname: "/(modals)/summary",
-        params: { workoutId: workout.id },
-      });
     } catch (error) {
       console.error("Failed to finish workout:", error);
       Alert.alert(
@@ -127,6 +128,8 @@ const Workout = () => {
   };
 
   const cancelWorkout = async () => {
+    router.back();
+
     if (!activeWorkoutId) return;
 
     try {
@@ -158,7 +161,6 @@ const Workout = () => {
       console.error("Failed to delete workout:", error);
     }
     await stopWorkout();
-    router.back();
   };
 
   const handleCancel = () => {
@@ -236,5 +238,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: 20,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });

@@ -17,6 +17,7 @@ import dayjs from "dayjs";
 interface WorkoutContextType {
   seconds: number;
   activeWorkoutId: string | undefined;
+  isLoading: boolean;
   startWorkout: (routine?: Routine) => Promise<void>;
   stopWorkout: (workoutName?: string) => Promise<void>;
 }
@@ -35,6 +36,7 @@ export const WorkoutProvider = ({
   );
   const appState = useRef(AppState.currentState);
   const { user } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
 
   const startTimer = () => {
     if (!timerRef.current) {
@@ -93,6 +95,8 @@ export const WorkoutProvider = ({
   }, []);
 
   const startWorkout = async (routine?: Routine) => {
+    setIsLoading(true);
+
     try {
       const newWorkout = await database.write(async () => {
         const workout = await database
@@ -146,6 +150,8 @@ export const WorkoutProvider = ({
       startTimer();
     } catch (error) {
       console.error("Failed to start workout", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -154,6 +160,8 @@ export const WorkoutProvider = ({
       console.log("No active workout to stop");
       return;
     }
+
+    setIsLoading(true);
 
     try {
       await database.write(async () => {
@@ -175,12 +183,14 @@ export const WorkoutProvider = ({
     } catch (error) {
       console.error("Failed to stop workout", error);
       throw error;
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
     <WorkoutContext.Provider
-      value={{ seconds, activeWorkoutId, startWorkout, stopWorkout }}
+      value={{ seconds, activeWorkoutId, startWorkout, stopWorkout, isLoading }}
     >
       {children}
     </WorkoutContext.Provider>
