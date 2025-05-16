@@ -11,7 +11,7 @@ const WorkoutListShort = ({ workouts }: { workouts: Workout[] }) => {
   return (
     <>
       {workouts.map((workout) => (
-        <WorkoutListitemShort workout={workout} key={workout.id} style={{}} />
+        <WorkoutListitemShort workout={workout} key={workout.id} />
       ))}
     </>
   );
