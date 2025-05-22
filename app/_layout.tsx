@@ -51,7 +51,8 @@ export default function RootLayout() {
     console.log("checking defaults");
     try {
       const hasSyncedDefaults = await exercisesCollection.query(
-        Q.where("is_default", true)
+        Q.where("is_default", true),
+        Q.take(1)
       );
 
       if (hasSyncedDefaults.length === 0) {
