@@ -6,9 +6,11 @@ import {
   Alert,
   Linking,
   Button,
+  ActivityIndicator,
 } from "react-native";
 import { useAuth } from "@/providers/AuthProvider";
 import { useTheme } from "@react-navigation/native";
+import { useNetwork } from "@/providers/NetworkProvider";
 import { mySync } from "@/db/sync";
 import { useSync } from "@/providers/SyncProvider";
 import database, { resetUserData } from "@/db";
@@ -34,16 +36,30 @@ import { useWorkout } from "@/providers/WorkoutProvider";
 import { removePushTokenFromServer } from "@/api/notifications";
 import { importStrongCSV } from "@/utils/csvImport";
 import { useActionSheet } from "@expo/react-native-action-sheet";
+import { EmptyState } from "@/components/EmptyState";
 
 export default function ProfileScreen() {
-  const { user } = useAuth();
+  const { user, isLoading } = useAuth();
   const { updateLastSync } = useSync();
   const { colors } = useTheme();
+  const { isOnline } = useNetwork();
   const [imageVersion, setImageVersion] = useState(Date.now());
   const { activeWorkoutId } = useWorkout();
   const [status, requestPermission] = ImagePicker.useCameraPermissions();
   const [importing, setImporting] = useState(false);
   const { showActionSheetWithOptions } = useActionSheet();
+
+  if (isLoading) return <ActivityIndicator />;
+
+  if (!isOnline) {
+    return (
+      <EmptyState
+        icon="globe-outline"
+        title="Offline"
+        description="You're currently offline. Please check your internet connection and try again."
+      />
+    );
+  }
 
   if (!user) return <LoginScreen />;
 
@@ -152,6 +168,31 @@ export default function ProfileScreen() {
         Alert.alert(
           "Active workout",
           "You have an active workout. Please finish it before logging out."
+        );
+        return;
+      }
+
+      if (!isOnline) {
+        Alert.alert(
+          "Offline",
+          "You're currently offline. If you logout now, your latest changes might not be synced.",
+          [
+            {
+              text: "Cancel",
+              style: "cancel",
+            },
+            {
+              text: "Logout Anyway",
+              onPress: async () => {
+                try {
+                  await logout();
+                } catch (error) {
+                  console.error("Failed to logout:", error);
+                }
+              },
+              style: "destructive",
+            },
+          ]
         );
         return;
       }
@@ -270,7 +311,16 @@ export default function ProfileScreen() {
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     key="sync"
-                    onSelect={() => mySync(user, updateLastSync, () => {})}
+                    onSelect={() => {
+                      if (!isOnline) {
+                        Alert.alert(
+                          "Offline",
+                          "You need to be online to sync your data."
+                        );
+                        return;
+                      }
+                      mySync(user, updateLastSync, () => {});
+                    }}
                   >
                     <DropdownMenuItemTitle>Sync</DropdownMenuItemTitle>
                     <DropdownMenuItemIcon

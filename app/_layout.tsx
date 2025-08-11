@@ -23,6 +23,7 @@ import SummaryHeader from "@/components/ui/SummaryHeader";
 import * as Notifications from "expo-notifications";
 import { Toast } from "@/components/Toast";
 import { ActionSheetProvider } from "@expo/react-native-action-sheet";
+import { NetworkProvider } from "@/providers/NetworkProvider";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -100,21 +101,23 @@ export default function RootLayout() {
       <KeyboardProvider>
         <ActionSheetProvider>
           <QueryClientProvider client={queryClient}>
-            <AuthProvider>
-              <WorkoutProvider>
-                <ThemeProvider
-                  value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
-                >
-                  <SyncProvider>
-                    <View style={{ flex: 1 }}>
-                      <RootLayoutNav />
-                      <Toast />
-                      <StatusBar style="auto" />
-                    </View>
-                  </SyncProvider>
-                </ThemeProvider>
-              </WorkoutProvider>
-            </AuthProvider>
+            <ThemeProvider
+              value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
+            >
+              <NetworkProvider>
+                <AuthProvider>
+                  <WorkoutProvider>
+                    <SyncProvider>
+                      <View style={{ flex: 1 }}>
+                        <RootLayoutNav />
+                        <Toast />
+                        <StatusBar style="auto" />
+                      </View>
+                    </SyncProvider>
+                  </WorkoutProvider>
+                </AuthProvider>
+              </NetworkProvider>
+            </ThemeProvider>
           </QueryClientProvider>
         </ActionSheetProvider>
       </KeyboardProvider>

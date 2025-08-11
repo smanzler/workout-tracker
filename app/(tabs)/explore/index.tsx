@@ -2,7 +2,6 @@ import {
   ActivityIndicator,
   RefreshControl,
   StyleSheet,
-  Text,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -10,13 +9,12 @@ import React, { useState, useRef } from "react";
 import { router, Stack } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "@react-navigation/native";
-import { BodyScrollView } from "@/components/BodyScrollView";
 import { useExplorePosts, useFollowingPosts } from "@/api/posts";
 import { FlatList } from "react-native-gesture-handler";
 import PostListItem from "@/components/PostListItem";
 import { useAuth } from "@/providers/AuthProvider";
-import { ThemedText } from "@/components/ThemedText";
 import { EmptyState } from "@/components/EmptyState";
+import { useNetwork } from "@/providers/NetworkProvider";
 import {
   DropdownMenuContent,
   DropdownMenuItem,
@@ -29,6 +27,7 @@ import {
 const ExplorePage = () => {
   const { colors } = useTheme();
   const { user } = useAuth();
+  const { isOnline } = useNetwork();
   const [showExplore, setShowExplore] = useState(false);
   const isRefreshingRef = useRef(false);
 
@@ -54,6 +53,24 @@ const ExplorePage = () => {
     await refetch();
     isRefreshingRef.current = false;
   };
+
+  if (!isOnline) {
+    return (
+      <>
+        <Stack.Screen options={{ headerRight: () => null }} />
+        <EmptyState
+          icon="globe-outline"
+          title="You're Offline"
+          description="Connect to the internet to view and interact with posts."
+          buttonText="Retry"
+          buttonIcon="refresh"
+          onButtonPress={handleRefresh}
+          isRefetching={isRefetching}
+          onRefresh={handleRefresh}
+        />
+      </>
+    );
+  }
 
   if (!user) {
     return (
@@ -123,7 +140,17 @@ const ExplorePage = () => {
           headerTitle: showExplore ? "Explore" : "Following",
         }}
       />
-      {posts.length === 0 && !isLoading ? (
+      {!isOnline ? (
+        <EmptyState
+          icon="globe-outline"
+          title="You're Offline"
+          description="Connect to the internet to view and interact with posts."
+          buttonText="Retry"
+          buttonIcon="refresh"
+          onButtonPress={handleRefresh}
+          isRefetching={isRefetching}
+        />
+      ) : posts.length === 0 && !isLoading ? (
         <EmptyState
           icon={showExplore ? "globe-outline" : "people-outline"}
           title={showExplore ? "No Posts Yet" : "No Posts From Following"}
