@@ -17,6 +17,7 @@ import { getMaxPRBefore } from "@/utils/PRs";
 import dayjs from "dayjs";
 import ExerciseHistoryListItem from "@/components/ExerciseHistoryListItem";
 import { Q } from "@nozbe/watermelondb";
+import NativeChartsView from "@/modules/native-charts/src/NativeChartsView";
 
 type PRs = {
   weight: {
@@ -42,6 +43,7 @@ const ExerciseHistory = () => {
   const [workoutExercises, setWorkoutExercises] = useState<
     WorkoutExercise[] | undefined
   >(undefined);
+  const [chartData, setChartData] = useState<{ x: number; y: number }[]>([]);
   const { colors } = useTheme();
   const [loading, setLoading] = useState(true);
   const [prs, setPrs] = useState<PRs>();
@@ -67,7 +69,8 @@ const ExerciseHistory = () => {
             WHERE workout_exercises.exercise_id = ? 
               AND workouts.end_time IS NOT NULL
               AND workout_exercises._status is not 'deleted'
-            ORDER BY workouts.start_time DESC
+              AND workouts._status is not 'deleted'
+            ORDER BY workouts.start_time ASC
             `,
             [exerciseId]
           )
@@ -92,6 +95,30 @@ const ExerciseHistory = () => {
       opacity.value = withTiming(1, { duration: 500 });
     }
   }, [loading]);
+
+  useEffect(() => {
+    const processChartData = async () => {
+      if (!workoutExercises) return;
+
+      const data = await Promise.all(
+        workoutExercises.map(async (we) => {
+          const sets = await we.sets.fetch();
+          const weights = sets.map((set) => set.weight ?? 0);
+          const workout = await we.workout;
+          return {
+            x: new Date(workout.startTime).getTime() / 1000,
+            y: Math.max(...weights, 0),
+          };
+        })
+      );
+
+      console.log("Chart data:", data);
+
+      setChartData(data);
+    };
+
+    processChartData();
+  }, [workoutExercises]);
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
@@ -209,6 +236,11 @@ const ExerciseHistory = () => {
                 </ThemedText>
               </View>
             </View>
+
+            <NativeChartsView
+              data={chartData}
+              style={{ height: 200, marginBottom: 40 }}
+            />
 
             <ThemedText type="subtitle" style={{ marginBottom: 10 }}>
               History

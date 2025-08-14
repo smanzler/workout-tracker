@@ -1,4 +1,4 @@
-import type { StyleProp, ViewStyle } from 'react-native';
+import type { StyleProp, ViewStyle } from "react-native";
 
 export type OnLoadEventPayload = {
   url: string;
@@ -12,8 +12,12 @@ export type ChangeEventPayload = {
   value: string;
 };
 
+type Point = {
+  x: number;
+  y: number;
+};
+
 export type NativeChartsViewProps = {
-  url: string;
-  onLoad: (event: { nativeEvent: OnLoadEventPayload }) => void;
+  data: Point[];
   style?: StyleProp<ViewStyle>;
 };
