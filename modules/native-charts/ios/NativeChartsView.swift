@@ -20,28 +20,24 @@ class NativeChartsView: ExpoView {
         addSubview(chartView)
         
         chartView.legend.enabled = false
-        chartView.rightAxis.enabled = false
         
-        chartView.leftAxis.labelFont = .systemFont(ofSize: 14, weight: .medium)
-        chartView.leftAxis.labelTextColor = .label
-        chartView.leftAxis.spaceTop = 15
-        chartView.leftAxis.spaceBottom = 15
-        chartView.leftAxis.xOffset = 10
-        chartView.leftAxis.axisMinimum = 0
-        chartView.leftAxis.labelCount = 6
-        chartView.leftAxis.forceLabelsEnabled = false
+        chartView.leftAxis.enabled = false
+        chartView.rightAxis.enabled = true
+        
+        chartView.rightAxis.labelFont = .systemFont(ofSize: 14, weight: .medium)
+        chartView.rightAxis.labelTextColor = .label
+        chartView.rightAxis.xOffset = 10
+        chartView.rightAxis.axisMinimum = 0
         
         chartView.xAxis.labelPosition = .bottom
         chartView.xAxis.labelFont = .systemFont(ofSize: 14, weight: .medium)
         chartView.xAxis.yOffset = 10
         chartView.xAxis.granularity = 24 * 60 * 60 * 30
         
-        chartView.dragEnabled = true
         chartView.dragXEnabled = true
         chartView.dragYEnabled = false
-        chartView.setScaleEnabled(false)
-        chartView.pinchZoomEnabled = false
         chartView.doubleTapToZoomEnabled = false
+        chartView.pinchZoomEnabled = false
         
         chartView.xAxis.labelTextColor = .label
     }
@@ -62,13 +58,20 @@ class NativeChartsView: ExpoView {
         
         let maxWeight = entries.map { $0.y }.max() ?? 0
         let yAxisMax = ceil((maxWeight + 20) / 50) * 50
-        chartView.leftAxis.axisMaximum = yAxisMax
+        chartView.rightAxis.axisMaximum = yAxisMax
         
         let latestDate = entries.map { $0.x }.max() ?? Date().timeIntervalSince1970
+        let earliestDate = entries.map { $0.x }.min() ?? latestDate
         let threeMonthsInSeconds: Double = 90 * 24 * 60 * 60
         
-        chartView.xAxis.axisMaximum = latestDate
-        chartView.xAxis.axisMinimum = entries.map { $0.x }.min() ?? 0
+        let now = Date().timeIntervalSince1970
+        let threeMonthsAgo = now - threeMonthsInSeconds
+        
+        chartView.xAxis.axisMaximum = now
+        chartView.xAxis.axisMinimum = min(earliestDate, threeMonthsAgo)
+        
+        
+        print(threeMonthsAgo, Date(timeIntervalSince1970: threeMonthsAgo))
         
         let set = LineChartDataSet(entries: entries)
         
