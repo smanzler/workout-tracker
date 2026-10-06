@@ -1,296 +1,92 @@
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import React, { useEffect, useState } from "react";
+import { BodyScrollView } from "@/components/ui/body-scroll-view";
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty";
+import { Icon } from "@/components/ui/icon";
+import { Text } from "@/components/ui/text";
+import type { Outputs } from "@rep/api";
 import { router, Stack, useLocalSearchParams } from "expo-router";
-import { Exercise } from "@/db/models/exercise";
-import { WorkoutExercise } from "@/db/models/workout-exercise";
-import { exercisesCollection, workoutExercisesCollection } from "@/db";
-import { Ionicons } from "@expo/vector-icons";
-import { useTheme } from "expo-router/react-navigation";
-import { BodyScrollView } from "@/components/body-scroll-view";
-import { ThemedText } from "@/components/themed-text";
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
-} from "react-native-reanimated";
-import { getMaxPRBefore } from "@/features/activity/lib/personal-records";
-import dayjs from "dayjs";
-import ExerciseHistoryListItem from "../components/exercise-history-list-item";
-import { Q } from "@nozbe/watermelondb";
-import NativeChartsView from "../../../../../modules/native-charts/src/NativeChartsView";
+import { Dumbbell } from "lucide-react-native";
+import { Pressable } from "@/components/ui/pressable";
+import { QueryView } from "../../components/query-view";
+import { SetListCard } from "../../components/set-list-card";
+import { formatDate } from "../../lib/date";
+import { exerciseCategoryLabels, muscleGroupLabels } from "../../lib/labels";
+import { PersonalRecordCards } from "../components/personal-record-cards";
+import { WeightChart } from "../components/weight-chart";
+import { useExerciseHistory } from "../hooks/use-exercise-history";
 
-type PRs = {
-  weight: {
-    value: number;
-    date: number;
-  };
-  volume: {
-    value: number;
-    date: number;
-  };
-  oneRepMax: {
-    value: number;
-    date: number;
-  };
-};
+type Exercise = Outputs["activity"]["exercise"]["history"]["exercise"];
 
-const ExerciseHistory = () => {
+const describe = ({ muscleGroup, category }: Exercise) =>
+  [
+    muscleGroup && muscleGroupLabels[muscleGroup],
+    category && exerciseCategoryLabels[category],
+  ]
+    .filter(Boolean)
+    .join(" · ");
+
+export default function ExerciseHistory() {
   const { exerciseId, title } = useLocalSearchParams<{
     exerciseId: string;
-    title: string;
+    title?: string;
   }>();
-  const [exercise, setExercise] = useState<Exercise | undefined>(undefined);
-  const [workoutExercises, setWorkoutExercises] = useState<
-    WorkoutExercise[] | undefined
-  >(undefined);
-  const [chartData, setChartData] = useState<{ x: number; y: number }[]>([]);
-  const { colors } = useTheme();
-  const [loading, setLoading] = useState(true);
-  const [prs, setPrs] = useState<PRs>();
-
-  const opacity = useSharedValue(0);
-
-  useEffect(() => {
-    const load = async () => {
-      if (!exerciseId) return;
-
-      setLoading(true);
-
-      const e = await exercisesCollection.find(exerciseId);
-      setExercise(e);
-
-      const we = await workoutExercisesCollection
-        .query(
-          Q.unsafeSqlQuery(
-            `
-            SELECT workout_exercises.*
-            FROM workout_exercises
-            JOIN workouts ON workout_exercises.workout_id = workouts.id
-            WHERE workout_exercises.exercise_id = ? 
-              AND workouts.end_time IS NOT NULL
-              AND workout_exercises._status is not 'deleted'
-              AND workouts._status is not 'deleted'
-            ORDER BY workouts.start_time ASC
-            `,
-            [exerciseId],
-          ),
-        )
-        .fetch();
-
-      setWorkoutExercises(we);
-
-      if (we.length > 0) {
-        const p = await getMaxPRBefore(new Date().getTime(), exerciseId);
-        setPrs(p);
-      }
-
-      setLoading(false);
-    };
-
-    load();
-  }, [exerciseId]);
-
-  useEffect(() => {
-    if (!loading) {
-      opacity.value = withTiming(1, { duration: 500 });
-    }
-  }, [loading]);
-
-  useEffect(() => {
-    const processChartData = async () => {
-      if (!workoutExercises) return;
-
-      const data = await Promise.all(
-        workoutExercises.map(async (we) => {
-          const sets = await we.sets.fetch();
-          const weights = sets.map((set) => set.weight ?? 0);
-          const workout = await we.workout;
-          return {
-            x: new Date(workout.startTime).getTime() / 1000,
-            y: Math.max(...weights, 0),
-          };
-        }),
-      );
-
-      console.log("Chart data:", data);
-
-      setChartData(data);
-    };
-
-    processChartData();
-  }, [workoutExercises]);
-
-  const animatedStyle = useAnimatedStyle(() => {
-    return {
-      opacity: opacity.value,
-    };
-  });
+  const historyQuery = useExerciseHistory(exerciseId);
 
   return (
-    <BodyScrollView style={{ padding: 20 }}>
+    <>
       <Stack.Screen
-        options={{
-          headerTitle: title,
-          headerLeft: () => (
-            <TouchableOpacity onPress={() => router.back()}>
-              <Ionicons name="chevron-back" size={24} color={colors.primary} />
-            </TouchableOpacity>
-          ),
-        }}
+        options={{ title: historyQuery.data?.exercise.title ?? title ?? "" }}
       />
 
-      <Animated.View style={[animatedStyle]}>
-        {workoutExercises && workoutExercises?.length !== 0 ? (
-          <>
-            <ThemedText
-              style={{
-                fontSize: 20,
-                fontWeight: 600,
-                opacity: 0.6,
-                marginBottom: 40,
-              }}
-            >
-              {exercise?.muscleGroup}
-            </ThemedText>
+      <QueryView query={historyQuery} errorTitle="Couldn't load exercise">
+        {({ exercise, entries, records }) => (
+          <BodyScrollView>
+            <Text variant="muted">{describe(exercise)}</Text>
 
-            <ThemedText type="subtitle" style={{ marginBottom: 10 }}>
-              Personal Records
-            </ThemedText>
-
-            <View style={styles.prContainer}>
-              <View style={[styles.prCard, { backgroundColor: colors.card }]}>
-                <ThemedText
-                  adjustsFontSizeToFit={true}
-                  numberOfLines={1}
-                  style={styles.prSubText}
-                >
-                  Max Weight
-                </ThemedText>
-
-                <ThemedText
-                  adjustsFontSizeToFit={true}
-                  numberOfLines={1}
-                  style={styles.prWeightText}
-                >
-                  {prs?.weight?.value} lbs
-                </ThemedText>
-
-                <ThemedText
-                  adjustsFontSizeToFit={true}
-                  numberOfLines={1}
-                  style={styles.prSubText}
-                >
-                  {dayjs(prs?.weight?.date).format("[on] MMM D")}
-                </ThemedText>
-              </View>
-
-              <View style={[styles.prCard, { backgroundColor: colors.card }]}>
-                <ThemedText
-                  adjustsFontSizeToFit={true}
-                  numberOfLines={1}
-                  style={styles.prSubText}
-                >
-                  One Rep Max
-                </ThemedText>
-
-                <ThemedText
-                  adjustsFontSizeToFit={true}
-                  numberOfLines={1}
-                  style={styles.prWeightText}
-                >
-                  {Math.floor(prs?.oneRepMax?.value ?? 0)} lbs
-                </ThemedText>
-
-                <ThemedText
-                  adjustsFontSizeToFit={true}
-                  numberOfLines={1}
-                  style={styles.prSubText}
-                >
-                  {dayjs(prs?.oneRepMax?.date).format("[on] MMM D")}
-                </ThemedText>
-              </View>
-
-              <View style={[styles.prCard, { backgroundColor: colors.card }]}>
-                <ThemedText
-                  adjustsFontSizeToFit={true}
-                  numberOfLines={1}
-                  style={styles.prSubText}
-                >
-                  Max Volume
-                </ThemedText>
-
-                <ThemedText
-                  adjustsFontSizeToFit={true}
-                  numberOfLines={1}
-                  style={styles.prWeightText}
-                >
-                  {prs?.volume?.value} lbs
-                </ThemedText>
-
-                <ThemedText
-                  adjustsFontSizeToFit={true}
-                  numberOfLines={1}
-                  style={styles.prSubText}
-                >
-                  {dayjs(prs?.volume?.date).format("[on] MMM D")}
-                </ThemedText>
-              </View>
-            </View>
-
-            <NativeChartsView
-              data={chartData}
-              style={{ height: 200, marginBottom: 40 }}
-            />
-
-            <ThemedText type="subtitle" style={{ marginBottom: 10 }}>
-              History
-            </ThemedText>
-
-            {workoutExercises.map((workoutExercise) => (
-              <ExerciseHistoryListItem
-                key={workoutExercise.id}
-                workoutExercise={workoutExercise}
-              />
-            ))}
-          </>
-        ) : (
-          <View style={{ alignItems: "center", padding: 40, marginTop: 100 }}>
-            <Ionicons name="barbell" color={colors.text} size={50} />
-            <ThemedText type="subtitle">No History</ThemedText>
-            <ThemedText
-              type="defaultSemiBold"
-              style={{ opacity: 0.6, textAlign: "center" }}
-            >
-              Your PRs and Hisory will appear here when you use the exercise
-            </ThemedText>
-          </View>
+            {entries.length === 0 ? (
+              <Empty>
+                <EmptyHeader>
+                  <EmptyMedia variant="icon">
+                    <Icon as={Dumbbell} />
+                  </EmptyMedia>
+                  <EmptyTitle>No history yet</EmptyTitle>
+                  <EmptyDescription>
+                    Do this exercise in a workout to see your records here.
+                  </EmptyDescription>
+                </EmptyHeader>
+              </Empty>
+            ) : (
+              <>
+                <PersonalRecordCards records={records} />
+                <WeightChart entries={entries} />
+                <Text variant="h4">History</Text>
+                {entries.map((entry) => (
+                  <Pressable
+                    key={entry.id}
+                    onPress={() =>
+                      router.push({
+                        pathname: "/(modals)/workout-details",
+                        params: { workoutId: entry.workoutId },
+                      })
+                    }
+                  >
+                    <SetListCard
+                      title={entry.workoutName}
+                      description={formatDate(entry.startedAt)}
+                      sets={entry.sets}
+                    />
+                  </Pressable>
+                ))}
+              </>
+            )}
+          </BodyScrollView>
         )}
-      </Animated.View>
-    </BodyScrollView>
+      </QueryView>
+    </>
   );
-};
-
-export default ExerciseHistory;
-
-const styles = StyleSheet.create({
-  prContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 40,
-  },
-  prCard: {
-    padding: 12,
-    borderRadius: 12,
-    alignItems: "center",
-    width: "32%",
-  },
-  prSubText: {
-    fontSize: 16,
-    fontWeight: 600,
-    opacity: 0.6,
-  },
-  prWeightText: {
-    fontSize: 18,
-    fontWeight: 600,
-  },
-});
+}

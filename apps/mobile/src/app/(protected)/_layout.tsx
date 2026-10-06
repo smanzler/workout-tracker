@@ -98,22 +98,11 @@ export default function Layout() {
         />
         <Stack.Screen
           name="(modals)/exercise-history"
-          options={{
-            headerTitle: "Exercise",
-            headerBackVisible: false,
-            ...(Platform.OS !== "ios"
-              ? {}
-              : {
-                  headerTransparent: true,
-                  headerBlurEffect: "systemChromeMaterial",
-                  headerLargeTitle: true,
-                  headerLargeTitleShadowVisible: false,
-                  headerShadowVisible: true,
-                  headerLargeStyle: {
-                    backgroundColor: "transparent",
-                  },
-                }),
-          }}
+          options={{ headerBackButtonDisplayMode: "minimal" }}
+        />
+        <Stack.Screen
+          name="(modals)/new-exercise"
+          options={{ title: "New Exercise", presentation: "modal" }}
         />
         <Stack.Screen
           name="(modals)/post"

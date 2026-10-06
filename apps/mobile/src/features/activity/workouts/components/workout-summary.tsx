@@ -5,8 +5,8 @@ import { Text } from "@/components/ui/text";
 import type { Outputs } from "@rep/api";
 import { Calendar, Clock, Trophy, type LucideIcon } from "lucide-react-native";
 import { View } from "react-native";
+import { formatDate, formatTime } from "../../lib/date";
 import { findBestSet, formatSet } from "../../lib/format";
-import { formatDate, formatTime } from "../lib/date";
 import { formatDuration } from "../lib/duration";
 import {
   countPersonalRecords,

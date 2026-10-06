@@ -1,11 +1,31 @@
-/** Exercises whose title contains every word of the search, ignoring case. */
-export const filterExercises = <TExercise extends { title: string }>(
+import type { ExerciseCategory, MuscleGroup } from "@rep/shared";
+
+export type ExerciseFilter = {
+  search: string;
+  muscleGroup: MuscleGroup | null;
+  category: ExerciseCategory | null;
+};
+
+type FilterableExercise = {
+  title: string;
+  muscleGroup: MuscleGroup | null;
+  category: ExerciseCategory | null;
+};
+
+/**
+ * Exercises whose title contains every word of the search, ignoring case, and
+ * that have the muscle group and the category when the filter sets them.
+ */
+export const filterExercises = <TExercise extends FilterableExercise>(
   exercises: TExercise[],
-  search: string,
+  { search, muscleGroup, category }: ExerciseFilter,
 ) => {
   const words = search.toLowerCase().split(/\s+/).filter(Boolean);
-  return exercises.filter(({ title }) =>
-    words.every((word) => title.toLowerCase().includes(word)),
+  return exercises.filter(
+    (exercise) =>
+      (muscleGroup === null || exercise.muscleGroup === muscleGroup) &&
+      (category === null || exercise.category === category) &&
+      words.every((word) => exercise.title.toLowerCase().includes(word)),
   );
 };
 

@@ -8,10 +8,10 @@ import { router, Stack, useLocalSearchParams } from "expo-router";
 import { Ellipsis } from "lucide-react-native";
 import { View } from "react-native";
 import { QueryView } from "../../components/query-view";
-import { WorkoutExerciseCard } from "../components/workout-exercise-card";
+import { SetListCard } from "../../components/set-list-card";
 import { useWorkout } from "../hooks/use-workout";
 import { useWorkoutMenu } from "../hooks/use-workout-menu";
-import { formatDate, formatTime } from "../lib/date";
+import { formatDate, formatTime } from "../../lib/date";
 import { formatDuration } from "../lib/duration";
 import { countPersonalRecords } from "../lib/personal-records";
 
@@ -83,10 +83,12 @@ export default function WorkoutDetails() {
           />
           <BodyScrollView>
             <WorkoutStats workout={workout} />
-            {workout.exercises.map((workoutExercise) => (
-              <WorkoutExerciseCard
-                key={workoutExercise.id}
-                workoutExercise={workoutExercise}
+            {workout.exercises.map(({ id, exercise, notes, sets }) => (
+              <SetListCard
+                key={id}
+                title={exercise.title}
+                description={notes}
+                sets={sets}
               />
             ))}
           </BodyScrollView>

@@ -2,14 +2,11 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Icon } from "@/components/ui/icon";
 import { Text } from "@/components/ui/text";
-import type { Outputs } from "@rep/api";
-import type { PersonalRecordFlags } from "@rep/shared";
+import type { PersonalRecordFlags, SetPerformance } from "@rep/shared";
 import { Trophy } from "lucide-react-native";
 import { View } from "react-native";
-import { formatSet } from "../../lib/format";
-
-type WorkoutExercise =
-  Outputs["activity"]["workout"]["get"]["exercises"][number];
+import { formatSet } from "../lib/format";
+import { keysOf } from "../lib/keys-of";
 
 const recordLabels: Record<keyof PersonalRecordFlags, string> = {
   isWeightPr: "Weight",
@@ -17,19 +14,23 @@ const recordLabels: Record<keyof PersonalRecordFlags, string> = {
   isOneRepMaxPr: "1RM",
 };
 
-const recordFlags = Object.keys(recordLabels) as (keyof PersonalRecordFlags)[];
+const recordFlags = keysOf(recordLabels);
 
-/** The sets of one exercise in a saved workout, with the records they broke. */
-export function WorkoutExerciseCard({
-  workoutExercise: { exercise, notes, sets },
+/** Numbered sets under a title, each with the records it broke. */
+export function SetListCard({
+  title,
+  description,
+  sets,
 }: {
-  workoutExercise: WorkoutExercise;
+  title: string;
+  description?: string | null;
+  sets: (SetPerformance & PersonalRecordFlags & { id: string })[];
 }) {
   return (
     <Card className="gap-3 py-4">
       <CardHeader className="gap-1 px-4">
-        <CardTitle className="text-lg">{exercise.title}</CardTitle>
-        {notes && <Text variant="muted">{notes}</Text>}
+        <CardTitle className="text-lg">{title}</CardTitle>
+        {description && <Text variant="muted">{description}</Text>}
       </CardHeader>
       <CardContent className="gap-2 px-4">
         {sets.map((set, index) => (

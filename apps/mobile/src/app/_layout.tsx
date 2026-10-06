@@ -10,9 +10,6 @@ import "react-native-reanimated";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { View } from "react-native";
 import { NAV_THEME } from "@/lib/theme";
-import { pullDefaultExercises } from "@/features/activity/exercises/lib/default-exercises";
-import { exercisesCollection } from "@/db";
-import { Q } from "@nozbe/watermelondb";
 import { KeyboardProvider } from "react-native-keyboard-controller";
 import * as Notifications from "expo-notifications";
 import { Toast } from "@/features/notifications/components/toast";
@@ -52,32 +49,7 @@ export default function RootLayout() {
     }
   }, [loaded]);
 
-  async function checkAndSyncDefaults() {
-    console.log("checking defaults");
-    try {
-      const hasSyncedDefaults = await exercisesCollection.query(
-        Q.where("is_default", true),
-        Q.take(1),
-      );
-
-      if (hasSyncedDefaults.length === 0) {
-        try {
-          await pullDefaultExercises();
-          console.log("Default exercises synced on first app open");
-        } catch (error) {
-          console.error("Error syncing default exercises:", error);
-        }
-      } else {
-        console.log("Default exercises already synced");
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
   useEffect(() => {
-    checkAndSyncDefaults();
-
     const notificationSubscription =
       Notifications.addNotificationReceivedListener((notification) => {
         setNotification(notification);
