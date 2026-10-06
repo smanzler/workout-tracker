@@ -1,6 +1,6 @@
 # rep
 
-pnpm monorepo — Expo mobile app (`apps/mobile`) and a Fastify + tRPC + Drizzle API (`packages/api`).
+pnpm monorepo — Expo mobile app (`apps/mobile`), Fastify + tRPC + Drizzle API (`packages/api`), shared types/schemas (`packages/shared`).
 
 ## General
 
@@ -12,7 +12,8 @@ pnpm monorepo — Expo mobile app (`apps/mobile`) and a Fastify + tRPC + Drizzle
 - Follow DRY (Don't Repeat Yourself) principles: avoid duplicating logic, extract reusable abstractions, and prefer referencing existing code over copying it
 - Prettier runs on commit via husky + lint-staged. To format sooner, run `pnpm format` (or `pnpm --filter @rep/<pkg> format`)
 - Prefer node built-ins to 3rd-party libraries (e.g. `fetch` not `axios`, `crypto.randomUUID()` not `uuid`)
-- Import with the `@/*` alias inside an app, and by package name (`@rep/api`) across workspaces. Never reach into another workspace by relative path
+- Anything crossing the API↔client boundary — payload shapes, enums, response types — belongs in `packages/shared` as a zod schema with its inferred type exported alongside it
+- Import with the `@/*` alias inside an app, and by package name (`@rep/shared`, `@rep/api`) across workspaces. Never reach into another workspace by relative path
 - Avoid flattened type unions discriminated at runtime vs algebraic type unions discriminated at type-check time; e.g.:
   DO:
   type Thing = { type: "left", x: number } | { type: "right", y: string }
