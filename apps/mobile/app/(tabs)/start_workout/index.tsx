@@ -36,14 +36,14 @@ function StartWorkoutScreen({ routines }: { routines: Routine[] }) {
 
       database.write(async () => {
         const setsToDelete = await Promise.all(
-          workoutExercises.map((we) => we.sets.fetch())
+          workoutExercises.map((we) => we.sets.fetch()),
         );
 
         const workoutExerciseDeletions = await Promise.all(
-          workoutExercises.map((we) => we.markAsDeleted())
+          workoutExercises.map((we) => we.markAsDeleted()),
         );
         const setDeletions = await Promise.all(
-          setsToDelete.flat().map((set) => set.markAsDeleted())
+          setsToDelete.flat().map((set) => set.markAsDeleted()),
         );
         const workoutDeletion = await workout.markAsDeleted();
 
@@ -87,7 +87,7 @@ function StartWorkoutScreen({ routines }: { routines: Routine[] }) {
             style: "destructive",
           },
         ],
-        { cancelable: true }
+        { cancelable: true },
       );
     } else {
       startWorkout();

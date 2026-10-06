@@ -36,7 +36,7 @@ export default function ProfileScreen() {
   const { updateLastSync } = useSync();
   const { colors } = useTheme();
   const { isOnline } = useNetwork();
-  const [imageVersion, setImageVersion] = useState(Date.now());
+  const [imageVersion, setImageVersion] = useState(() => Date.now());
   const { activeWorkoutId } = useWorkout();
   const [status, requestPermission] = ImagePicker.useCameraPermissions();
   const [importing, setImporting] = useState(false);
@@ -94,7 +94,7 @@ export default function ProfileScreen() {
               text: "Cancel",
               style: "cancel",
             },
-          ]
+          ],
         );
         return;
       }
@@ -130,7 +130,7 @@ export default function ProfileScreen() {
           style: "destructive",
           onPress: handleDeleteAccount,
         },
-      ]
+      ],
     );
   };
 
@@ -161,7 +161,7 @@ export default function ProfileScreen() {
       if (activeWorkoutId) {
         Alert.alert(
           "Active workout",
-          "You have an active workout. Please finish it before logging out."
+          "You have an active workout. Please finish it before logging out.",
         );
         return;
       }
@@ -186,7 +186,7 @@ export default function ProfileScreen() {
               },
               style: "destructive",
             },
-          ]
+          ],
         );
         return;
       }
@@ -216,7 +216,7 @@ export default function ProfileScreen() {
               },
               style: "destructive",
             },
-          ]
+          ],
         );
         throw error;
       }
@@ -239,7 +239,7 @@ export default function ProfileScreen() {
         } else if (buttonIndex === 2) {
           takePhoto();
         }
-      }
+      },
     );
   };
 
@@ -261,7 +261,7 @@ export default function ProfileScreen() {
     } catch (err) {
       Alert.alert(
         "Error",
-        err instanceof Error ? err.message : "An error occurred during import"
+        err instanceof Error ? err.message : "An error occurred during import",
       );
     } finally {
       setImporting(false);
@@ -298,7 +298,7 @@ export default function ProfileScreen() {
                         if (!isOnline) {
                           Alert.alert(
                             "Offline",
-                            "You need to be online to sync your data."
+                            "You need to be online to sync your data.",
                           );
                           return;
                         }

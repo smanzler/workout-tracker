@@ -1,6 +1,5 @@
 import { Pressable, StyleSheet, View } from "react-native";
-import { useTheme } from "expo-router/react-navigation";
-import { Text } from "expo-router/react-navigation";
+import { useTheme, Text } from "expo-router/react-navigation";
 import { BottomTabBarProps } from "expo-router/js-tabs";
 import { BlurView } from "expo-blur";
 import { useWorkout } from "@/providers/WorkoutProvider";
@@ -55,8 +54,8 @@ export default function TabBar({
             options.tabBarLabel !== undefined
               ? options.tabBarLabel
               : options.title !== undefined
-              ? options.title
-              : route.name;
+                ? options.title
+                : route.name;
 
           const isFocused = state.routes[state.index].name === route.name;
 

@@ -46,7 +46,7 @@ const WRSetItem = ({
   const [weight, setWeight] = useState(set.weight?.toString() || "");
   const [reps, setReps] = useState(set.reps?.toString() || "");
   const [completed, setCompleted] = useState(
-    "completed" in set ? set.completed : false
+    "completed" in set ? set.completed : false,
   );
   const [weightFocused, setWeightFocused] = useState(false);
   const [repsFocused, setRepsFocused] = useState(false);
@@ -78,8 +78,8 @@ const WRSetItem = ({
               AND sets._status != 'deleted'
             ORDER BY workouts.start_time DESC LIMIT 1
             `,
-          [exerciseId, index]
-        )
+          [exerciseId, index],
+        ),
       )
       .unsafeFetchRaw();
 
@@ -88,11 +88,13 @@ const WRSetItem = ({
 
   useEffect(() => {
     if (!inputRefs.current[exerciseIndex]) {
+      // eslint-disable-next-line react-hooks/immutability
       inputRefs.current[exerciseIndex] = [];
     }
     inputRefs.current[exerciseIndex][index * 2] = null;
     inputRefs.current[exerciseIndex][index * 2 + 1] = null;
 
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchPreviousSet();
   }, []);
 
@@ -195,6 +197,7 @@ const WRSetItem = ({
             <TextInput
               ref={(ref) => {
                 if (inputRefs.current[exerciseIndex]) {
+                  // eslint-disable-next-line react-hooks/immutability
                   inputRefs.current[exerciseIndex][index * 2] = ref;
                 }
               }}
@@ -208,8 +211,8 @@ const WRSetItem = ({
                   borderColor: weightFocused
                     ? colors.text
                     : completed
-                    ? "transparent"
-                    : colors.background,
+                      ? "transparent"
+                      : colors.background,
                   color: colors.text,
                 },
               ]}
@@ -236,6 +239,7 @@ const WRSetItem = ({
             <TextInput
               ref={(ref) => {
                 if (inputRefs.current[exerciseIndex]) {
+                  // eslint-disable-next-line react-hooks/immutability
                   inputRefs.current[exerciseIndex][index * 2 + 1] = ref;
                 }
               }}
@@ -249,8 +253,8 @@ const WRSetItem = ({
                   borderColor: repsFocused
                     ? colors.text
                     : completed
-                    ? "transparent"
-                    : colors.background,
+                      ? "transparent"
+                      : colors.background,
                   color: colors.text,
                 },
               ]}

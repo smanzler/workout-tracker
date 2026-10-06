@@ -72,8 +72,8 @@ const ExerciseHistory = () => {
               AND workouts._status is not 'deleted'
             ORDER BY workouts.start_time ASC
             `,
-            [exerciseId]
-          )
+            [exerciseId],
+          ),
         )
         .fetch();
 
@@ -109,7 +109,7 @@ const ExerciseHistory = () => {
             x: new Date(workout.startTime).getTime() / 1000,
             y: Math.max(...weights, 0),
           };
-        })
+        }),
       );
 
       console.log("Chart data:", data);

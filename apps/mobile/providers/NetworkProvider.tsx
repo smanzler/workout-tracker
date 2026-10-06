@@ -68,7 +68,7 @@ export function NetworkProvider({ children }: PropsWithChildren) {
           }}
         >
           <ThemedText style={{ color: colors.text }}>
-            You're offline. Some features may be limited.
+            You&apos;re offline. Some features may be limited.
           </ThemedText>
         </View>
       )}

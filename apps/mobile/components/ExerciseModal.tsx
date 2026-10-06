@@ -6,12 +6,12 @@ import {
   TouchableOpacity,
   View,
   Button as RNButton,
+  Button,
+  TouchableWithoutFeedback,
 } from "react-native";
 import React, { useState } from "react";
-import { Button } from "react-native";
 import database, { exercisesCollection } from "@/db";
 import { useAuth } from "@/providers/AuthProvider";
-import { TouchableWithoutFeedback } from "react-native";
 import { BlurView } from "expo-blur";
 import { router } from "expo-router";
 import { ThemedText } from "./ThemedText";
@@ -72,7 +72,7 @@ function OptionRow({
           options.map((option) => ({
             label: option,
             onSelect: () => onChange(option),
-          }))
+          })),
         )
       }
     >

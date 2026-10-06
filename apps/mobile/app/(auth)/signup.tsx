@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Alert, SafeAreaView, StyleSheet, Text, View } from "react-native";
 import { router, Stack } from "expo-router";
 import { supabase } from "@/lib/supabase";
@@ -17,20 +17,12 @@ export default function SignupScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [isDebouncing, setIsDebouncing] = useState(false);
   const [error, setError] = useState<string | undefined>(undefined);
   const [showEula, setShowEula] = useState(false);
   const theme = useTheme();
 
   const debouncedUsername = useDebounce(username, 500);
-
-  useEffect(() => {
-    if (username !== debouncedUsername) {
-      setIsDebouncing(true);
-    } else {
-      setIsDebouncing(false);
-    }
-  }, [username, debouncedUsername]);
+  const isDebouncing = username !== debouncedUsername;
 
   const { data: isUsernameAvailable, isLoading: checkingUsername } = useQuery({
     queryKey: ["username", debouncedUsername],

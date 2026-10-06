@@ -65,7 +65,7 @@ export const postPost = async (
   caption: string,
   user: User,
   workout_id: string,
-  image?: string
+  image?: string,
 ) => {
   if (!user) return;
 

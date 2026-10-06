@@ -58,7 +58,7 @@ const EditWorkout = () => {
               position: set.position,
             })),
           };
-        })
+        }),
       );
 
       addInitialExercises(loadedExercises);
@@ -72,14 +72,14 @@ const EditWorkout = () => {
 
     // Check if all sets are complete
     const hasIncompleteSets = exercises.some((exercise) =>
-      exercise.sets.some((set) => !set.completed)
+      exercise.sets.some((set) => !set.completed),
     );
 
     if (hasIncompleteSets) {
       Alert.alert(
         "Incomplete Workout",
         "Please complete all sets before saving the workout.",
-        [{ text: "OK" }]
+        [{ text: "OK" }],
       );
       return;
     }
@@ -105,7 +105,7 @@ const EditWorkout = () => {
             we.prepareUpdate((rec: any) => {
               // @ts-ignore
               rec.exercise.set(draftWE.exercise);
-            })
+            }),
           );
         } else {
           we = workoutExercisesCollection.prepareCreate((rec) => {
@@ -134,7 +134,7 @@ const EditWorkout = () => {
                   ? parseFloat(draftSet.weight)
                   : undefined;
                 rec.completed = draftSet.completed;
-              })
+              }),
             );
             usedSetIds.push(set.id);
           } else {
@@ -179,7 +179,7 @@ const EditWorkout = () => {
     } catch (error) {
       Alert.alert(
         "Error",
-        `Failed to save workout changes. Please try again. ${error}`
+        `Failed to save workout changes. Please try again. ${error}`,
       );
       console.error(error);
     } finally {
@@ -188,6 +188,7 @@ const EditWorkout = () => {
   };
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     loadWorkout();
   }, [workoutId]);
 

@@ -1,10 +1,10 @@
-import { requireNativeView } from 'expo';
-import * as React from 'react';
+import { requireNativeView } from "expo";
+import * as React from "react";
 
-import { NativeChartsViewProps } from './NativeCharts.types';
+import { NativeChartsViewProps } from "./NativeCharts.types";
 
 const NativeView: React.ComponentType<NativeChartsViewProps> =
-  requireNativeView('NativeCharts');
+  requireNativeView("NativeCharts");
 
 export default function NativeChartsView(props: NativeChartsViewProps) {
   return <NativeView {...props} />;

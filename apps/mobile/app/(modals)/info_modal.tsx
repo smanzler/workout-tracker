@@ -30,7 +30,7 @@ export default function InfoModal() {
 
   const modalX = Math.min(
     Math.max(MODAL_MARGIN, xPos - MODAL_WIDTH / 2),
-    SCREEN_WIDTH - MODAL_WIDTH - MODAL_MARGIN
+    SCREEN_WIDTH - MODAL_WIDTH - MODAL_MARGIN,
   );
 
   const modalY = yPos + 20;

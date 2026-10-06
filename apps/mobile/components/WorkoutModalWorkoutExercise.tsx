@@ -28,7 +28,7 @@ const enhance = withObservables(
     workoutExercise,
     exercise: workoutExercise.exercise,
     sets: workoutExercise.sets,
-  })
+  }),
 );
 
 export default enhance(WorkoutModalWorkoutExercise);

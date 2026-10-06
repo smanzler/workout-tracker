@@ -7,7 +7,7 @@ export async function mySync(
   user: User | undefined,
   updateLastSync: (timestamp: number) => Promise<void>,
   setSyncing: React.Dispatch<React.SetStateAction<boolean>>,
-  pullAllChanges: boolean = false
+  pullAllChanges: boolean = false,
 ) {
   if (!user) {
     console.log("no user");
@@ -66,7 +66,7 @@ export async function mySync(
         exercises: {
           created:
             changes.exercises?.created?.filter(
-              (exercise) => !exercise.is_default
+              (exercise) => !exercise.is_default,
             ) || [],
         },
       };

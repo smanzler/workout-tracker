@@ -20,7 +20,7 @@ interface WebhookPayload {
 
 const supabase = createClient(
   Deno.env.get("SUPABASE_URL")!,
-  Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
+  Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
 );
 
 Deno.serve(async (req) => {
@@ -53,8 +53,8 @@ Deno.serve(async (req) => {
     payload.record.type === "follow"
       ? " started following you"
       : payload.record.type === "follow_request"
-      ? " sent you a follow request"
-      : " liked your post";
+        ? " sent you a follow request"
+        : " liked your post";
 
   const res = await fetch("https://exp.host/--/api/v2/push/send", {
     method: "POST",

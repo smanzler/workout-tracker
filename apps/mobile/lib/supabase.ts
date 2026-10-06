@@ -7,7 +7,7 @@ const supabaseAnonKey =
 
 if (!supabaseUrl || !supabaseAnonKey) {
   throw new Error(
-    "Missing Supabase environment variables. Check .env file and make sure to run source .env"
+    "Missing Supabase environment variables. Check .env file and make sure to run source .env",
   );
 }
 

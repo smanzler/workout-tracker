@@ -30,7 +30,7 @@ const WorkoutListitemShort = ({
         workoutExercises.map(async (we) => {
           const exercise = await we.exercise;
           return exercise?.title ?? "Unknown";
-        })
+        }),
       );
 
       setExerciseNames(names);

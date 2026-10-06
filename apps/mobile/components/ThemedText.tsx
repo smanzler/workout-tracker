@@ -3,12 +3,7 @@ import { StyleSheet, Text, type TextProps } from "react-native";
 
 export type ThemedTextProps = TextProps & {
   type?:
-    | "default"
-    | "title"
-    | "defaultSemiBold"
-    | "subtitle"
-    | "link"
-    | "small";
+    "default" | "title" | "defaultSemiBold" | "subtitle" | "link" | "small";
 };
 
 export function ThemedText({

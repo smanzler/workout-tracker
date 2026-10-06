@@ -24,17 +24,17 @@ type WorkoutActions = {
   updateSetWeight: (
     exerciseIndex: number,
     setIndex: number,
-    updatedWeight: string | undefined
+    updatedWeight: string | undefined,
   ) => void;
   updateSetReps: (
     exerciseIndex: number,
     setIndex: number,
-    updatedReps: string | undefined
+    updatedReps: string | undefined,
   ) => void;
   updateSetCompleted: (
     exerciseIndex: number,
     setIndex: number,
-    updatedCompleted: boolean
+    updatedCompleted: boolean,
   ) => void;
   removeSetAtIndex: (exerciseIndex: number, setIndex: number) => void;
   clearWorkout: () => void;
@@ -98,7 +98,7 @@ const useWorkoutStore = create<WorkoutState>((set) => ({
                   },
                 ],
               }
-            : re
+            : re,
         ),
       }));
     },
@@ -108,7 +108,7 @@ const useWorkoutStore = create<WorkoutState>((set) => ({
         exercises: state.exercises.map((re, i) => {
           if (i !== exerciseIndex) return re;
           const updatedSets = re.sets.map((s, j) =>
-            j === setIndex - 1 ? { ...s, weight: updatedWeight } : s
+            j === setIndex - 1 ? { ...s, weight: updatedWeight } : s,
           );
           return { ...re, sets: updatedSets };
         }),
@@ -120,7 +120,7 @@ const useWorkoutStore = create<WorkoutState>((set) => ({
         exercises: state.exercises.map((re, i) => {
           if (i !== exerciseIndex) return re;
           const updatedSets = re.sets.map((s, j) =>
-            j === setIndex - 1 ? { ...s, reps: updatedReps } : s
+            j === setIndex - 1 ? { ...s, reps: updatedReps } : s,
           );
           return { ...re, sets: updatedSets };
         }),
@@ -132,7 +132,7 @@ const useWorkoutStore = create<WorkoutState>((set) => ({
         exercises: state.exercises.map((re, i) => {
           if (i !== exerciseIndex) return re;
           const updatedSets = re.sets.map((s, j) =>
-            j === setIndex - 1 ? { ...s, completed: updatedCompleted } : s
+            j === setIndex - 1 ? { ...s, completed: updatedCompleted } : s,
           );
           return { ...re, sets: updatedSets };
         }),

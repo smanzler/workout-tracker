@@ -43,7 +43,7 @@ const PostWorkoutSummary = ({
       });
       return acc;
     },
-    { oneRM: 0, volume: 0, weight: 0 }
+    { oneRM: 0, volume: 0, weight: 0 },
   );
 
   const totalPRs = prCounts.oneRM + prCounts.volume + prCounts.weight;

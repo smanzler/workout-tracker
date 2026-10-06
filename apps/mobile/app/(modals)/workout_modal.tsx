@@ -30,7 +30,7 @@ const WorkoutModal = () => {
   const { workoutId } = useLocalSearchParams<{ workoutId: string }>();
   const [workout, setWorkout] = useState<Workout | null>(null);
   const [workoutExercises, setWorkoutExercises] = useState<WorkoutExercise[]>(
-    []
+    [],
   );
 
   useEffect(() => {

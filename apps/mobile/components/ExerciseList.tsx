@@ -54,6 +54,80 @@ const groupData = (data: Exercise[]): Section[] => {
   return groupedSections;
 };
 
+const fetchPreviousBestSet = async (exerciseId: string) => {
+  try {
+    const set = await setsCollection
+      .query(
+        Q.unsafeSqlQuery(
+          `
+            SELECT * FROM sets
+            JOIN workout_exercises ON sets.workout_exercise_id = workout_exercises.id
+            JOIN workouts ON workout_exercises.workout_id = workouts.id
+            WHERE workout_exercises.exercise_id = ?
+              AND sets._status != 'deleted'
+              AND workouts.end_time IS NOT NULL
+            ORDER BY sets.weight DESC
+            LIMIT 1
+          `,
+          [exerciseId],
+        ),
+      )
+      .unsafeFetchRaw();
+
+    return set;
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+};
+
+function ExerciseListItem({
+  exercise,
+  selected,
+  onPress,
+}: {
+  exercise: Exercise;
+  selected: boolean;
+  onPress: () => void;
+}) {
+  const theme = useTheme();
+  const [previousSet, setPreviousSet] = useState<Set | null>(null);
+
+  useEffect(() => {
+    fetchPreviousBestSet(exercise.id).then((set) =>
+      setPreviousSet(set?.[0] ?? null),
+    );
+  }, [exercise.id]);
+
+  return (
+    <TouchableOpacity onPress={onPress}>
+      <View
+        style={[
+          styles.item,
+          selected && {
+            backgroundColor: String(theme.colors.primary)
+              .replace("rgb", "rgba")
+              .replace(")", ", 0.2)"),
+          },
+          { borderBottomColor: theme.colors.border },
+        ]}
+      >
+        <ThemedText style={{ fontSize: 16, fontWeight: 600 }}>
+          {exercise.title}
+        </ThemedText>
+
+        <View style={styles.row}>
+          <ThemedText style={styles.mgText}>{exercise.muscleGroup}</ThemedText>
+
+          <ThemedText style={styles.mgText}>
+            {previousSet && `${previousSet.weight} lb x ${previousSet.reps}`}
+          </ThemedText>
+        </View>
+      </View>
+    </TouchableOpacity>
+  );
+}
+
 function Exercises({
   exercises,
   onPress,
@@ -68,7 +142,7 @@ function Exercises({
   const [searchQuery, setSearchQuery] = useState("");
   const [visible, setVisible] = useState(false);
   const [selectedMuscleGroups, setSelectedMuscleGroups] = useState<string[]>(
-    []
+    [],
   );
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const theme = useTheme();
@@ -93,7 +167,7 @@ function Exercises({
   const toggleSelection = (
     value: string,
     current: string[],
-    setFn: (v: string[]) => void
+    setFn: (v: string[]) => void,
   ) => {
     if (current.includes(value)) {
       setFn(current.filter((v) => v !== value));
@@ -105,41 +179,14 @@ function Exercises({
   const showFilterOptions = (
     values: string[],
     current: string[],
-    setFn: (v: string[]) => void
+    setFn: (v: string[]) => void,
   ) =>
     showMenu(
       values.map((value) => ({
         label: current.includes(value) ? `✓ ${value}` : value,
         onSelect: () => toggleSelection(value, current, setFn),
-      }))
+      })),
     );
-
-  const fetchPreviousBestSet = async (exerciseId: string) => {
-    try {
-      const set = await setsCollection
-        .query(
-          Q.unsafeSqlQuery(
-            `
-              SELECT * FROM sets
-              JOIN workout_exercises ON sets.workout_exercise_id = workout_exercises.id
-              JOIN workouts ON workout_exercises.workout_id = workouts.id
-              WHERE workout_exercises.exercise_id = ?
-                AND sets._status != 'deleted'
-                AND workouts.end_time IS NOT NULL
-              ORDER BY sets.weight DESC
-              LIMIT 1
-            `,
-            [exerciseId]
-          )
-        )
-        .unsafeFetchRaw();
-
-      return set;
-    } catch (error) {
-      console.log(error);
-      return null;
-    }
-  };
 
   return (
     <>
@@ -164,7 +211,7 @@ function Exercises({
                         showFilterOptions(
                           MUSCLE_GROUPS,
                           selectedMuscleGroups,
-                          setSelectedMuscleGroups
+                          setSelectedMuscleGroups,
                         ),
                     },
                     {
@@ -173,7 +220,7 @@ function Exercises({
                         showFilterOptions(
                           CATEGORIES,
                           selectedCategories,
-                          setSelectedCategories
+                          setSelectedCategories,
                         ),
                     },
                     {
@@ -204,46 +251,13 @@ function Exercises({
 
       <ExerciseSectionList
         sections={sections}
-        renderItem={({ item }: { item: Exercise }) => {
-          const [previousSet, setPreviousSet] = useState<Set | null>(null);
-
-          useEffect(() => {
-            fetchPreviousBestSet(item.id).then((set) =>
-              setPreviousSet(set?.[0] ?? null)
-            );
-          }, []);
-
-          return (
-            <TouchableOpacity onPress={() => onPress(item)}>
-              <View
-                style={[
-                  styles.item,
-                  selectedItems?.some((i) => i.id === item.id) && {
-                    backgroundColor: String(theme.colors.primary)
-                      .replace("rgb", "rgba")
-                      .replace(")", ", 0.2)"),
-                  },
-                  { borderBottomColor: theme.colors.border },
-                ]}
-              >
-                <ThemedText style={{ fontSize: 16, fontWeight: 600 }}>
-                  {item.title}
-                </ThemedText>
-
-                <View style={styles.row}>
-                  <ThemedText style={styles.mgText}>
-                    {item.muscleGroup}
-                  </ThemedText>
-
-                  <ThemedText style={styles.mgText}>
-                    {previousSet &&
-                      `${previousSet.weight} lb x ${previousSet.reps}`}
-                  </ThemedText>
-                </View>
-              </View>
-            </TouchableOpacity>
-          );
-        }}
+        renderItem={({ item }: { item: Exercise }) => (
+          <ExerciseListItem
+            exercise={item}
+            selected={!!selectedItems?.some((i) => i.id === item.id)}
+            onPress={() => onPress(item)}
+          />
+        )}
       />
 
       <ExerciseModal visible={visible} setVisible={setVisible} />

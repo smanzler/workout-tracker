@@ -1,10 +1,9 @@
-import { Database } from "@nozbe/watermelondb";
+import { Database, Q } from "@nozbe/watermelondb";
 import { Exercise } from "../models/Exercise";
 import { Workout } from "../models/Workout";
 import { WorkoutExercise } from "../models/WorkoutExercise";
 import { Set } from "../models/Set";
 import Papa from "papaparse";
-import { Q } from "@nozbe/watermelondb";
 import { recalculateAllPRs } from "./PRs";
 
 interface StrongCSVRow {
@@ -25,7 +24,7 @@ interface StrongCSVRow {
 export async function importStrongCSV(
   database: Database,
   csvContent: string,
-  userId?: string
+  userId?: string,
 ) {
   await database.write(async () => {
     const { data } = Papa.parse<StrongCSVRow>(csvContent, {
@@ -43,7 +42,7 @@ export async function importStrongCSV(
         groups[key].push(row);
         return groups;
       },
-      {} as Record<string, StrongCSVRow[]>
+      {} as Record<string, StrongCSVRow[]>,
     );
 
     // Process each workout
@@ -74,12 +73,12 @@ export async function importStrongCSV(
           groups[row["Exercise Name"]].push(row);
           return groups;
         },
-        {} as Record<string, StrongCSVRow[]>
+        {} as Record<string, StrongCSVRow[]>,
       );
 
       // Process each exercise
       for (const [exerciseName, exerciseRows] of Object.entries(
-        exerciseGroups
+        exerciseGroups,
       )) {
         // Create or find exercise
         let exercise = await database.collections
@@ -110,7 +109,7 @@ export async function importStrongCSV(
 
         // Create sets
         const setRows = (exerciseRows as StrongCSVRow[]).filter(
-          (row) => row["Set Order"] !== "Rest Timer"
+          (row) => row["Set Order"] !== "Rest Timer",
         );
         for (const [index, row] of setRows.entries()) {
           await database.collections.get<Set>("sets").create((set) => {

@@ -28,7 +28,7 @@ export const EulaAgreement = ({ onAgree, onDecline }: EulaAgreementProps) => {
       [
         { text: "Cancel", style: "cancel" },
         { text: "I Agree", onPress: onAgree },
-      ]
+      ],
     );
   };
 

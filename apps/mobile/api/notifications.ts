@@ -8,7 +8,7 @@ interface PushTokenUploadResponse {
 
 export async function uploadPushToken(
   token: string,
-  userId: string
+  userId: string,
 ): Promise<PushTokenUploadResponse> {
   try {
     const { error } = await supabase.from("user_push_tokens").insert({

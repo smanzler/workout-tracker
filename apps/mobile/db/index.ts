@@ -59,7 +59,7 @@ export const migrateUserData = async (userId: string) => {
       const workoutUpdates = workoutsToUpdate.map((w) =>
         w.prepareUpdate((rec) => {
           rec.userId = userId;
-        })
+        }),
       );
 
       const setsToUpdate = await setsCollection
@@ -68,7 +68,7 @@ export const migrateUserData = async (userId: string) => {
       const setUpdates = setsToUpdate.map((s) =>
         s.prepareUpdate((rec) => {
           rec.userId = userId;
-        })
+        }),
       );
 
       const workoutExercisesToUpdate = await workoutExercisesCollection
@@ -77,7 +77,7 @@ export const migrateUserData = async (userId: string) => {
       const workoutExerciseUpdates = workoutExercisesToUpdate.map((we) =>
         we.prepareUpdate((rec) => {
           rec.userId = userId;
-        })
+        }),
       );
 
       const exercisesToUpdate = await exercisesCollection
@@ -86,7 +86,7 @@ export const migrateUserData = async (userId: string) => {
       const exerciseUpdates = exercisesToUpdate.map((e) =>
         e.prepareUpdate((rec) => {
           rec.userId = userId;
-        })
+        }),
       );
 
       const routinesToUpdate = await routinesCollection
@@ -95,7 +95,7 @@ export const migrateUserData = async (userId: string) => {
       const routineUpdates = routinesToUpdate.map((r) =>
         r.prepareUpdate((rec) => {
           rec.userId = userId;
-        })
+        }),
       );
 
       const routineExercisesToUpdate = await routineExercisesCollection
@@ -104,7 +104,7 @@ export const migrateUserData = async (userId: string) => {
       const routineExerciseUpdates = routineExercisesToUpdate.map((re) =>
         re.prepareUpdate((rec) => {
           rec.userId = userId;
-        })
+        }),
       );
 
       const routineSetsToUpdate = await routineSetsCollection
@@ -113,7 +113,7 @@ export const migrateUserData = async (userId: string) => {
       const routineSetUpdates = routineSetsToUpdate.map((rs) =>
         rs.prepareUpdate((rec) => {
           rec.userId = userId;
-        })
+        }),
       );
 
       const allUpdates = [

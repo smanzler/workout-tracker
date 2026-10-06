@@ -65,7 +65,7 @@ const CreatePost = () => {
                 text: "Cancel",
                 style: "cancel",
               },
-            ]
+            ],
           );
           return;
         }
@@ -129,7 +129,7 @@ const CreatePost = () => {
         } else if (buttonIndex === 2) {
           handlePickImage("take");
         }
-      }
+      },
     );
   };
 

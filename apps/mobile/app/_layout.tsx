@@ -51,7 +51,7 @@ export default function RootLayout() {
     try {
       const hasSyncedDefaults = await exercisesCollection.query(
         Q.where("is_default", true),
-        Q.take(1)
+        Q.take(1),
       );
 
       if (hasSyncedDefaults.length === 0) {

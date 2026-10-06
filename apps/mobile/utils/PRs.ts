@@ -25,8 +25,8 @@ export async function getMaxPRBefore(startTime: number, exerciseId: string) {
       ORDER BY workouts.start_time DESC
       LIMIT 1
     `,
-        [exerciseId, startTime]
-      )
+        [exerciseId, startTime],
+      ),
     )
     .unsafeFetchRaw();
 
@@ -47,8 +47,8 @@ export async function getMaxPRBefore(startTime: number, exerciseId: string) {
       ORDER BY workouts.start_time DESC
       LIMIT 1
     `,
-        [exerciseId, startTime]
-      )
+        [exerciseId, startTime],
+      ),
     )
     .unsafeFetchRaw();
 
@@ -69,8 +69,8 @@ export async function getMaxPRBefore(startTime: number, exerciseId: string) {
       ORDER BY workouts.start_time DESC
       LIMIT 1
     `,
-        [exerciseId, startTime]
-      )
+        [exerciseId, startTime],
+      ),
     )
     .unsafeFetchRaw();
 
@@ -119,7 +119,7 @@ export async function getMaxPRBefore(startTime: number, exerciseId: string) {
 
 export async function checkPRs(
   workout: Workout,
-  workoutExercises: WorkoutExercise[]
+  workoutExercises: WorkoutExercise[],
 ) {
   await Promise.all(
     workoutExercises.map(async (workoutExercise) => {
@@ -127,13 +127,13 @@ export async function checkPRs(
 
       const prevPRs = await getMaxPRBefore(
         new Date(workout.startTime).getTime(),
-        exercise.id
+        exercise.id,
       );
 
       console.log(
         "Previous PRs for exercise:",
         workoutExercise.exercise.title,
-        prevPRs
+        prevPRs,
       );
 
       let newWeightPRSet = null;
@@ -175,10 +175,10 @@ export async function checkPRs(
               s.isVolumePr = set.id === newVolumePRSet?.id;
               s.is1RMPr = set.id === new1RMPRSet?.id;
             });
-          })
+          }),
         );
       });
-    })
+    }),
   );
 }
 
@@ -195,8 +195,8 @@ export async function recalculateAllPRs() {
           s.isWeightPr = false;
           s.isVolumePr = false;
           s.is1RMPr = false;
-        })
-      )
+        }),
+      ),
     );
   });
 

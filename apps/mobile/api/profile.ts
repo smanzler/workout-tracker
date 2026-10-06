@@ -26,7 +26,7 @@ interface Post {
 export const uploadImageAsync = async (
   uri: string,
   userId: string,
-  setImageVersion: React.Dispatch<React.SetStateAction<number>>
+  setImageVersion: React.Dispatch<React.SetStateAction<number>>,
 ) => {
   try {
     const base64 = await FileSystem.readAsStringAsync(uri, {

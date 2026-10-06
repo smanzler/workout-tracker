@@ -36,7 +36,7 @@ const RoutineItem = ({
           // @ts-ignore
           const ex = await re.exercise.fetch();
           return ex.title;
-        })
+        }),
       );
       setExerciseNames(names.join(" • "));
     };
@@ -55,14 +55,14 @@ const RoutineItem = ({
         const routineExercises = await routine.routineExercises.fetch();
 
         const setsToDelete = await Promise.all(
-          routineExercises.map((re) => re.routineSets.fetch())
+          routineExercises.map((re) => re.routineSets.fetch()),
         );
 
         const routineExerciseDeletions = await Promise.all(
-          routineExercises.map((re) => re.markAsDeleted())
+          routineExercises.map((re) => re.markAsDeleted()),
         );
         const routineSetDeletions = await Promise.all(
-          setsToDelete.flat().map((set) => set.markAsDeleted())
+          setsToDelete.flat().map((set) => set.markAsDeleted()),
         );
         const routineDeletion = await routine.markAsDeleted();
 

@@ -20,12 +20,12 @@ type RoutineActions = {
   updateSetWeight: (
     exerciseIndex: number,
     setIndex: number,
-    updatedWeight: string | undefined
+    updatedWeight: string | undefined,
   ) => void;
   updateSetReps: (
     exerciseIndex: number,
     setIndex: number,
-    updatedReps: string | undefined
+    updatedReps: string | undefined,
   ) => void;
   removeSetAtIndex: (exerciseIndex: number, setIndex: number) => void;
   clearRoutine: () => void;
@@ -77,7 +77,7 @@ const useRoutineStore = create<RoutineState>((set) => ({
                   },
                 ],
               }
-            : re
+            : re,
         ),
       }));
     },
@@ -87,7 +87,7 @@ const useRoutineStore = create<RoutineState>((set) => ({
         exercises: state.exercises.map((re, i) => {
           if (i !== exerciseIndex) return re;
           const updatedSets = re.sets.map((s, j) =>
-            j === setIndex - 1 ? { ...s, weight: updatedWeight } : s
+            j === setIndex - 1 ? { ...s, weight: updatedWeight } : s,
           );
           return { ...re, sets: updatedSets };
         }),
@@ -99,7 +99,7 @@ const useRoutineStore = create<RoutineState>((set) => ({
         exercises: state.exercises.map((re, i) => {
           if (i !== exerciseIndex) return re;
           const updatedSets = re.sets.map((s, j) =>
-            j === setIndex - 1 ? { ...s, reps: updatedReps } : s
+            j === setIndex - 1 ? { ...s, reps: updatedReps } : s,
           );
           return { ...re, sets: updatedSets };
         }),

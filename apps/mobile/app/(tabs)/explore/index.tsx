@@ -146,7 +146,7 @@ const ExplorePage = () => {
           buttonIcon={showExplore ? "add" : "person-add"}
           onButtonPress={() =>
             router.push(
-              showExplore ? "/(modals)/create_post" : "/(modals)/find_friends"
+              showExplore ? "/(modals)/create_post" : "/(modals)/find_friends",
             )
           }
           isRefetching={isRefetching}

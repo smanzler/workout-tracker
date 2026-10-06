@@ -73,7 +73,9 @@ export const Toast = () => {
       <View style={[styles.toast, { backgroundColor: colors.card }]}>
         {actorProfile?.profile.id && (
           <Image
-            source={{ uri: getProfileImageUrl(actorProfile.profile.id) ?? undefined }}
+            source={{
+              uri: getProfileImageUrl(actorProfile.profile.id) ?? undefined,
+            }}
             style={styles.avatar}
             cachePolicy="memory"
           />
@@ -85,8 +87,8 @@ export const Toast = () => {
           {message?.type === "follow"
             ? " started following you!"
             : message?.type === "like"
-            ? " liked your post!"
-            : " sent you a follow request!"}
+              ? " liked your post!"
+              : " sent you a follow request!"}
         </ThemedText>
       </View>
     </AnimatedPressable>

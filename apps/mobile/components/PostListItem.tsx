@@ -130,7 +130,7 @@ const PostListItem = ({ post }: { post: Post }) => {
       newLikedState ? "like_post" : "unlike_post",
       {
         _post_id: post.id,
-      }
+      },
     );
 
     if (error) {
@@ -157,7 +157,7 @@ const PostListItem = ({ post }: { post: Post }) => {
             if (finished) {
               scale.value = withTiming(0, { duration: 150 });
             }
-          }
+          },
         );
         runOnJS(toggleLike)();
       }
@@ -187,7 +187,7 @@ const PostListItem = ({ post }: { post: Post }) => {
             contentFit="cover"
             transition={300}
           />
-        </View>
+        </View>,
       );
     }
 
@@ -197,7 +197,7 @@ const PostListItem = ({ post }: { post: Post }) => {
           key="workout"
           workout={post.workout}
           style={{ borderRadius: 20 }}
-        />
+        />,
       );
     }
 

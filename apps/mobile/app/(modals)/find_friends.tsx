@@ -42,7 +42,7 @@ async function getMostFollowedUsers() {
       id,
       username,
       follower_count
-    `
+    `,
     )
     .order("follower_count", { ascending: false })
     .limit(20);

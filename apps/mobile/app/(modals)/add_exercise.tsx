@@ -54,7 +54,7 @@ function AddExercise() {
               // @ts-ignore
               workoutExercise.workout.set(workout);
               user && (workoutExercise.userId = user.id);
-            }
+            },
           );
 
           const set = setsCollection.prepareCreate((set) => {
@@ -79,7 +79,7 @@ function AddExercise() {
       console.error("Failed to add exercises to workout:", error);
       Alert.alert(
         "Error",
-        "Failed to add exercises to workout. Please try again."
+        "Failed to add exercises to workout. Please try again.",
       );
     }
   };

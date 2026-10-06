@@ -20,15 +20,15 @@ export function useMenu() {
         options: [...items.map((item) => item.label), "Cancel"],
         cancelButtonIndex: items.length,
         destructiveButtonIndex: items.flatMap((item, index) =>
-          item.destructive ? [index] : []
+          item.destructive ? [index] : [],
         ),
         disabledButtonIndices: items.flatMap((item, index) =>
-          item.disabled ? [index] : []
+          item.disabled ? [index] : [],
         ),
       },
       (index) => {
         if (index === undefined) return;
         items[index]?.onSelect();
-      }
+      },
     );
 }

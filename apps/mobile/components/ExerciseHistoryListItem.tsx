@@ -38,7 +38,7 @@ const enhance = withObservables(
     exercise: workoutExercise.exercise,
     workout: workoutExercise.workout,
     sets: workoutExercise.sets,
-  })
+  }),
 );
 
 export default enhance(ExerciseHistoryListItem);

@@ -1,6 +1,6 @@
 export function formatDuration(startTime: number, endTime: number): string {
   const durationInSeconds = Math.floor(
-    ((endTime ?? startTime) - startTime) / 1000
+    ((endTime ?? startTime) - startTime) / 1000,
   );
 
   if (durationInSeconds < 60) {
@@ -20,8 +20,8 @@ export function formatDuration(startTime: number, endTime: number): string {
   return `${minutes}m`;
 }
 
-export const chunkArray = (arr: Array<any>, size: number) => {
+export const chunkArray = (arr: any[], size: number) => {
   return Array.from({ length: Math.ceil(arr.length / size) }, (_, i) =>
-    arr.slice(i * size, i * size + size)
+    arr.slice(i * size, i * size + size),
   );
 };

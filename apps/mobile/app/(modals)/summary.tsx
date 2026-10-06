@@ -60,7 +60,7 @@ const Summary = ({
     exercises: workoutExercises.map((we) => {
       const exercise = exercises.find((e) => e.id === we.exercise.id);
       const exerciseSets = sets.filter(
-        (set) => set.workoutExercise.id === we.id
+        (set) => set.workoutExercise.id === we.id,
       );
 
       return {
@@ -81,7 +81,7 @@ const Summary = ({
       workout.endTime && workout.startTime
         ? formatDuration(
             new Date(workout.endTime).getTime() -
-              new Date(workout.startTime).getTime()
+              new Date(workout.startTime).getTime(),
           )
         : "0m";
 
@@ -128,7 +128,7 @@ const enhanceWorkout = withObservables(
   ["workoutId"],
   ({ workoutId }: { workoutId: string }) => ({
     workout: workoutsCollection.findAndObserve(workoutId),
-  })
+  }),
 );
 
 // Then enhance with related data
@@ -142,7 +142,7 @@ const enhanceWithRelations = withObservables(
       .get<Set>("sets")
       .query(Q.on("workout_exercises", "workout_id", workout.id))
       .observe(),
-  })
+  }),
 );
 
 // Compose the enhancements

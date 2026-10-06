@@ -78,7 +78,7 @@ async function syncDefaultExercisesToLocal(defaultExercises: ServerExercise[]) {
         } catch (err) {
           console.error(`Error processing exercise ${serverExercise.id}:`, err);
         }
-      })
+      }),
     );
 
     await database.batch(...batchOps);

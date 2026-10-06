@@ -49,11 +49,11 @@ export function useLiveNotifications(userId?: string) {
 
           queryClient.setQueryData(
             ["notifications", userId],
-            (old: any[] = []) => [newNotification, ...old]
+            (old: any[] = []) => [newNotification, ...old],
           );
 
           showToast(newNotification);
-        }
+        },
       )
       .subscribe();
 
@@ -73,7 +73,7 @@ export function useLiveNotifications(userId?: string) {
       .eq("id", notificationId);
 
     queryClient.setQueryData(["notifications", userId], (old: any[] = []) =>
-      old.map((n) => (n.id === notificationId ? { ...n, read_at: now } : n))
+      old.map((n) => (n.id === notificationId ? { ...n, read_at: now } : n)),
     );
   };
 

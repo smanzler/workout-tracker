@@ -48,7 +48,7 @@ const AddRoutine = () => {
               // @ts-ignore
               routineExercise.routine.set(routine);
               if (user) routineExercise.userId = user.id;
-            }
+            },
           );
 
           const sets = exercise.sets.map((s) =>
@@ -58,7 +58,7 @@ const AddRoutine = () => {
               set.reps = s.reps ? parseInt(s.reps) : undefined;
               set.weight = s.weight ? parseInt(s.weight) : undefined;
               if (user) set.userId = user.id;
-            })
+            }),
           );
 
           return [routineExercise, ...sets];
@@ -92,7 +92,7 @@ const AddRoutine = () => {
           },
           style: "destructive",
         },
-      ]
+      ],
     );
   };
 

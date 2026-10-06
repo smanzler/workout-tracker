@@ -45,7 +45,7 @@ const NotificationItem: React.FC<{
         type === "accept" ? "accept_follow_request" : "reject_follow_request",
         {
           _follower_id: notification.actor_id,
-        }
+        },
       );
 
       if (error) throw error;

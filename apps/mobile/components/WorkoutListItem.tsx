@@ -27,24 +27,27 @@ const WorkoutListItem = ({
   const showMenu = useMenu();
 
   // Create a map of exercise titles
-  const exerciseTitles = exercises.reduce((acc, exercise) => {
-    const workoutExercise = workoutExercises.find(
-      (we) => we.exercise.id === exercise.id
-    );
-    if (workoutExercise) {
-      acc[workoutExercise.id] = exercise.title;
-    }
-    return acc;
-  }, {} as Record<string, string>);
+  const exerciseTitles = exercises.reduce(
+    (acc, exercise) => {
+      const workoutExercise = workoutExercises.find(
+        (we) => we.exercise.id === exercise.id,
+      );
+      if (workoutExercise) {
+        acc[workoutExercise.id] = exercise.title;
+      }
+      return acc;
+    },
+    {} as Record<string, string>,
+  );
 
   const handleDelete = () => {
     try {
       database.write(async () => {
         const workoutExerciseDeletions = await Promise.all(
-          workoutExercises.map((we) => we.markAsDeleted())
+          workoutExercises.map((we) => we.markAsDeleted()),
         );
         const setDeletions = await Promise.all(
-          sets.map((set) => set.markAsDeleted())
+          sets.map((set) => set.markAsDeleted()),
         );
         const workoutDeletion = await workout.markAsDeleted();
 
@@ -133,7 +136,7 @@ const enhance = withObservables(
       sets,
       exercises,
     };
-  }
+  },
 );
 
 export default enhance(WorkoutListItem);

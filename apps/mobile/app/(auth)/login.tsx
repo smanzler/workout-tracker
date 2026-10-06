@@ -71,7 +71,7 @@ export default function LoginScreen() {
           Sign in
         </Button>
         <ThemedText type="defaultSemiBold" style={styles.signupText}>
-          Don't have an account?
+          Don&apos;t have an account?
         </ThemedText>
         <Button
           disabled={loading}

@@ -24,7 +24,7 @@ export const WorkoutProvider = ({
   const [startTime, setStartTime] = useState<number | undefined>(undefined);
   const [now, setNow] = useState(() => Date.now());
   const [activeWorkoutId, setActiveWorkoutId] = useState<string | undefined>(
-    undefined
+    undefined,
   );
   const { user } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
@@ -42,10 +42,11 @@ export const WorkoutProvider = ({
       ? 0
       : Math.max(0, Math.floor((now - startTime) / 1000));
 
-  const loadStartTime = async () => {
-    try {
-      const storedWorkoutId = await AsyncStorage.getItem("activeWorkoutId");
-      if (storedWorkoutId) {
+  useEffect(() => {
+    AsyncStorage.getItem("activeWorkoutId")
+      .then(async (storedWorkoutId) => {
+        if (!storedWorkoutId) return;
+
         setActiveWorkoutId(storedWorkoutId);
 
         const workout = await database
@@ -54,14 +55,10 @@ export const WorkoutProvider = ({
         if (workout && workout.startTime) {
           setStartTime(workout.startTime);
         }
-      }
-    } catch (error) {
-      console.error("Failed to load workout start time", error);
-    }
-  };
-
-  useEffect(() => {
-    loadStartTime();
+      })
+      .catch((error) => {
+        console.error("Failed to load workout start time", error);
+      });
   }, []);
 
   const startWorkout = async (routine?: Routine) => {
@@ -90,7 +87,7 @@ export const WorkoutProvider = ({
                   // @ts-ignore
                   workoutExercise.workout.set(workout);
                   user && (workoutExercise.userId = user.id);
-                }
+                },
               );
 
               const setOps = routineSets.map((routineSet, index) => {
@@ -105,7 +102,7 @@ export const WorkoutProvider = ({
               });
 
               return [workoutExercise, ...setOps];
-            })
+            }),
           );
 
           await database.batch(...batchOps.flat());

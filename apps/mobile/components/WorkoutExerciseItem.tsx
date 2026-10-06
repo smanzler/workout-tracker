@@ -23,7 +23,7 @@ const WorkoutExerciseItem = ({
       (set.isWeightPr ? 1 : 0) +
       (set.isVolumePr ? 1 : 0) +
       (set.is1RMPr ? 1 : 0),
-    0
+    0,
   );
 
   return (

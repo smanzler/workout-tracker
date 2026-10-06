@@ -56,12 +56,12 @@ const Workout = () => {
     if (hours > 0) {
       return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(
         2,
-        "0"
+        "0",
       )}:${String(seconds).padStart(2, "0")}`;
     } else {
       return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(
         2,
-        "0"
+        "0",
       )}`;
     }
   };
@@ -90,7 +90,7 @@ const Workout = () => {
             },
             style: "destructive",
           },
-        ]
+        ],
       );
       return;
     }
@@ -99,7 +99,7 @@ const Workout = () => {
       workoutExercises.map(async (we) => {
         const sets = await we.sets.fetch();
         return sets.every((set) => set.completed);
-      })
+      }),
     );
 
     if (!allSetsComplete.every((complete) => complete)) {
@@ -122,7 +122,7 @@ const Workout = () => {
       console.error("Failed to finish workout:", error);
       Alert.alert(
         "Error",
-        `Failed to finish workout. Please try again. ${error}`
+        `Failed to finish workout. Please try again. ${error}`,
       );
     }
   };
@@ -138,14 +138,14 @@ const Workout = () => {
 
       database.write(async () => {
         const setsToDelete = await Promise.all(
-          workoutExercises.map((we) => we.sets.fetch())
+          workoutExercises.map((we) => we.sets.fetch()),
         );
 
         const workoutExerciseDeletions = await Promise.all(
-          workoutExercises.map((we) => we.markAsDeleted())
+          workoutExercises.map((we) => we.markAsDeleted()),
         );
         const setDeletions = await Promise.all(
-          setsToDelete.flat().map((set) => set.markAsDeleted())
+          setsToDelete.flat().map((set) => set.markAsDeleted()),
         );
         const workoutDeletion = await workout.markAsDeleted();
 
@@ -177,7 +177,7 @@ const Workout = () => {
           onPress: cancelWorkout,
           style: "destructive",
         },
-      ]
+      ],
     );
   };
 

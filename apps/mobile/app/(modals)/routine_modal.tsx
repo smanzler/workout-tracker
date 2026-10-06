@@ -39,7 +39,7 @@ const RoutineModal = () => {
   const { routineId } = useLocalSearchParams<{ routineId: string }>();
   const [routine, setRoutine] = useState<Routine | undefined>(undefined);
   const [routineExercises, setRoutineExercises] = useState<RoutineExercise[]>(
-    []
+    [],
   );
   const [loading, setLoading] = useState(true);
   const opacity = useSharedValue(0);

@@ -63,7 +63,7 @@ const SetListItem = ({
           .query(
             Q.where("workout_exercise_id", workoutExerciseId),
             Q.where("position", Q.gt(set.position)),
-            Q.sortBy("position", Q.asc)
+            Q.sortBy("position", Q.asc),
           )
           .fetch()) as Set[];
 
@@ -73,7 +73,7 @@ const SetListItem = ({
           .get("sets")
           .query(
             Q.where("workout_exercise_id", workoutExerciseId),
-            Q.sortBy("position", Q.asc)
+            Q.sortBy("position", Q.asc),
           )
           .fetch()) as Set[];
 
@@ -81,8 +81,8 @@ const SetListItem = ({
           allSets.map((s, index) =>
             s.update((record) => {
               record.position = index + 1;
-            })
-          )
+            }),
+          ),
         );
       });
     } catch (error) {

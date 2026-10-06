@@ -1,6 +1,6 @@
-import { NativeModule, requireNativeModule } from 'expo';
+import { NativeModule, requireNativeModule } from "expo";
 
-import { NativeChartsModuleEvents } from './NativeCharts.types';
+import { NativeChartsModuleEvents } from "./NativeCharts.types";
 
 declare class NativeChartsModule extends NativeModule<NativeChartsModuleEvents> {
   PI: number;
@@ -9,4 +9,4 @@ declare class NativeChartsModule extends NativeModule<NativeChartsModuleEvents> 
 }
 
 // This call loads the native module object from the JSI.
-export default requireNativeModule<NativeChartsModule>('NativeCharts');
+export default requireNativeModule<NativeChartsModule>("NativeCharts");
