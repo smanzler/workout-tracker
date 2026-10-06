@@ -2,11 +2,15 @@ import db, { type Transaction } from "../../../db/index";
 import { WorkoutExercises, WorkoutSets, Workouts } from "../../../db/schema";
 import {
   createWorkoutSchema,
+  importWorkoutsSchema,
   updateWorkoutSchema,
   type WorkoutExerciseInput,
 } from "@rep/shared";
-import { and, eq } from "drizzle-orm";
-import { hasExerciseAccess } from "../../../lib/exercises";
+import { and, eq, inArray } from "drizzle-orm";
+import {
+  hasExerciseAccess,
+  resolveExerciseTitles,
+} from "../../../lib/exercises";
 import { updatePersonalRecords } from "../../../lib/personal-records";
 import { protectedProcedure, router } from "../../../lib/trpc";
 import { TRPCError } from "@trpc/server";
@@ -77,19 +81,19 @@ const listPage = async ({
 
 const insertExercises = async (
   tx: Transaction,
-  {
-    workoutId,
-    exercises,
-  }: { workoutId: string; exercises: WorkoutExerciseInput[] },
+  workouts: { workoutId: string; exercises: WorkoutExerciseInput[] }[],
 ) => {
-  const rows = exercises.map((exercise, position) => ({
-    ...exercise,
-    id: crypto.randomUUID(),
-    position,
-  }));
+  const rows = workouts.flatMap(({ workoutId, exercises }) =>
+    exercises.map((exercise, position) => ({
+      ...exercise,
+      id: crypto.randomUUID(),
+      workoutId,
+      position,
+    })),
+  );
 
   await tx.insert(WorkoutExercises).values(
-    rows.map(({ id, exerciseId, notes, position }) => ({
+    rows.map(({ id, workoutId, exerciseId, notes, position }) => ({
       id,
       workoutId,
       exerciseId,
@@ -185,7 +189,7 @@ export const workoutRouter = router({
           });
         }
 
-        await insertExercises(tx, { workoutId: workout.id, exercises });
+        await insertExercises(tx, [{ workoutId: workout.id, exercises }]);
         await updatePersonalRecords(tx, { userId: user.id, exerciseIds });
 
         return workout.id;
@@ -226,7 +230,7 @@ export const workoutRouter = router({
         await tx
           .delete(WorkoutExercises)
           .where(eq(WorkoutExercises.workoutId, id));
-        await insertExercises(tx, { workoutId: id, exercises });
+        await insertExercises(tx, [{ workoutId: id, exercises }]);
         await updatePersonalRecords(tx, {
           userId: user.id,
           exerciseIds: [...previousIds, ...exerciseIds],
@@ -234,6 +238,83 @@ export const workoutRouter = router({
       });
 
       return { workoutId: id };
+    }),
+
+  import: protectedProcedure
+    .input(importWorkoutsSchema)
+    .mutation(async (opts) => {
+      const { user } = opts.ctx;
+      const { workouts } = opts.input;
+
+      return db.transaction(async (tx) => {
+        const existing = await tx
+          .select({ name: Workouts.name, startedAt: Workouts.startedAt })
+          .from(Workouts)
+          .where(
+            and(
+              eq(Workouts.userId, user.id),
+              inArray(
+                Workouts.startedAt,
+                workouts.map(({ startedAt }) => new Date(startedAt)),
+              ),
+            ),
+          );
+
+        // Importing the same file twice skips the workouts it already added.
+        const existingKeys = new Set(
+          existing.map(
+            ({ name, startedAt }) => `${startedAt.getTime()}:${name}`,
+          ),
+        );
+        const fresh = workouts
+          .filter(
+            ({ name, startedAt }) => !existingKeys.has(`${startedAt}:${name}`),
+          )
+          .map((workout) => ({ ...workout, id: crypto.randomUUID() }));
+
+        if (fresh.length === 0) {
+          return { importedCount: 0, skippedCount: workouts.length };
+        }
+
+        const { getId } = await resolveExerciseTitles(tx, {
+          userId: user.id,
+          titles: fresh.flatMap(({ exercises }) =>
+            exercises.map(({ title }) => title),
+          ),
+        });
+
+        await tx.insert(Workouts).values(
+          fresh.map(({ id, name, startedAt, endedAt }) => ({
+            id,
+            userId: user.id,
+            name,
+            startedAt: new Date(startedAt),
+            endedAt: new Date(endedAt),
+          })),
+        );
+
+        const workoutExercises = fresh.map(({ id, exercises }) => ({
+          workoutId: id,
+          exercises: exercises.map(({ title, notes, sets }) => ({
+            exerciseId: getId(title),
+            sets,
+            ...(notes !== undefined && { notes }),
+          })),
+        }));
+
+        await insertExercises(tx, workoutExercises);
+        await updatePersonalRecords(tx, {
+          userId: user.id,
+          exerciseIds: workoutExercises.flatMap(({ exercises }) =>
+            toExerciseIds(exercises),
+          ),
+        });
+
+        return {
+          importedCount: fresh.length,
+          skippedCount: workouts.length - fresh.length,
+        };
+      });
     }),
 
   delete: protectedProcedure

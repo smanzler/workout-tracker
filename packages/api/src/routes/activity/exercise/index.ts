@@ -6,13 +6,11 @@ import {
   Workouts,
 } from "../../../db/schema";
 import { createExerciseSchema, summarizePersonalRecords } from "@rep/shared";
-import { and, asc, desc, eq, isNull, or, sql } from "drizzle-orm";
+import { and, asc, desc, eq, sql } from "drizzle-orm";
+import { isVisibleTo } from "../../../lib/exercises";
 import { protectedProcedure, router } from "../../../lib/trpc";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
-
-const isVisibleTo = (userId: string) =>
-  or(isNull(Exercises.userId), eq(Exercises.userId, userId));
 
 const exerciseColumns = {
   id: Exercises.id,

@@ -39,3 +39,31 @@ export const updateWorkoutSchema = z.object({
 });
 
 export type UpdateWorkoutInput = z.infer<typeof updateWorkoutSchema>;
+
+/** The most workouts that one import takes. */
+export const maxImportWorkouts = 50;
+
+/** Workouts from another app, with exercises named instead of referenced. */
+export const importWorkoutsSchema = z.object({
+  workouts: z
+    .array(
+      z.object({
+        name: workoutNameSchema,
+        startedAt: z.number().int(),
+        endedAt: z.number().int(),
+        exercises: z
+          .array(
+            z.object({
+              title: z.string().trim().min(1).max(100),
+              notes: z.string().trim().max(1000).optional(),
+              sets: z.array(workoutSetInputSchema).min(1),
+            }),
+          )
+          .min(1),
+      }),
+    )
+    .min(1)
+    .max(maxImportWorkouts),
+});
+
+export type ImportWorkoutsInput = z.infer<typeof importWorkoutsSchema>;
