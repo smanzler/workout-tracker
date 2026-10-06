@@ -74,6 +74,9 @@ class NativeChartsView: ExpoView {
         print(threeMonthsAgo, Date(timeIntervalSince1970: threeMonthsAgo))
         
         let set = LineChartDataSet(entries: entries)
+        // DGCharts plots against the left axis by default, but the range is on
+        // the right axis, which is the one that shows.
+        set.axisDependency = .right
         
         set.colors = [NSUIColor.systemBlue]
         set.circleColors = [NSUIColor.systemBlue]
