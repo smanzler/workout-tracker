@@ -1,240 +1,100 @@
-import {
-  Alert,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-  TextInput,
-  Keyboard,
-  KeyboardAvoidingView,
-  Platform,
-  Button as RNButton,
-  ActivityIndicator,
-} from "react-native";
-import React, { useEffect, useRef, useState } from "react";
-import { useWorkout } from "@/providers/workout-provider";
+import { Button } from "@/components/ui/button";
+import { Icon } from "@/components/ui/icon";
+import { Input } from "@/components/ui/input";
+import { Spinner } from "@/components/ui/spinner";
+import { Text } from "@/components/ui/text";
 import { router, Stack } from "expo-router";
-import database, { workoutsCollection } from "@/db";
-import { Workout as WorkoutModel } from "@/db/models/workout";
-import WorkoutExerciseList from "../components/workout-exercise-list";
-import { useTheme } from "expo-router/react-navigation";
-import Button from "@/components/button";
-import { checkPRs } from "@/features/activity/lib/personal-records";
+import { Plus } from "lucide-react-native";
+import { Alert, View } from "react-native";
 import {
   KeyboardAwareScrollView,
   KeyboardToolbar,
 } from "react-native-keyboard-controller";
+import { ExerciseEditor } from "../../components/exercise-editor";
+import { useElapsedSeconds } from "../hooks/use-elapsed-seconds";
+import { useFinishWorkout } from "../hooks/use-finish-workout";
+import { formatTimer } from "../lib/duration";
+import { useWorkoutSessionStore } from "../stores/workout-session-store";
 
-const Workout = () => {
-  const { seconds, activeWorkoutId, stopWorkout, isLoading } = useWorkout();
-  const [workout, setWorkout] = useState<WorkoutModel | undefined>(undefined);
-  const [workoutName, setWorkoutName] = useState<string>("");
-  const { colors } = useTheme();
-  const inputRefs = useRef<(TextInput | null)[][]>([]);
+export default function Workout() {
+  const startedAt = useWorkoutSessionStore((state) => state.startedAt);
+  const name = useWorkoutSessionStore((state) => state.name);
+  const exercises = useWorkoutSessionStore((state) => state.exercises);
+  const setName = useWorkoutSessionStore((state) => state.setName);
+  const updateExercises = useWorkoutSessionStore(
+    (state) => state.updateExercises,
+  );
+  const discard = useWorkoutSessionStore((state) => state.discard);
+  const seconds = useElapsedSeconds(startedAt);
+  const { finish, isPending } = useFinishWorkout();
 
-  useEffect(() => {
-    async function fetchWorkout() {
-      if (activeWorkoutId) {
-        const workout = await workoutsCollection.find(activeWorkoutId);
-        setWorkout(workout);
-      }
-    }
-
-    fetchWorkout();
-  }, [activeWorkoutId]);
-
-  const formatTime = (totalSeconds: number): string => {
-    const hours = Math.floor(totalSeconds / 3600);
-    const minutes = Math.floor((totalSeconds % 3600) / 60);
-    const seconds = totalSeconds % 60;
-
-    if (hours > 0) {
-      return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(
-        2,
-        "0",
-      )}:${String(seconds).padStart(2, "0")}`;
-    } else {
-      return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(
-        2,
-        "0",
-      )}`;
-    }
-  };
-
-  const finish = async () => {
-    if (!workout) return;
-
-    const workoutExercises = await workout.workoutExercises.fetch();
-    if (workoutExercises.length === 0) {
-      Alert.alert(
-        "Empty Workout",
-        "This workout is empty. Would you like to delete it?",
-        [
-          {
-            text: "Cancel",
-            style: "cancel",
-          },
-          {
-            text: "Delete",
-            onPress: async () => {
-              await stopWorkout();
-              await database.write(async () => {
-                await workout.markAsDeleted();
-              });
-              router.replace("/(tabs)/start-workout");
-            },
-            style: "destructive",
-          },
-        ],
-      );
-      return;
-    }
-
-    const allSetsComplete = await Promise.all(
-      workoutExercises.map(async (we) => {
-        const sets = await we.sets.fetch();
-        return sets.every((set) => set.completed);
-      }),
-    );
-
-    if (!allSetsComplete.every((complete) => complete)) {
-      alert("Please complete all sets before finishing the workout.");
-      return;
-    }
-
-    router.replace({
-      pathname: "/(modals)/summary",
-      params: { workoutId: workout.id },
-    });
-
-    try {
-      await checkPRs(workout, workoutExercises);
-
-      await stopWorkout(workoutName);
-    } catch (error) {
-      console.error("Failed to finish workout:", error);
-      Alert.alert(
-        "Error",
-        `Failed to finish workout. Please try again. ${error}`,
-      );
-    }
-  };
-
-  const cancelWorkout = async () => {
-    router.back();
-
-    if (!activeWorkoutId) return;
-
-    try {
-      const workout = await workoutsCollection.find(activeWorkoutId);
-      const workoutExercises = await workout.workoutExercises.fetch();
-
-      database.write(async () => {
-        const setsToDelete = await Promise.all(
-          workoutExercises.map((we) => we.sets.fetch()),
-        );
-
-        const workoutExerciseDeletions = await Promise.all(
-          workoutExercises.map((we) => we.markAsDeleted()),
-        );
-        const setDeletions = await Promise.all(
-          setsToDelete.flat().map((set) => set.markAsDeleted()),
-        );
-        const workoutDeletion = await workout.markAsDeleted();
-
-        const batchOps = [
-          ...workoutExerciseDeletions,
-          ...setDeletions,
-          workoutDeletion,
-        ];
-
-        await database.batch(...batchOps);
-      });
-    } catch (error) {
-      console.error("Failed to delete workout:", error);
-    }
-    await stopWorkout();
-  };
-
-  const handleCancel = () => {
-    Alert.alert(
-      "Cancel Workout",
-      "Are you sure you want to cancel this workout?",
-      [
-        {
-          text: "Cancel",
-          style: "cancel",
+  const confirmDiscard = () =>
+    Alert.alert("Discard workout?", "The sets of this workout will be lost.", [
+      { text: "Cancel", style: "cancel" },
+      {
+        text: "Discard",
+        style: "destructive",
+        onPress: () => {
+          router.back();
+          discard();
         },
-        {
-          text: "Yes",
-          onPress: cancelWorkout,
-          style: "destructive",
-        },
-      ],
-    );
-  };
+      },
+    ]);
 
   return (
-    <KeyboardAwareScrollView
-      bottomOffset={100}
-      style={styles.container}
-      contentInsetAdjustmentBehavior="automatic"
-      showsVerticalScrollIndicator={false}
-    >
+    <>
       <Stack.Screen
         options={{
-          headerTitle: formatTime(seconds),
-          headerRight: () => <RNButton title="Finish" onPress={finish} />,
+          title: formatTimer(seconds),
+          headerRight: () => (
+            <Button size="sm" disabled={isPending} onPress={finish}>
+              <Text>Finish</Text>
+            </Button>
+          ),
         }}
-      />
-      <TextInput
-        style={{
-          fontSize: 24,
-          fontWeight: "600",
-          color: colors.text,
-          marginVertical: 20,
-        }}
-        value={workoutName}
-        onChangeText={setWorkoutName}
-        placeholder="Workout Name"
-        placeholderTextColor={String(colors.text)
-          .replace("rgb", "rgba")
-          .replace(")", ", 0.4)")}
       />
 
-      {workout && (
-        <WorkoutExerciseList workout={workout} inputRefs={inputRefs} />
+      {startedAt !== null && (
+        <KeyboardAwareScrollView
+          bottomOffset={64}
+          contentInsetAdjustmentBehavior="automatic"
+          keyboardShouldPersistTaps="handled"
+          contentContainerClassName="gap-3 p-4 pb-safe-offset-4"
+        >
+          <Input
+            value={name}
+            onChangeText={setName}
+            placeholder="Workout name"
+            maxLength={100}
+            accessibilityLabel="Workout name"
+            className="h-12 border-0 bg-transparent px-0 text-2xl font-semibold shadow-none dark:bg-transparent"
+          />
+
+          {exercises.map((exercise) => (
+            <ExerciseEditor
+              key={exercise.id}
+              exercise={exercise}
+              completable
+              onUpdate={updateExercises}
+            />
+          ))}
+
+          <Button onPress={() => router.push("/(modals)/add-exercise")}>
+            <Icon as={Plus} className="size-4 text-primary-foreground" />
+            <Text>Add Exercises</Text>
+          </Button>
+          <Button variant="ghost" onPress={confirmDiscard}>
+            <Text className="text-destructive">Discard Workout</Text>
+          </Button>
+        </KeyboardAwareScrollView>
       )}
+      <KeyboardToolbar />
 
-      <Button
-        onPress={() => {
-          router.push("/(modals)/add-exercise");
-        }}
-      >
-        Add Exercises
-      </Button>
-
-      <Button
-        style={{ marginTop: 10 }}
-        variant="outline"
-        onPress={handleCancel}
-      >
-        Cancel Workout
-      </Button>
-    </KeyboardAwareScrollView>
+      {isPending && (
+        <View className="absolute inset-0 items-center justify-center bg-black/40">
+          <Spinner className="text-white" />
+        </View>
+      )}
+    </>
   );
-};
-
-export default Workout;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingHorizontal: 20,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-});
+}

@@ -2,7 +2,7 @@ import { Pressable, StyleSheet, View } from "react-native";
 import { useTheme, Text } from "expo-router/react-navigation";
 import { BottomTabBarProps } from "expo-router/js-tabs";
 import { BlurView } from "expo-blur";
-import { useWorkout } from "@/providers/workout-provider";
+import { useIsWorkingOut } from "@/features/activity/workouts/stores/workout-session-store";
 import { ThemedText } from "./themed-text";
 import { router } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -14,7 +14,7 @@ export default function TabBar({
   navigation,
 }: BottomTabBarProps) {
   const { colors } = useTheme();
-  const { activeWorkoutId } = useWorkout();
+  const isWorkingOut = useIsWorkingOut();
   const { bottom } = useSafeAreaInsets();
   const showExploreTab = useSettings();
 
@@ -38,7 +38,7 @@ export default function TabBar({
         overflow: "hidden",
       }}
     >
-      {activeWorkoutId && (
+      {isWorkingOut && (
         <Pressable
           style={[styles.resumeContainer, { backgroundColor: colors.card }]}
           onPress={() => router.push("/(modals)/workout")}

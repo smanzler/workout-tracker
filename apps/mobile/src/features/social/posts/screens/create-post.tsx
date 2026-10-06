@@ -22,7 +22,6 @@ import * as ImagePicker from "expo-image-picker";
 import Button from "@/components/button";
 import { postPost } from "../lib/posts";
 import { useAuth } from "@/hooks/use-auth";
-import { useWorkout } from "@/providers/workout-provider";
 import { useQueryClient } from "@tanstack/react-query";
 import { useActionSheet } from "@expo/react-native-action-sheet";
 

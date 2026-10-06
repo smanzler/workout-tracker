@@ -8,7 +8,6 @@ import {
 import { Icon } from "@/components/ui/icon";
 import { Spinner } from "@/components/ui/spinner";
 import { useMyProfile } from "@/features/social/profile/hooks/use-my-profile";
-import SummaryHeader from "@/features/activity/workouts/components/summary-header";
 import { Ionicons } from "@expo/vector-icons";
 import { router, Stack } from "expo-router";
 import { useTheme } from "expo-router/react-navigation";
@@ -55,34 +54,18 @@ export default function Layout() {
           name="(modals)/workout"
           options={{
             presentation: "modal",
-            headerTransparent: Platform.OS === "ios" ? true : false,
+            headerTransparent: Platform.OS === "ios",
             headerBlurEffect: "systemChromeMaterial",
             headerShadowVisible: true,
           }}
         />
         <Stack.Screen
           name="(modals)/add-exercise"
-          options={{
-            title: "Add Exercises",
-            presentation: "fullScreenModal",
-            headerLeft: () => (
-              <TouchableOpacity onPress={() => router.back()}>
-                <Ionicons
-                  name="chevron-back"
-                  size={24}
-                  color={colors.primary}
-                />
-              </TouchableOpacity>
-            ),
-          }}
+          options={{ title: "Add Exercises", presentation: "modal" }}
         />
         <Stack.Screen
           name="(modals)/summary"
-          options={{
-            presentation: "fullScreenModal",
-            headerTransparent: true,
-            header: () => <SummaryHeader handleShare={() => {}} />,
-          }}
+          options={{ presentation: "fullScreenModal", headerShown: false }}
         />
         <Stack.Screen
           name="(modals)/workout-modal"
@@ -120,41 +103,18 @@ export default function Layout() {
         />
         <Stack.Screen
           name="(modals)/add-routine"
-          options={{
-            headerTitle: "New Routine",
-            headerBackVisible: false,
-            ...(Platform.OS !== "ios"
-              ? {}
-              : {
-                  headerTransparent: true,
-                  headerBlurEffect: "systemChromeMaterial",
-                  headerShadowVisible: true,
-                }),
-          }}
+          options={{ title: "New Routine", presentation: "modal" }}
         />
         <Stack.Screen
           name="(modals)/add-routine-exercises"
-          options={{
-            headerTitle: "New Routine",
-            ...(Platform.OS !== "ios"
-              ? {}
-              : {
-                  headerTransparent: true,
-                  headerBlurEffect: "systemChromeMaterial",
-                  headerLargeTitle: true,
-                  headerLargeTitleShadowVisible: false,
-                  headerShadowVisible: true,
-                  headerLargeStyle: {
-                    backgroundColor: "transparent",
-                  },
-                }),
-          }}
+          options={{ title: "Add Exercises", presentation: "modal" }}
         />
         <Stack.Screen
           name="(modals)/routine-modal"
           options={{
-            presentation: "transparentModal",
-            animation: "fade",
+            presentation: "formSheet",
+            sheetAllowedDetents: "fitToContents",
+            sheetGrabberVisible: true,
             headerShown: false,
           }}
         />

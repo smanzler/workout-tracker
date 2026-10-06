@@ -24,7 +24,10 @@ import { useMyProfile } from "../hooks/use-my-profile";
 import { useUpdateProfile } from "../hooks/use-update-profile";
 import { useDeleteAccount } from "../hooks/use-delete-account";
 import { useMenu } from "@/hooks/use-menu";
-import { useWorkout } from "@/providers/workout-provider";
+import {
+  useIsWorkingOut,
+  useWorkoutSessionStore,
+} from "@/features/activity/workouts/stores/workout-session-store";
 import { importStrongCSV } from "@/features/activity/workouts/lib/csv-import";
 
 export default function ProfileScreen() {
@@ -34,7 +37,8 @@ export default function ProfileScreen() {
     useUpdateProfile();
   const { mutate: deleteAccount } = useDeleteAccount();
   const { colors } = useTheme();
-  const { activeWorkoutId } = useWorkout();
+  const isWorkingOut = useIsWorkingOut();
+  const discardWorkout = useWorkoutSessionStore((state) => state.discard);
   const [importing, setImporting] = useState(false);
   const showMenu = useMenu();
 
@@ -70,12 +74,15 @@ export default function ProfileScreen() {
 
   const handleDeleteAccount = () =>
     deleteAccount(undefined, {
-      onSuccess: () => resetUserData(),
+      onSuccess: () => {
+        discardWorkout();
+        resetUserData();
+      },
       onError: (error) => Alert.alert("Error", error.message),
     });
 
   const handleLogout = async () => {
-    if (activeWorkoutId) {
+    if (isWorkingOut) {
       Alert.alert(
         "Active workout",
         "You have an active workout. Please finish it before logging out.",

@@ -1,148 +1,74 @@
-import React from "react";
+import { Button } from "@/components/ui/button";
+import { BodyScrollView } from "@/components/ui/body-scroll-view";
 import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-  Alert,
-  SafeAreaView,
-  Button as RNButton,
-} from "react-native";
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty";
+import { Icon } from "@/components/ui/icon";
+import { Text } from "@/components/ui/text";
+import { RoutineCard } from "@/features/activity/routines/components/routine-card";
+import { useRoutines } from "@/features/activity/routines/hooks/use-routines";
 import { router } from "expo-router";
-import { Entypo, Feather, Ionicons } from "@expo/vector-icons";
-import { useWorkout } from "@/providers/workout-provider";
-import database, { routinesCollection, workoutsCollection } from "@/db";
-import { useTheme } from "expo-router/react-navigation";
-import Button from "@/components/button";
-import { BodyScrollView } from "@/components/body-scroll-view";
-import { ThemedText } from "@/components/themed-text";
-import { withObservables } from "@nozbe/watermelondb/react";
-import { Routine } from "@/db/models/routine";
-import RoutineItem from "@/features/activity/routines/components/routine-item";
-import { Q } from "@nozbe/watermelondb";
-import { EmptyState } from "@/components/empty-state";
+import { ClipboardList, Plus } from "lucide-react-native";
+import { View } from "react-native";
+import { QueryView } from "../../components/query-view";
+import { useStartWorkout } from "../hooks/use-start-workout";
 
-function StartWorkoutScreen({ routines }: { routines: Routine[] }) {
-  const { activeWorkoutId, startWorkout, isLoading } = useWorkout();
-  const { colors } = useTheme();
+const openNewRoutine = () => router.push("/(modals)/add-routine");
 
-  const handleDelete = async () => {
-    if (!activeWorkoutId) return;
-
-    try {
-      const workout = await workoutsCollection.find(activeWorkoutId);
-      const workoutExercises = await workout.workoutExercises.fetch();
-
-      database.write(async () => {
-        const setsToDelete = await Promise.all(
-          workoutExercises.map((we) => we.sets.fetch()),
-        );
-
-        const workoutExerciseDeletions = await Promise.all(
-          workoutExercises.map((we) => we.markAsDeleted()),
-        );
-        const setDeletions = await Promise.all(
-          setsToDelete.flat().map((set) => set.markAsDeleted()),
-        );
-        const workoutDeletion = await workout.markAsDeleted();
-
-        const batchOps = [
-          ...workoutExerciseDeletions,
-          ...setDeletions,
-          workoutDeletion,
-        ];
-
-        await database.batch(...batchOps);
-      });
-    } catch (error) {
-      console.error("Failed to delete workout:", error);
-    }
-  };
-
-  const start = () => {
-    if (activeWorkoutId) {
-      Alert.alert(
-        "Active Workout",
-        "You already have an active workout. Starting a new workout will override the current one. Do you want to continue?",
-        [
-          {
-            text: "Cancel",
-            style: "cancel",
-          },
-          {
-            text: "Resume Workout",
-            onPress: () => {
-              router.push("/(modals)/workout");
-            },
-          },
-          {
-            text: "Start New Workout",
-            onPress: async () => {
-              await handleDelete();
-
-              await startWorkout();
-              router.push("/(modals)/workout");
-            },
-            style: "destructive",
-          },
-        ],
-        { cancelable: true },
-      );
-    } else {
-      startWorkout();
-      router.push("/(modals)/workout");
-    }
-  };
+export default function StartWorkout() {
+  const startWorkout = useStartWorkout();
+  const routinesQuery = useRoutines();
 
   return (
-    <BodyScrollView style={{ padding: 20 }}>
-      <Button onPress={start} size="md" loading={isLoading}>
-        Start Workout
+    <BodyScrollView>
+      <Button size="lg" onPress={() => startWorkout()}>
+        <Text>Start Empty Workout</Text>
       </Button>
 
-      <View style={styles.headerContainer}>
-        <ThemedText type="title">Routines</ThemedText>
-
-        <TouchableOpacity onPress={() => router.push("/(modals)/add-routine")}>
-          <Ionicons name="add" color={colors.primary} size={28} />
-        </TouchableOpacity>
+      <View className="mt-6 flex-row items-center justify-between">
+        <Text variant="h3">Routines</Text>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="rounded-full"
+          accessibilityLabel="New routine"
+          onPress={openNewRoutine}
+        >
+          <Icon as={Plus} />
+        </Button>
       </View>
 
-      <View>
-        {routines.length !== 0 ? (
-          routines.map((r, i) => <RoutineItem key={i} routine={r} />)
-        ) : (
-          <EmptyState
-            icon="create-outline"
-            title="No Routines"
-            description="Your Routines will appear here when you create them."
-            buttonText="Create Routine"
-            buttonIcon="add"
-            onButtonPress={() => router.push("/(modals)/add-routine")}
-          />
-        )}
-      </View>
+      <QueryView query={routinesQuery} errorTitle="Couldn't load routines">
+        {(routines) =>
+          routines.length === 0 ? (
+            <Empty>
+              <EmptyHeader>
+                <EmptyMedia variant="icon">
+                  <Icon as={ClipboardList} />
+                </EmptyMedia>
+                <EmptyTitle>No routines</EmptyTitle>
+                <EmptyDescription>
+                  Save the exercises you repeat, and start them in one tap.
+                </EmptyDescription>
+              </EmptyHeader>
+              <EmptyContent>
+                <Button variant="outline" onPress={openNewRoutine}>
+                  <Text>Create Routine</Text>
+                </Button>
+              </EmptyContent>
+            </Empty>
+          ) : (
+            routines.map((routine) => (
+              <RoutineCard key={routine.id} routine={routine} />
+            ))
+          )
+        }
+      </QueryView>
     </BodyScrollView>
   );
 }
-
-const enhance = withObservables([], () => ({
-  routines: routinesCollection.query(Q.sortBy("created_at", "desc")),
-}));
-
-export default enhance(StartWorkoutScreen);
-
-const styles = StyleSheet.create({
-  headerContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginTop: 60,
-    marginBottom: 10,
-  },
-  headerText: {
-    fontSize: 30,
-    fontWeight: "bold",
-    marginBottom: 40,
-  },
-});

@@ -1,178 +1,58 @@
-import {
-  SafeAreaView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-  ActivityIndicator,
-  ScrollView,
-  Share,
-} from "react-native";
-import React from "react";
-import { useTheme } from "expo-router/react-navigation";
-import { workoutsCollection } from "@/db";
-import { router, Stack, useLocalSearchParams } from "expo-router";
-import { Workout } from "@/db/models/workout";
-import { Ionicons } from "@expo/vector-icons";
-import PostWorkoutSummary, {
-  PostWorkout,
-} from "@/components/post-workout-summary";
-import { Q } from "@nozbe/watermelondb";
-import { BodyScrollView } from "@/components/body-scroll-view";
-import SummaryHeader from "../components/summary-header";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { withObservables } from "@nozbe/watermelondb/react";
-import { Exercise } from "@/db/models/exercise";
-import { WorkoutExercise } from "@/db/models/workout-exercise";
-import { Set } from "@/db/models/set";
-import { Observable } from "rxjs";
+import type { Outputs } from "@rep/api";
+import { useLocalSearchParams } from "expo-router";
+import { useState } from "react";
+import { ScrollView, Share, View } from "react-native";
+import { QueryView } from "../../components/query-view";
+import { SummaryHeader } from "../components/summary-header";
+import { WorkoutSummary } from "../components/workout-summary";
+import { useWorkout } from "../hooks/use-workout";
+import { formatDuration } from "../lib/duration";
 
-interface SummaryProps {
-  workout: Workout;
-  workoutExercises: WorkoutExercise[];
-  exercises: Exercise[];
-  sets: Set[];
-}
+const toShareMessage = (workout: Outputs["activity"]["workout"]["get"]) =>
+  [
+    "🏋️‍♂️ Just crushed a workout on Rep!",
+    "",
+    `🎯 ${workout.name}`,
+    `⏱️ ${formatDuration(workout.endedAt.getTime() - workout.startedAt.getTime())}`,
+    `💪 ${workout.exercises.length} exercises completed`,
+    "",
+    "Feeling stronger every day! 💪",
+  ].join("\n");
 
-const Summary = ({
-  workout,
-  workoutExercises,
-  exercises,
-  sets,
-}: SummaryProps) => {
-  const formatDuration = (milliseconds: number): string => {
-    const minutes = Math.floor(milliseconds / (1000 * 60));
-    const hours = Math.floor(minutes / 60);
+export default function Summary() {
+  const { workoutId } = useLocalSearchParams<{ workoutId: string }>();
+  const workoutQuery = useWorkout(workoutId);
+  const [headerHeight, setHeaderHeight] = useState(0);
 
-    if (hours > 0) {
-      const remainingMinutes = minutes % 60;
-      return `${hours}h ${remainingMinutes}m`;
-    }
-    return `${minutes}m`;
-  };
-
-  // Transform the data for PostWorkoutSummary
-  const workoutData: PostWorkout = {
-    workout_id: workout.id,
-    workout_name: workout.name,
-    start_time: workout.startTime.toString(),
-    end_time: workout.endTime ? workout.endTime.toString() : "",
-    exercises: workoutExercises.map((we) => {
-      const exercise = exercises.find((e) => e.id === we.exercise.id);
-      const exerciseSets = sets.filter(
-        (set) => set.workoutExercise.id === we.id,
-      );
-
-      return {
-        exercise_title: exercise?.title || "Loading...",
-        sets: exerciseSets.map((set) => ({
-          reps: set.reps,
-          weight: set.weight,
-          is_1rm_pr: set.is1RMPr,
-          is_volume_pr: set.isVolumePr,
-          is_weight_pr: set.isWeightPr,
-        })),
-      };
-    }),
-  };
-
-  const handleShare = async () => {
-    const duration =
-      workout.endTime && workout.startTime
-        ? formatDuration(
-            new Date(workout.endTime).getTime() -
-              new Date(workout.startTime).getTime(),
-          )
-        : "0m";
-
-    try {
-      const message = `🏋️‍♂️ Just crushed a workout on Rep!\n\n🎯 ${workout.name}\n⏱️ ${duration}\n💪 ${workoutExercises.length} exercises completed\n\nFeeling stronger every day! 💪`;
-
-      await Share.share({
-        message,
-      });
-    } catch (error) {
-      console.error("Error sharing:", error);
+  const share = () => {
+    if (workoutQuery.data) {
+      Share.share({ message: toShareMessage(workoutQuery.data) });
     }
   };
 
   return (
-    <>
-      <Stack.Screen
-        options={{
-          presentation: "fullScreenModal",
-          headerTransparent: true,
-          header: () => <SummaryHeader handleShare={handleShare} />,
-        }}
-      />
-
-      <BodyScrollView style={{ padding: 20, paddingTop: 120 }}>
-        <TouchableOpacity
-          onPress={() =>
-            router.push({
-              pathname: "/(modals)/workout-modal",
-              params: { workoutId: workout.id },
-            })
-          }
-          style={styles.summaryContainer}
-        >
-          <PostWorkoutSummary workout={workoutData} />
-        </TouchableOpacity>
-      </BodyScrollView>
-    </>
+    <View className="flex-1 bg-background">
+      <QueryView
+        query={workoutQuery}
+        errorTitle="Couldn't load workout"
+        errorDescription="Your workout is saved. Find it in your history."
+      >
+        {(workout) => (
+          <ScrollView
+            contentInsetAdjustmentBehavior="never"
+            contentContainerClassName="px-4 pb-safe-offset-4"
+            contentContainerStyle={{ paddingTop: headerHeight + 16 }}
+          >
+            <WorkoutSummary workout={workout} />
+          </ScrollView>
+        )}
+      </QueryView>
+      <View
+        className="absolute inset-x-0 top-0"
+        onLayout={(event) => setHeaderHeight(event.nativeEvent.layout.height)}
+      >
+        <SummaryHeader onShare={share} />
+      </View>
+    </View>
   );
-};
-
-// First enhance the workout
-const enhanceWorkout = withObservables(
-  ["workoutId"],
-  ({ workoutId }: { workoutId: string }) => ({
-    workout: workoutsCollection.findAndObserve(workoutId),
-  }),
-);
-
-// Then enhance with related data
-const enhanceWithRelations = withObservables(
-  ["workout"],
-  ({ workout }: { workout: Workout }) => ({
-    workout,
-    workoutExercises: workout.workoutExercises.observe(),
-    exercises: workout.collections.get<Exercise>("exercises").query().observe(),
-    sets: workout.collections
-      .get<Set>("sets")
-      .query(Q.on("workout_exercises", "workout_id", workout.id))
-      .observe(),
-  }),
-);
-
-// Compose the enhancements
-const enhance = (component: React.ComponentType<SummaryProps>) =>
-  enhanceWorkout(enhanceWithRelations(component));
-
-const EnhancedSummary = enhance(Summary);
-
-// Wrapper component to handle the workoutId from params
-const SummaryWrapper = () => {
-  const { workoutId } = useLocalSearchParams<{ workoutId: string }>();
-
-  if (!workoutId) {
-    return null;
-  }
-
-  return <EnhancedSummary workoutId={workoutId} />;
-};
-
-export default SummaryWrapper;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  contentContainer: {
-    padding: 20,
-  },
-  summaryContainer: {
-    borderRadius: 20,
-    overflow: "hidden",
-  },
-});
+}

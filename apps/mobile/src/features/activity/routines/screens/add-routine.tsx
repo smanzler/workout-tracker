@@ -1,145 +1,91 @@
-import {
-  StyleSheet,
-  View,
-  Button as RNButton,
-  Alert,
-  TextInput,
-} from "react-native";
-import React, { useRef, useState } from "react";
-import { BodyScrollView } from "@/components/body-scroll-view";
-import RoutineExerciseList from "../components/routine-exercise-list";
+import { Button } from "@/components/ui/button";
+import { Icon } from "@/components/ui/icon";
+import { Input } from "@/components/ui/input";
+import { Text } from "@/components/ui/text";
 import { router, Stack } from "expo-router";
-import database, {
-  routineExercisesCollection,
-  routinesCollection,
-  routineSetsCollection,
-} from "@/db";
-import Button from "@/components/button";
-import { useTheme } from "expo-router/react-navigation";
-import { useAuth } from "@/hooks/use-auth";
+import { Plus } from "lucide-react-native";
+import { useEffect } from "react";
+import { Alert } from "react-native";
 import {
-  useRoutineActions,
-  useRoutineExercises,
-} from "../stores/routine-store";
+  KeyboardAwareScrollView,
+  KeyboardToolbar,
+} from "react-native-keyboard-controller";
+import { ExerciseEditor } from "../../components/exercise-editor";
+import { toExerciseInputs } from "../../lib/draft";
+import { useCreateRoutine } from "../hooks/use-create-routine";
+import { useRoutineDraftStore } from "../stores/routine-draft-store";
 
-const AddRoutine = () => {
-  const { colors } = useTheme();
-  const { user } = useAuth();
-  const [routineName, setRoutineName] = useState<string>("");
-  const exercises = useRoutineExercises();
-  const { clearRoutine } = useRoutineActions();
-  const inputRefs = useRef<(TextInput | null)[][]>([]);
+export default function AddRoutine() {
+  const name = useRoutineDraftStore((state) => state.name);
+  const exercises = useRoutineDraftStore((state) => state.exercises);
+  const setName = useRoutineDraftStore((state) => state.setName);
+  const updateExercises = useRoutineDraftStore(
+    (state) => state.updateExercises,
+  );
+  const reset = useRoutineDraftStore((state) => state.reset);
+  const { mutate: createRoutine, isPending } = useCreateRoutine();
 
-  const handleSave = async () => {
-    if (exercises.length === 0) {
-      Alert.alert("Add Exercises", "Add exercises to the routine to save it");
-      return;
-    }
+  useEffect(() => reset, [reset]);
 
-    try {
-      await database.write(async () => {
-        const routine = await routinesCollection.create((r) => {
-          r.name = routineName || "New Routine";
-          if (user) r.userId = user.id;
-        });
+  const canSave = name.trim() !== "" && exercises.length > 0 && !isPending;
 
-        const batchOps = exercises.flatMap((exercise) => {
-          const routineExercise = routineExercisesCollection.prepareCreate(
-            (routineExercise) => {
-              // @ts-ignore
-              routineExercise.exercise.set(exercise.exercise);
-              // @ts-ignore
-              routineExercise.routine.set(routine);
-              if (user) routineExercise.userId = user.id;
-            },
-          );
-
-          const sets = exercise.sets.map((s) =>
-            routineSetsCollection.prepareCreate((set) => {
-              // @ts-ignore
-              set.routineExercise.set(routineExercise);
-              set.reps = s.reps ? parseInt(s.reps) : undefined;
-              set.weight = s.weight ? parseInt(s.weight) : undefined;
-              if (user) set.userId = user.id;
-            }),
-          );
-
-          return [routineExercise, ...sets];
-        });
-
-        await database.batch(...batchOps);
-      });
-
-      clearRoutine();
-    } catch (error) {
-      console.log("Error creating routine", error);
-    }
-
-    router.back();
-  };
-
-  const handleBack = () => {
-    Alert.alert(
-      "Discard Routine",
-      "Are you sure you want to discard this routine?",
-      [
-        {
-          text: "Cancel",
-          style: "cancel",
-        },
-        {
-          text: "Discard",
-          onPress: async () => {
-            clearRoutine();
-            router.back();
-          },
-          style: "destructive",
-        },
-      ],
+  const save = () =>
+    createRoutine(
+      { name: name.trim(), exercises: toExerciseInputs(exercises) },
+      {
+        onSuccess: () => router.back(),
+        onError: () =>
+          Alert.alert("Could not save routine", "Try again in a moment."),
+      },
     );
-  };
 
   return (
-    <BodyScrollView style={{ padding: 20 }}>
+    <>
       <Stack.Screen
         options={{
-          headerRight: () => <RNButton title="Cancel" onPress={handleBack} />,
+          headerLeft: () => (
+            <Button variant="ghost" size="sm" onPress={() => router.back()}>
+              <Text>Cancel</Text>
+            </Button>
+          ),
+          headerRight: () => (
+            <Button size="sm" disabled={!canSave} onPress={save}>
+              <Text>Save</Text>
+            </Button>
+          ),
         }}
       />
 
-      <TextInput
-        style={{
-          fontSize: 24,
-          fontWeight: "600",
-          color: colors.text,
-          marginVertical: 20,
-        }}
-        value={routineName}
-        onChangeText={setRoutineName}
-        placeholder="Routine Name"
-        placeholderTextColor={String(colors.text)
-          .replace("rgb", "rgba")
-          .replace(")", ", 0.4)")}
-      />
-
-      <RoutineExerciseList exercises={exercises} inputRefs={inputRefs} />
-
-      <Button
-        variant="outline"
-        onPress={() => router.push("/(modals)/add-routine-exercises")}
+      <KeyboardAwareScrollView
+        bottomOffset={64}
+        contentInsetAdjustmentBehavior="automatic"
+        keyboardShouldPersistTaps="handled"
+        contentContainerClassName="gap-3 p-4 pb-safe-offset-4"
       >
-        Add Exercises
-      </Button>
+        <Input
+          value={name}
+          onChangeText={setName}
+          placeholder="Routine name"
+          maxLength={100}
+          accessibilityLabel="Routine name"
+          className="h-12 border-0 bg-transparent px-0 text-2xl font-semibold shadow-none dark:bg-transparent"
+        />
 
-      <Button onPress={handleSave} style={{ marginTop: 10 }}>
-        Save
-      </Button>
+        {exercises.map((exercise) => (
+          <ExerciseEditor
+            key={exercise.id}
+            exercise={exercise}
+            completable={false}
+            onUpdate={updateExercises}
+          />
+        ))}
 
-      <View style={{ height: 50 }} />
-    </BodyScrollView>
+        <Button onPress={() => router.push("/(modals)/add-routine-exercises")}>
+          <Icon as={Plus} className="size-4 text-primary-foreground" />
+          <Text>Add Exercises</Text>
+        </Button>
+      </KeyboardAwareScrollView>
+      <KeyboardToolbar />
+    </>
   );
-};
-
-export default AddRoutine;
-
-const styles = StyleSheet.create({});
+}

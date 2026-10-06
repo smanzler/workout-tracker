@@ -1,107 +1,77 @@
-import { StyleSheet, View, TouchableOpacity, Share } from "react-native";
-import React, { useEffect, useRef } from "react";
+import { Button } from "@/components/ui/button";
+import { Icon } from "@/components/ui/icon";
+import { Text } from "@/components/ui/text";
 import { BlurView } from "expo-blur";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { ThemedText } from "@/components/themed-text";
-import LottieView from "lottie-react-native";
-import { Ionicons } from "@expo/vector-icons";
-import { router } from "expo-router";
-import { useTheme } from "expo-router/react-navigation";
 import * as Haptics from "expo-haptics";
+import { router } from "expo-router";
+import LottieView from "lottie-react-native";
+import { Share, X } from "lucide-react-native";
+import { useEffect, useRef } from "react";
+import { View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-interface SummaryHeaderProps {
-  handleShare: () => void;
-}
+const starAnimation = require("../assets/star.json");
 
-const SummaryHeader: React.FC<SummaryHeaderProps> = ({ handleShare }) => {
-  const { top } = useSafeAreaInsets();
-  const { colors } = useTheme();
-  const lottieRef1 = useRef<LottieView>(null);
-  const lottieRef2 = useRef<LottieView>(null);
-  const lottieRef3 = useRef<LottieView>(null);
+const starDelaysMs = [400, 500, 600];
+
+function Star({ delayMs }: { delayMs: number }) {
+  const ref = useRef<LottieView>(null);
 
   useEffect(() => {
-    lottieRef1.current?.reset();
-    lottieRef2.current?.reset();
-    lottieRef3.current?.reset();
+    ref.current?.reset();
+    const timeout = setTimeout(() => {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      ref.current?.play();
+    }, delayMs);
 
-    setTimeout(() => {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-      lottieRef1.current?.play();
-    }, 400);
-    setTimeout(() => {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-      lottieRef2.current?.play();
-    }, 500);
-    setTimeout(() => {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-      lottieRef3.current?.play();
-    }, 600);
-  }, []);
+    return () => clearTimeout(timeout);
+  }, [delayMs]);
+
+  return (
+    <LottieView
+      ref={ref}
+      source={starAnimation}
+      loop={false}
+      style={{ width: 50, height: 50 }}
+    />
+  );
+}
+
+export function SummaryHeader({ onShare }: { onShare: () => void }) {
+  const { top } = useSafeAreaInsets();
+
   return (
     <BlurView
-      style={[styles.container, { paddingTop: top, height: 100 + top }]}
       intensity={100}
       tint="systemChromeMaterial"
+      style={{ paddingTop: top }}
     >
-      <View style={styles.titleContainer}>
-        <TouchableOpacity onPress={() => router.back()}>
-          <Ionicons name="close" size={28} color={colors.primary} />
-        </TouchableOpacity>
-        <ThemedText style={styles.title}>Congratulations!</ThemedText>
-        <TouchableOpacity onPress={handleShare}>
-          <Ionicons name="share-outline" size={28} color={colors.primary} />
-        </TouchableOpacity>
+      <View className="flex-row items-center justify-between px-2">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="rounded-full"
+          accessibilityLabel="Close"
+          onPress={() => router.back()}
+        >
+          <Icon as={X} />
+        </Button>
+        <Text variant="h3">Congratulations!</Text>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="rounded-full"
+          accessibilityLabel="Share"
+          onPress={onShare}
+        >
+          <Icon as={Share} />
+        </Button>
       </View>
-      <View style={styles.lottieContainer}>
-        <LottieView
-          ref={lottieRef1}
-          style={styles.lottieView}
-          source={require("../assets/star.json")}
-          loop={false}
-        />
-        <LottieView
-          ref={lottieRef2}
-          style={styles.lottieView}
-          source={require("../assets/star.json")}
-          loop={false}
-        />
-        <LottieView
-          ref={lottieRef3}
-          style={styles.lottieView}
-          source={require("../assets/star.json")}
-          loop={false}
-        />
+      <View className="flex-row justify-center pb-2">
+        {starDelaysMs.map((delayMs) => (
+          <Star key={delayMs} delayMs={delayMs} />
+        ))}
       </View>
     </BlurView>
   );
-};
-
-export default SummaryHeader;
-
-const styles = StyleSheet.create({
-  container: {
-    alignItems: "center",
-  },
-  titleContainer: {
-    height: 30,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    width: "100%",
-    paddingHorizontal: 20,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    lineHeight: 30,
-  },
-  lottieContainer: {
-    height: 50,
-    flexDirection: "row",
-  },
-  lottieView: {
-    width: 50,
-    height: 50,
-  },
-});
+}

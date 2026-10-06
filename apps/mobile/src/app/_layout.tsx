@@ -8,7 +8,6 @@ import { useEffect, useState } from "react";
 import "react-native-reanimated";
 
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { WorkoutProvider } from "@/providers/workout-provider";
 import { View } from "react-native";
 import { NAV_THEME } from "@/lib/theme";
 import { pullDefaultExercises } from "@/features/activity/exercises/lib/default-exercises";
@@ -113,14 +112,12 @@ export default function RootLayout() {
                 value={NAV_THEME[(theme as "light" | "dark") ?? "light"]}
               >
                 <NetworkProvider>
-                  <WorkoutProvider>
-                    <View className="flex-1">
-                      <RootLayoutNav />
-                      <AuthOverlay />
-                      <Toast />
-                      <StatusBar style="auto" />
-                    </View>
-                  </WorkoutProvider>
+                  <View className="flex-1">
+                    <RootLayoutNav />
+                    <AuthOverlay />
+                    <Toast />
+                    <StatusBar style="auto" />
+                  </View>
                 </NetworkProvider>
               </ThemeProvider>
             </ApiProvider>
