@@ -8,7 +8,7 @@
     "ios": "expo run:ios",
     "test": "jest --passWithNoTests",
     "test:watch": "jest --watchAll",
-    "lint": "expo lint .",
+    "lint": "expo lint src",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx}\"",
     "check": "prettier --check \"**/*.{ts,tsx,js,jsx}\"",
     "typecheck": "tsc --noEmit"

@@ -1,0 +1,155 @@
+import { useTheme } from "expo-router/react-navigation";
+import React from "react";
+import {
+  StyleSheet,
+  TextInput as RNTextInput,
+  TextInputProps as RNTextInputProps,
+  TextStyle,
+  View,
+  ViewStyle,
+  ActivityIndicator,
+} from "react-native";
+import { ThemedText } from "./themed-text";
+import { Ionicons } from "@expo/vector-icons";
+
+type InputVariant = "default" | "filled" | "outlined" | "ghost";
+type InputSize = "sm" | "md" | "lg";
+
+interface TextInputProps extends Omit<RNTextInputProps, "style"> {
+  label?: string;
+  error?: string;
+  variant?: InputVariant;
+  size?: InputSize;
+  containerStyle?: ViewStyle;
+  inputStyle?: TextStyle;
+  disabled?: boolean;
+  rightIcon?: string;
+  rightIconColor?: string;
+  isLoading?: boolean;
+}
+
+export const TextInput: React.FC<TextInputProps> = ({
+  label,
+  error,
+  variant = "default",
+  size = "md",
+  containerStyle,
+  inputStyle,
+  disabled = false,
+  rightIcon,
+  rightIconColor,
+  isLoading = false,
+  ...props
+}) => {
+  const sizeStyles: Record<
+    InputSize,
+    { height?: number; fontSize: number; padding: number }
+  > = {
+    sm: { fontSize: 16, padding: 8 },
+    md: { height: 50, fontSize: 16, padding: 14 },
+    lg: { height: 55, fontSize: 32, padding: 16 },
+  };
+
+  const theme = useTheme();
+
+  const getVariantStyle = () => {
+    const baseStyle: ViewStyle = {
+      borderRadius: 12,
+      backgroundColor: theme.colors.background,
+    };
+
+    switch (variant) {
+      case "filled":
+        return {
+          ...baseStyle,
+          backgroundColor: theme.colors.card,
+        };
+      case "outlined":
+        return {
+          ...baseStyle,
+          borderWidth: 1,
+          borderColor: theme.colors.card,
+        };
+      case "ghost":
+        return {
+          ...baseStyle,
+          backgroundColor: "transparent",
+        };
+      default:
+        return baseStyle;
+    }
+  };
+
+  const getTextColor = () => {
+    if (disabled) {
+      return theme.colors.text;
+    }
+    return theme.colors.text;
+  };
+
+  return (
+    <View style={[styles.container, containerStyle]}>
+      {label && <ThemedText style={styles.label}>{label}</ThemedText>}
+      <View style={[getVariantStyle(), disabled && styles.disabled]}>
+        <View style={styles.inputContainer}>
+          <RNTextInput
+            style={[
+              {
+                height: sizeStyles[size].height,
+                fontSize: sizeStyles[size].fontSize,
+                padding: sizeStyles[size].padding,
+                color: getTextColor(),
+                flex: 1,
+              },
+              inputStyle,
+            ]}
+            placeholderTextColor={theme.colors.text}
+            editable={!disabled}
+            {...props}
+          />
+          {isLoading ? (
+            <ActivityIndicator
+              style={styles.rightIcon}
+              color={theme.colors.text}
+            />
+          ) : rightIcon ? (
+            <Ionicons
+              name={rightIcon as any}
+              size={24}
+              color={rightIconColor || theme.colors.text}
+              style={styles.rightIcon}
+            />
+          ) : null}
+        </View>
+      </View>
+      {error && <ThemedText style={styles.error}>{error}</ThemedText>}
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    marginBottom: 16,
+  },
+  label: {
+    fontWeight: 600,
+    marginBottom: 4,
+    opacity: 0.6,
+  },
+  error: {
+    color: "#ef4444", // red-500
+    marginTop: 4,
+  },
+  disabled: {
+    opacity: 0.5,
+  },
+  inputContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  rightIcon: {
+    marginRight: 14,
+  },
+});
+
+export default TextInput;
