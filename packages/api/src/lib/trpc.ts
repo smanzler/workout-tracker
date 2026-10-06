@@ -1,5 +1,6 @@
 import { type CreateFastifyContextOptions } from "@trpc/server/adapters/fastify";
 import { initTRPC, TRPCError } from "@trpc/server";
+import superjson from "superjson";
 import { fromNodeHeaders } from "better-auth/node";
 import { auth } from "./auth";
 
@@ -14,7 +15,7 @@ export async function createContext({ req, res }: CreateFastifyContextOptions) {
 
 export type Context = Awaited<ReturnType<typeof createContext>>;
 
-const t = initTRPC.context<Context>().create();
+const t = initTRPC.context<Context>().create({ transformer: superjson });
 
 export const router = t.router;
 

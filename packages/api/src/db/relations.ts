@@ -12,10 +12,12 @@ export const relations = defineRelations(schema, (r) => ({
     workout: r.one.Workouts({
       from: r.WorkoutExercises.workoutId,
       to: r.Workouts.id,
+      optional: false,
     }),
     exercise: r.one.Exercises({
       from: r.WorkoutExercises.exerciseId,
       to: r.Exercises.id,
+      optional: false,
     }),
     sets: r.many.WorkoutSets({
       from: r.WorkoutExercises.id,
@@ -26,6 +28,7 @@ export const relations = defineRelations(schema, (r) => ({
     workoutExercise: r.one.WorkoutExercises({
       from: r.WorkoutSets.workoutExerciseId,
       to: r.WorkoutExercises.id,
+      optional: false,
     }),
   },
   Routines: {
@@ -38,10 +41,12 @@ export const relations = defineRelations(schema, (r) => ({
     routine: r.one.Routines({
       from: r.RoutineExercises.routineId,
       to: r.Routines.id,
+      optional: false,
     }),
     exercise: r.one.Exercises({
       from: r.RoutineExercises.exerciseId,
       to: r.Exercises.id,
+      optional: false,
     }),
     sets: r.many.RoutineSets({
       from: r.RoutineExercises.id,
@@ -52,6 +57,7 @@ export const relations = defineRelations(schema, (r) => ({
     routineExercise: r.one.RoutineExercises({
       from: r.RoutineSets.routineExerciseId,
       to: r.RoutineExercises.id,
+      optional: false,
     }),
   },
 }));

@@ -8,3 +8,5 @@ const db = drizzle(env.DATABASE_URL, {
 });
 
 export default db;
+
+export type Transaction = Parameters<Parameters<typeof db.transaction>[0]>[0];
