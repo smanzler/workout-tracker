@@ -40,6 +40,15 @@ A modern, social workout tracking app built with React Native and Expo. Track yo
 - **UI Components**: Custom components with native feel
 - **Authentication**: Supabase Auth
 
+## Development
+
+The repo is a pnpm workspace. The Expo app lives in `apps/mobile`.
+
+```bash
+pnpm install
+pnpm --filter @rep/mobile start
+```
+
 ## Author
 
 Simon Manzler
