@@ -83,6 +83,7 @@ export function ExerciseList({
       <Stack.SearchBar
         placeholder="Search exercises"
         hideNavigationBar={false}
+        hideWhenScrolling={false}
         onChangeText={(event) => {
           // The event is gone when React runs the updater.
           const search = event.nativeEvent.text;

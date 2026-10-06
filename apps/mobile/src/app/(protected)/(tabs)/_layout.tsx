@@ -1,62 +1,36 @@
-import { Tabs } from "expo-router/js-tabs";
-import React, { useEffect } from "react";
-import { Platform } from "react-native";
+import { Stack } from "expo-router";
+import { NativeTabs } from "expo-router/unstable-native-tabs";
 
-import { HapticTab } from "@/components/haptic-tab";
-import TabBarBackground from "@/components/tab-bar-background";
-import { Ionicons } from "@expo/vector-icons";
-import { useTheme } from "expo-router/react-navigation";
-import TabBar from "@/components/tab-bar";
-
-export default function TabLayout() {
-  const theme = useTheme();
-
+export function TabLayout() {
   return (
-    <Tabs
-      tabBar={(props) => <TabBar {...props} />}
-      screenOptions={{
-        tabBarActiveTintColor: theme.colors.primary,
-        tabBarButton: HapticTab,
-        tabBarBackground: TabBarBackground,
-        headerShown: false,
-      }}
-    >
-      <Tabs.Screen
-        name="history"
-        options={{
-          title: "History",
-          tabBarIcon: ({ color }) => (
-            <Ionicons size={26} name="time" color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="start-workout"
-        options={{
-          title: "Workout",
-          tabBarIcon: ({ color }) => (
-            <Ionicons size={26} name="create" color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="exercises"
-        options={{
-          title: "Exercises",
-          tabBarIcon: ({ color }) => (
-            <Ionicons size={26} name="barbell" color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="you"
-        options={{
-          title: "You",
-          tabBarIcon: ({ color }) => (
-            <Ionicons size={26} name="person" color={color} />
-          ),
-        }}
-      />
-    </Tabs>
+    <Stack>
+      <Stack.Screen name="index" options={{ headerShown: true }} />
+    </Stack>
+  );
+}
+
+export default function Layout() {
+  return (
+    <NativeTabs>
+      <NativeTabs.Trigger name="start-workout">
+        <NativeTabs.Trigger.Label>Workout</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon
+          sf="figure.strengthtraining.traditional"
+          md="fitness_center"
+        />
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="history">
+        <NativeTabs.Trigger.Label>History</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon sf="clock.arrow.circlepath" md="history" />
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="exercises">
+        <NativeTabs.Trigger.Label>Exercises</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon sf="dumbbell.fill" md="exercise" />
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="you">
+        <NativeTabs.Trigger.Label>You</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon sf="person.crop.circle" md="account_circle" />
+      </NativeTabs.Trigger>
+    </NativeTabs>
   );
 }

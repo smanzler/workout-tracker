@@ -1,5 +1,5 @@
-import TabStack from "@/components/tab-stack";
+import { TabLayout } from "../_layout";
 
-export default function HistoryLayout() {
-  return <TabStack name="index" headerTitle="History" />;
+export default function Layout() {
+  return <TabLayout />;
 }

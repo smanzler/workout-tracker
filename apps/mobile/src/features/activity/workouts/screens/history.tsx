@@ -10,13 +10,14 @@ import {
 import { Icon } from "@/components/ui/icon";
 import { Spinner } from "@/components/ui/spinner";
 import { Text } from "@/components/ui/text";
-import { router } from "expo-router";
+import { router, Stack } from "expo-router";
 import { History as HistoryIcon } from "lucide-react-native";
 import { Pressable } from "@/components/ui/pressable";
 import { FlatList } from "react-native";
 import { QueryView } from "@/components/query-view";
 import { RefetchControl } from "@/components/refetch-control";
 import { WorkoutSummary } from "@/components/workout-summary";
+import { WorkoutIndicator } from "../components/workout-indicator";
 import { useWorkoutMenu } from "../hooks/use-workout-menu";
 import { useWorkouts } from "../hooks/use-workouts";
 
@@ -48,34 +49,38 @@ export default function History() {
   const showWorkoutMenu = useWorkoutMenu();
 
   return (
-    <QueryView query={workoutsQuery} errorTitle="Couldn't load your history">
-      {({ pages }) => (
-        <FlatList
-          data={pages.flatMap(({ items }) => items)}
-          keyExtractor={({ id }) => id}
-          contentInsetAdjustmentBehavior="automatic"
-          contentContainerClassName="grow gap-3 p-4"
-          refreshControl={<RefetchControl refetch={refetch} />}
-          onEndReached={() => {
-            if (hasNextPage && !isFetchingNextPage) fetchNextPage();
-          }}
-          ListEmptyComponent={EmptyHistory}
-          ListFooterComponent={isFetchingNextPage ? <Spinner /> : null}
-          renderItem={({ item }) => (
-            <Pressable
-              onPress={() =>
-                router.push({
-                  pathname: "/workout-details",
-                  params: { workoutId: item.id },
-                })
-              }
-              onLongPress={() => showWorkoutMenu(item)}
-            >
-              <WorkoutSummary workout={item} />
-            </Pressable>
-          )}
-        />
-      )}
-    </QueryView>
+    <>
+      <Stack.Screen options={{ title: "History" }} />
+      <QueryView query={workoutsQuery} errorTitle="Couldn't load your history">
+        {({ pages }) => (
+          <FlatList
+            data={pages.flatMap(({ items }) => items)}
+            keyExtractor={({ id }) => id}
+            contentInsetAdjustmentBehavior="automatic"
+            contentContainerClassName="grow gap-3 p-4"
+            refreshControl={<RefetchControl refetch={refetch} />}
+            onEndReached={() => {
+              if (hasNextPage && !isFetchingNextPage) fetchNextPage();
+            }}
+            ListEmptyComponent={EmptyHistory}
+            ListFooterComponent={isFetchingNextPage ? <Spinner /> : null}
+            renderItem={({ item }) => (
+              <Pressable
+                onPress={() =>
+                  router.push({
+                    pathname: "/workout-details",
+                    params: { workoutId: item.id },
+                  })
+                }
+                onLongPress={() => showWorkoutMenu(item)}
+              >
+                <WorkoutSummary workout={item} />
+              </Pressable>
+            )}
+          />
+        )}
+      </QueryView>
+      <WorkoutIndicator />
+    </>
   );
 }

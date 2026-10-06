@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/ui/icon";
 import { router, Stack } from "expo-router";
 import { Plus } from "lucide-react-native";
+import { WorkoutIndicator } from "@/features/activity/workouts/components/workout-indicator";
 import { ExerciseList } from "../../components/exercise-list";
 
 export default function Exercises() {
@@ -9,6 +10,7 @@ export default function Exercises() {
     <>
       <Stack.Screen
         options={{
+          title: "Exercises",
           headerRight: () => (
             <Button
               variant="ghost"
@@ -30,6 +32,7 @@ export default function Exercises() {
           })
         }
       />
+      <WorkoutIndicator />
     </>
   );
 }

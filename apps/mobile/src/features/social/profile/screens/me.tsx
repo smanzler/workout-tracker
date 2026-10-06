@@ -1,3 +1,4 @@
+import { WorkoutIndicator } from "@/features/activity/workouts/components/workout-indicator";
 import { NotificationsBellButton } from "@/features/notifications/components/notifications-bell-button";
 import { Stack } from "expo-router";
 import { Settings, Users } from "lucide-react-native";
@@ -30,6 +31,7 @@ export default function Me() {
         }}
       />
       <ProfileView profileId={profile?.id} />
+      <WorkoutIndicator />
     </>
   );
 }
