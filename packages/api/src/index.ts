@@ -7,6 +7,7 @@ import { authRoutes } from "./routes/auth";
 import { env } from "./env";
 import { appRouter, type AppRouter } from "./routes";
 import { createContext } from "./lib/trpc";
+import "./lib/boss";
 
 // A batched tRPC call puts every procedure name in the URL path.
 const server = fastify({ routerOptions: { maxParamLength: 5000 } });

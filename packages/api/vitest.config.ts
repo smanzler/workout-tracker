@@ -21,6 +21,8 @@ const testEnv: Record<keyof Env, string> = {
   SMTP_PASSWORD: "test-pass",
   SMTP_FROM: "test@example.com",
 
+  EXPO_ACCESS_TOKEN: "test-expo-token",
+
   REVIEW_EMAIL: "review@example.com",
   REVIEW_OTP: "123456",
 };

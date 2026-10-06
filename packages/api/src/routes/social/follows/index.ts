@@ -1,6 +1,7 @@
 import db from "../../../db/index";
 import { Follows, Profiles } from "../../../db/schema";
 import { and, count, eq } from "drizzle-orm";
+import { notify } from "../../../lib/notify";
 import { protectedProcedure, router } from "../../../lib/trpc";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
@@ -88,10 +89,26 @@ export const followsRouter = router({
         .returning();
 
       // Following someone twice keeps the first follow.
-      return (
-        follow ??
-        (await findFollow({ followerId: user.id, followeeId: targetUserId }))
-      );
+      if (!follow) {
+        return findFollow({ followerId: user.id, followeeId: targetUserId });
+      }
+
+      // The follow references the follower's profile, so it exists.
+      const [follower] = await db
+        .select({ username: Profiles.username })
+        .from(Profiles)
+        .where(eq(Profiles.id, user.id));
+
+      await notify({
+        userId: targetUserId,
+        payload: {
+          type: "follow",
+          data: { userId: user.id, followerName: follower?.username ?? "" },
+        },
+        dedupeKey: `follow:${user.id}:${targetUserId}`,
+      });
+
+      return follow;
     }),
 
   delete: protectedProcedure

@@ -21,6 +21,8 @@ export const envSchema = z.object({
   SMTP_PASSWORD: z.string().optional(),
   SMTP_FROM: z.string().default("Rep <noreply@rep.local>"),
 
+  EXPO_ACCESS_TOKEN: z.string().optional(),
+
   REVIEW_EMAIL: z.email().toLowerCase().optional(),
   REVIEW_OTP: z
     .string()

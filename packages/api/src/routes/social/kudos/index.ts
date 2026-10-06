@@ -1,6 +1,7 @@
 import db from "../../../db/index";
-import { Kudos, Workouts } from "../../../db/schema";
+import { Kudos, Profiles, Workouts } from "../../../db/schema";
 import { and, eq } from "drizzle-orm";
+import { notify } from "../../../lib/notify";
 import { protectedProcedure, router } from "../../../lib/trpc";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
@@ -13,7 +14,11 @@ export const kudosRouter = router({
       const { workoutId } = opts.input;
 
       const [workout] = await db
-        .select({ id: Workouts.id })
+        .select({
+          id: Workouts.id,
+          name: Workouts.name,
+          userId: Workouts.userId,
+        })
         .from(Workouts)
         .where(eq(Workouts.id, workoutId));
 
@@ -21,10 +26,32 @@ export const kudosRouter = router({
         throw new TRPCError({ code: "NOT_FOUND" });
       }
 
-      await db
+      const [kudos] = await db
         .insert(Kudos)
         .values({ workoutId, userId: user.id })
-        .onConflictDoNothing();
+        .onConflictDoNothing()
+        .returning({ id: Kudos.id });
+
+      if (kudos && workout.userId !== user.id) {
+        const [giver] = await db
+          .select({ username: Profiles.username })
+          .from(Profiles)
+          .where(eq(Profiles.id, user.id));
+
+        // The dedupe key stops a second push after kudos are taken back and given again.
+        await notify({
+          userId: workout.userId,
+          payload: {
+            type: "kudos",
+            data: {
+              workoutId,
+              workoutName: workout.name,
+              giverName: giver?.username ?? "",
+            },
+          },
+          dedupeKey: `kudos:${workoutId}:${user.id}`,
+        });
+      }
 
       return { workoutId };
     }),
