@@ -7,6 +7,7 @@ import {
   pgTable,
   text,
   timestamp,
+  unique,
   uniqueIndex,
   uuid,
 } from "drizzle-orm/pg-core";
@@ -145,6 +146,42 @@ export const RoutineSets = pgTable(
   },
   (t) => [
     index("routine_sets_routine_exercise_id_idx").on(t.routineExerciseId),
+  ],
+);
+
+export const Follows = pgTable(
+  "follows",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    followerId: uuid("follower_id")
+      .notNull()
+      .references(() => Profiles.id, { onDelete: "cascade" }),
+    followeeId: uuid("followee_id")
+      .notNull()
+      .references(() => Profiles.id, { onDelete: "cascade" }),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+  },
+  (t) => [
+    unique().on(t.followerId, t.followeeId),
+    index("follows_followee_id_idx").on(t.followeeId),
+  ],
+);
+
+export const Kudos = pgTable(
+  "kudos",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    workoutId: uuid("workout_id")
+      .notNull()
+      .references(() => Workouts.id, { onDelete: "cascade" }),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => Profiles.id, { onDelete: "cascade" }),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+  },
+  (t) => [
+    unique().on(t.workoutId, t.userId),
+    index("kudos_workout_id_idx").on(t.workoutId),
   ],
 );
 
