@@ -1,5 +1,6 @@
+import { NotificationsBellButton } from "@/features/notifications/components/notifications-bell-button";
 import { Stack } from "expo-router";
-import { Bell, Settings, Users } from "lucide-react-native";
+import { Settings, Users } from "lucide-react-native";
 import { View } from "react-native";
 import { HeaderLink } from "../../components/header-link";
 import { ProfileView } from "../components/profile-view";
@@ -22,11 +23,7 @@ export default function Me() {
           ),
           headerRight: () => (
             <View className="flex-row items-center">
-              <HeaderLink
-                icon={Bell}
-                label="Notifications"
-                href="/notifications"
-              />
+              <NotificationsBellButton />
               <HeaderLink icon={Users} label="Friends" href="/friends" />
             </View>
           ),

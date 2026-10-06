@@ -4,7 +4,7 @@ import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import "react-native-reanimated";
 
 import { GestureHandlerRootView } from "react-native-gesture-handler";
@@ -12,14 +12,13 @@ import { View } from "react-native";
 import { NAV_THEME } from "@/lib/theme";
 import { restoreTheme } from "@/features/social/profile/lib/theme";
 import { KeyboardProvider } from "react-native-keyboard-controller";
-import * as Notifications from "expo-notifications";
-import { Toast } from "@/features/notifications/components/toast";
 import { ActionSheetProvider } from "@expo/react-native-action-sheet";
 import { NetworkProvider } from "@/providers/network-provider";
 import { SafeAreaListener } from "react-native-safe-area-context";
 import { Uniwind, useUniwind } from "uniwind";
 import { ApiProvider } from "@/providers/api-provider";
 import { authClient } from "@/lib/auth-client";
+import { useOnboardingStore } from "@/features/onboarding/stores/onboarding-store";
 import {
   Empty,
   EmptyDescription,
@@ -38,9 +37,6 @@ restoreTheme();
 export default function RootLayout() {
   const { theme } = useUniwind();
 
-  const [notification, setNotification] =
-    useState<Notifications.Notification>();
-
   const [loaded] = useFonts({
     SpaceMono: require("../../assets/fonts/SpaceMono-Regular.ttf"),
   });
@@ -50,23 +46,6 @@ export default function RootLayout() {
       SplashScreen.hideAsync();
     }
   }, [loaded]);
-
-  useEffect(() => {
-    const notificationSubscription =
-      Notifications.addNotificationReceivedListener((notification) => {
-        setNotification(notification);
-      });
-
-    const responseSubscription =
-      Notifications.addNotificationResponseReceivedListener((response) => {
-        console.log(response);
-      });
-
-    return () => {
-      notificationSubscription.remove();
-      responseSubscription.remove();
-    };
-  }, []);
 
   if (!loaded) {
     return null;
@@ -89,7 +68,6 @@ export default function RootLayout() {
                   <View className="flex-1">
                     <RootLayoutNav />
                     <AuthOverlay />
-                    <Toast />
                     <StatusBar style="auto" />
                   </View>
                 </NetworkProvider>
@@ -104,13 +82,17 @@ export default function RootLayout() {
 
 function RootLayoutNav() {
   const { data: session } = authClient.useSession();
+  const onboarded = useOnboardingStore((state) => state.completed);
 
   return (
     <Stack>
-      <Stack.Protected guard={!session}>
+      <Stack.Protected guard={!onboarded}>
+        <Stack.Screen name="onboarding" options={{ headerShown: false }} />
+      </Stack.Protected>
+      <Stack.Protected guard={onboarded && !session}>
         <Stack.Screen name="(auth)" options={{ headerShown: false }} />
       </Stack.Protected>
-      <Stack.Protected guard={!!session}>
+      <Stack.Protected guard={onboarded && !!session}>
         <Stack.Screen name="(protected)" options={{ headerShown: false }} />
       </Stack.Protected>
     </Stack>

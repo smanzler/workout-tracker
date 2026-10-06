@@ -4,6 +4,7 @@ import { Icon } from "@/components/ui/icon";
 import { Spinner } from "@/components/ui/spinner";
 import { resetUserData } from "@/db";
 import { useStrongImport } from "@/features/activity/workouts/hooks/use-strong-import";
+import { useRemovePushToken } from "@/features/notifications/hooks/use-remove-push-token";
 import {
   useIsWorkingOut,
   useWorkoutSessionStore,
@@ -47,6 +48,7 @@ export default function Settings() {
   const { importFile, isPending: isImporting } = useStrongImport();
   const isWorkingOut = useIsWorkingOut();
   const discardWorkout = useWorkoutSessionStore((state) => state.discard);
+  const { mutateAsync: removePushToken } = useRemovePushToken();
   const showMenu = useMenu();
 
   const handleUpdateAvatar = (avatar: string | null) =>
@@ -100,6 +102,7 @@ export default function Settings() {
         text: "Sign Out",
         style: "destructive",
         onPress: async () => {
+          await removePushToken().catch(() => undefined);
           await authClient.signOut();
           await resetUserData();
         },

@@ -7,6 +7,8 @@ import {
 } from "@/components/ui/empty";
 import { Icon } from "@/components/ui/icon";
 import { Spinner } from "@/components/ui/spinner";
+import { useNotificationTaps } from "@/features/notifications/hooks/use-notification-taps";
+import { usePushNotificationRegistration } from "@/features/notifications/hooks/use-push-notification-registration";
 import { useMyProfile } from "@/features/social/profile/hooks/use-my-profile";
 import { Ionicons } from "@expo/vector-icons";
 import { router, Stack } from "expo-router";
@@ -15,6 +17,8 @@ import { TriangleAlert } from "lucide-react-native";
 import { Platform, TouchableOpacity, View } from "react-native";
 
 export default function Layout() {
+  usePushNotificationRegistration();
+  useNotificationTaps();
   const { colors } = useTheme();
   const { data: profile, isPending, isError } = useMyProfile();
 
