@@ -1,4 +1,11 @@
 import type { ConfigContext, ExpoConfig } from "expo/config";
+import "dotenv/config";
+
+const googleIosClientId = process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID;
+
+// Google sign-in on iOS opens the app with the reversed client ID.
+const reverseClientId = (clientId: string) =>
+  clientId.split(".").reverse().join(".");
 
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
@@ -16,6 +23,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     infoPlist: {
       ITSAppUsesNonExemptEncryption: false,
     },
+    usesAppleSignIn: true,
   },
   android: {
     adaptiveIcon: {
@@ -46,8 +54,31 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
         cameraPermission: "Allow $(PRODUCT_NAME) to access your camera",
       },
     ],
+    "expo-apple-authentication",
+    ...(googleIosClientId
+      ? [
+          [
+            "react-native-nitro-google-signin",
+            { iosUrlScheme: reverseClientId(googleIosClientId) },
+          ] as [string, unknown],
+        ]
+      : []),
     "expo-notifications",
-    "expo-build-properties",
+    [
+      "expo-build-properties",
+      {
+        ios: {
+          // Google sign-in links AppCheckCore, which needs these pods with
+          // modular headers. The Google plugin adds them, but only runs with
+          // a client ID.
+          extraPods: googleIosClientId
+            ? []
+            : ["AppCheckCore", "GoogleUtilities", "RecaptchaInterop"].map(
+                (name) => ({ name, modular_headers: true }),
+              ),
+        },
+      },
+    ],
     "expo-font",
     "expo-web-browser",
     "expo-image",

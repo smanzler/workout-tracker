@@ -3,6 +3,7 @@ import { BodyScrollView } from "@/components/ui/body-scroll-view";
 import { Icon } from "@/components/ui/icon";
 import { Spinner } from "@/components/ui/spinner";
 import { useStrongImport } from "@/features/activity/workouts/hooks/use-strong-import";
+import { signOutOfGoogle } from "@/features/auth/lib/google";
 import { useRemovePushToken } from "@/features/notifications/hooks/use-remove-push-token";
 import {
   useIsWorkingOut,
@@ -103,6 +104,7 @@ export default function Settings() {
         onPress: async () => {
           await removePushToken().catch(() => undefined);
           await authClient.signOut();
+          await signOutOfGoogle();
         },
       },
     ]);

@@ -23,6 +23,15 @@ export const envSchema = z.object({
 
   EXPO_ACCESS_TOKEN: z.string().optional(),
 
+  GOOGLE_CLIENT_ID: z.string().optional(),
+  GOOGLE_CLIENT_SECRET: z.string().optional(),
+
+  APPLE_CLIENT_ID: z.string().optional(),
+  APPLE_TEAM_ID: z.string().optional(),
+  APPLE_KEY_ID: z.string().optional(),
+  APPLE_PRIVATE_KEY: z.string().optional(),
+  APPLE_APP_BUNDLE_IDENTIFIER: z.string().optional(),
+
   REVIEW_EMAIL: z.email().toLowerCase().optional(),
   REVIEW_OTP: z
     .string()

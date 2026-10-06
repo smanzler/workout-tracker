@@ -8,6 +8,7 @@ import { useRouter } from "expo-router";
 import { useState } from "react";
 import { KeyboardAvoidingView, View } from "react-native";
 import { AuthCard } from "../components/auth-card";
+import { SocialSignIn } from "../components/social-sign-in";
 
 export function SignIn() {
   const router = useRouter();
@@ -80,6 +81,8 @@ export function SignIn() {
             {submitting && <Spinner className="text-secondary" />}
             <Text>Continue</Text>
           </Button>
+
+          <SocialSignIn />
         </AuthCard>
       </View>
     </KeyboardAvoidingView>

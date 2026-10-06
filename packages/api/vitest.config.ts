@@ -23,6 +23,15 @@ const testEnv: Record<keyof Env, string> = {
 
   EXPO_ACCESS_TOKEN: "test-expo-token",
 
+  GOOGLE_CLIENT_ID: "test-google-client-id",
+  GOOGLE_CLIENT_SECRET: "test-google-client-secret",
+
+  APPLE_CLIENT_ID: "com.example.test",
+  APPLE_TEAM_ID: "TESTTEAMID",
+  APPLE_KEY_ID: "TESTKEYID",
+  APPLE_PRIVATE_KEY: "test-private-key",
+  APPLE_APP_BUNDLE_IDENTIFIER: "com.example.test",
+
   REVIEW_EMAIL: "review@example.com",
   REVIEW_OTP: "123456",
 };
