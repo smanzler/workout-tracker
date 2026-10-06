@@ -20,6 +20,12 @@ pnpm monorepo — Expo mobile app (`apps/mobile`), Fastify + tRPC + Drizzle API 
   AVOID:
   type Thing = { x?: number, y?: string }
 
+## Frontend styling
+
+Prefer `className` over the `style` prop for frontend styling whenever possible.
+
+In app code, import UI components from `@/components/ui` — never `Text`, `Pressable`, or other styled primitives straight from `react-native`. Those belong inside `components/ui` wrappers, which carry the shared variants and theming. If a component isn't there yet, add it rather than styling a raw primitive at the call site.
+
 ## Local stack
 
 `pnpm dev` starts Postgres, pgAdmin and mailpit in Docker, then the API and Metro in a tmux session; `pnpm down` stops it. The ports differ from dash's so both stacks can run at once:

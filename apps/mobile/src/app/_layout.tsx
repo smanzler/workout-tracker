@@ -1,3 +1,4 @@
+import "@/global.css";
 import { ThemeProvider, useTheme } from "expo-router/react-navigation";
 import { useFonts } from "expo-font";
 import { router, Stack } from "expo-router";
@@ -6,14 +7,13 @@ import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
 import "react-native-reanimated";
 
-import { useColorScheme } from "@/hooks/use-color-scheme";
 import AuthProvider from "@/providers/auth-provider";
 import { SyncProvider } from "@/providers/sync-provider";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { WorkoutProvider } from "@/providers/workout-provider";
 import { Platform, TouchableOpacity, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { DarkTheme, DefaultTheme } from "@/lib/theme";
+import { NAV_THEME } from "@/lib/theme";
 import { pullDefaultExercises } from "@/features/activity/exercises/lib/default-exercises";
 import { exercisesCollection } from "@/db";
 import { Q } from "@nozbe/watermelondb";
@@ -24,6 +24,8 @@ import * as Notifications from "expo-notifications";
 import { Toast } from "@/features/notifications/components/toast";
 import { ActionSheetProvider } from "@expo/react-native-action-sheet";
 import { NetworkProvider } from "@/providers/network-provider";
+import { SafeAreaListener } from "react-native-safe-area-context";
+import { Uniwind, useUniwind } from "uniwind";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -31,7 +33,7 @@ SplashScreen.preventAutoHideAsync();
 const queryClient = new QueryClient();
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
+  const { theme } = useUniwind();
 
   const [notification, setNotification] =
     useState<Notifications.Notification>();
@@ -93,31 +95,37 @@ export default function RootLayout() {
   }
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <KeyboardProvider>
-        <ActionSheetProvider>
-          <QueryClientProvider client={queryClient}>
-            <ThemeProvider
-              value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
-            >
-              <NetworkProvider>
-                <AuthProvider>
-                  <WorkoutProvider>
-                    <SyncProvider>
-                      <View style={{ flex: 1 }}>
-                        <RootLayoutNav />
-                        <Toast />
-                        <StatusBar style="auto" />
-                      </View>
-                    </SyncProvider>
-                  </WorkoutProvider>
-                </AuthProvider>
-              </NetworkProvider>
-            </ThemeProvider>
-          </QueryClientProvider>
-        </ActionSheetProvider>
-      </KeyboardProvider>
-    </GestureHandlerRootView>
+    <SafeAreaListener
+      onChange={({ insets }) => {
+        Uniwind.updateInsets(insets);
+      }}
+    >
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <KeyboardProvider>
+          <ActionSheetProvider>
+            <QueryClientProvider client={queryClient}>
+              <ThemeProvider
+                value={NAV_THEME[(theme as "light" | "dark") ?? "light"]}
+              >
+                <NetworkProvider>
+                  <AuthProvider>
+                    <WorkoutProvider>
+                      <SyncProvider>
+                        <View className="flex-1">
+                          <RootLayoutNav />
+                          <Toast />
+                          <StatusBar style="auto" />
+                        </View>
+                      </SyncProvider>
+                    </WorkoutProvider>
+                  </AuthProvider>
+                </NetworkProvider>
+              </ThemeProvider>
+            </QueryClientProvider>
+          </ActionSheetProvider>
+        </KeyboardProvider>
+      </GestureHandlerRootView>
+    </SafeAreaListener>
   );
 }
 

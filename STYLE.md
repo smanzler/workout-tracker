@@ -46,6 +46,14 @@ Use (in order of preference):
 
 **Testing.** Happy path for deep functionality; complete unit tests for modular functionality. Pure, branchy logic is the target. Don't test thin wrappers over a client library, a Drizzle query, or a JSX tree with no logic in it. The API uses vitest; mobile uses jest-expo.
 
+## Frontend UI components
+
+**Use the local component library.** In app code, import UI components from `@/components/ui` — never `Text`, `Pressable`, or other styled primitives straight from `react-native`. The wrappers carry the shared `cva` variants and theme tokens and give us one place to change styling globally. Raw `react-native` primitives are fine inside `components/ui` itself (that's where they get wrapped) and for pure layout (`View`, `KeyboardAvoidingView`, `ScrollView`).
+
+**Style with `className`, not `style`.** The app uses Tailwind through uniwind. Reserve the `style` prop for the handful of things Tailwind can't express.
+
+**Variants over one-off classes.** When a component needs a new visual treatment, add a `cva` variant to the component in `components/ui` rather than passing a pile of classes at the call site.
+
 ## Structure
 
 **Mobile.** `src/app` holds routes only — a route file is either a couple of lines re-exporting a screen (`export default Workout`) or a small screen with no reusable parts. Real screens live in `src/features/<feature>/screens`, with that feature's `components/`, `hooks/`, `lib/` and `stores/` beside them. A sub-feature nests under its parent (`features/activity/workouts`) with the same directory names; code that its siblings share moves up to the parent (`features/activity/components`). Code that two or more features use goes in `src/components`, `src/hooks` and `src/lib`.
