@@ -1,0 +1,72 @@
+name: Store Metadata
+
+on:
+  workflow_dispatch:
+    inputs:
+      platform:
+        description: "Store listing to upload"
+        required: true
+        type: choice
+        options:
+          - all
+          - ios
+          - android
+        default: all
+
+concurrency:
+  group: deploy-mobile-metadata
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  ios:
+    if: ${{ inputs.platform != 'android' }}
+    runs-on: ubuntu-latest
+    environment: production
+    defaults:
+      run:
+        working-directory: apps/mobile
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.3"
+          bundler-cache: true
+          working-directory: apps/mobile
+
+      - name: Upload App Store listing
+        run: bundle exec fastlane ios metadata
+        env:
+          APP_STORE_CONNECT_API_KEY_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_KEY_ID }}
+          APP_STORE_CONNECT_API_KEY_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ISSUER_ID }}
+          APP_STORE_CONNECT_API_KEY_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY_KEY }}
+          REVIEW_EMAIL: ${{ secrets.REVIEW_EMAIL }}
+          REVIEW_OTP: ${{ secrets.REVIEW_OTP }}
+          REVIEW_CONTACT_FIRST_NAME: ${{ secrets.REVIEW_CONTACT_FIRST_NAME }}
+          REVIEW_CONTACT_LAST_NAME: ${{ secrets.REVIEW_CONTACT_LAST_NAME }}
+          REVIEW_CONTACT_EMAIL: ${{ secrets.REVIEW_CONTACT_EMAIL }}
+          REVIEW_CONTACT_PHONE: ${{ secrets.REVIEW_CONTACT_PHONE }}
+
+  android:
+    if: ${{ inputs.platform != 'ios' }}
+    runs-on: ubuntu-latest
+    environment: production
+    defaults:
+      run:
+        working-directory: apps/mobile
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.3"
+          bundler-cache: true
+          working-directory: apps/mobile
+
+      - name: Upload Play Store listing
+        run: bundle exec fastlane android metadata
+        env:
+          SUPPLY_JSON_KEY_DATA: ${{ secrets.GOOGLE_PLAY_JSON_KEY }}

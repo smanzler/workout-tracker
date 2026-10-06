@@ -40,3 +40,10 @@ app-example
 
 /ios/
 /android/
+
+# fastlane
+.bundle/
+vendor/bundle/
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/README.md

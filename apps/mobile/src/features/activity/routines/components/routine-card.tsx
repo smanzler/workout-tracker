@@ -36,6 +36,7 @@ export function RoutineCard({ routine }: { routine: Routine }) {
   return (
     <Card className="flex-row items-start gap-2 py-3 pl-4 pr-2">
       <Pressable
+        testID="routine-card"
         className="flex-1 gap-1 pt-2"
         accessibilityRole="button"
         onPress={() =>

@@ -66,6 +66,7 @@ export default function History() {
             ListFooterComponent={isFetchingNextPage ? <Spinner /> : null}
             renderItem={({ item }) => (
               <Pressable
+                testID="workout-card"
                 onPress={() =>
                   router.push({
                     pathname: "/workout-details",

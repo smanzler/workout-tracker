@@ -1,0 +1,18 @@
+Rep is a simple log for your lifts. Record every set, see your personal records as you break them, and keep up with your friends' training.
+
+LOG YOUR WORKOUTS
+- Record the weight and reps of every set, with the sets from your last workout as suggestions.
+- Pick from a library of exercises, or add your own.
+- Save routines and start a workout from one.
+- Your workout in progress stays on your phone, so closing the app loses nothing.
+
+SEE YOUR PROGRESS
+- Rep marks a personal record when you beat your best weight, volume or estimated one-rep max.
+- Each exercise shows your records, a chart of your heaviest weight and every session.
+- Browse and edit your workout history.
+
+TRAIN WITH FRIENDS
+Follow friends, see their workouts in your feed and give kudos. Get a notification when someone follows you or gives kudos to your workout.
+
+BRING YOUR HISTORY
+Import your workouts from a Strong CSV export.
