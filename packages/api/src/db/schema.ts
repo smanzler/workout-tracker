@@ -7,10 +7,27 @@ import {
   pgTable,
   text,
   timestamp,
+  uniqueIndex,
   uuid,
 } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
 import { exerciseCategories, muscleGroups } from "@rep/shared";
 import { users } from "./auth-schema";
+
+export const Profiles = pgTable(
+  "profiles",
+  {
+    id: uuid("id")
+      .primaryKey()
+      .references(() => users.id, { onDelete: "cascade" }),
+    username: text("username").notNull(),
+    avatarKey: text("avatar_key"),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+  },
+  (t) => [
+    uniqueIndex("profiles_username_lower_idx").on(sql`lower(${t.username})`),
+  ],
+);
 
 export const exerciseCategoryEnum = pgEnum(
   "exercise_category",
