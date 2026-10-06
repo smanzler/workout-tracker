@@ -1,4 +1,5 @@
 import type { ExerciseCategory, MuscleGroup } from "@rep/shared";
+import { groupBy } from "./group-by";
 
 export type ExerciseFilter = {
   search: string;
@@ -34,12 +35,7 @@ export const groupByFirstLetter = <TExercise extends { title: string }>(
   exercises: TExercise[],
 ) => {
   const sorted = [...exercises].sort((a, b) => a.title.localeCompare(b.title));
-  // Hermes has no Map.groupBy.
-  const groups = new Map<string, TExercise[]>();
-  for (const exercise of sorted) {
-    const letter = exercise.title.charAt(0).toUpperCase();
-    groups.set(letter, [...(groups.get(letter) ?? []), exercise]);
-  }
+  const groups = groupBy(sorted, ({ title }) => title.charAt(0).toUpperCase());
 
   return [...groups].map(([title, data]) => ({ title, data }));
 };

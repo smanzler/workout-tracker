@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   View,
   StyleSheet,
@@ -11,14 +11,13 @@ import {
 import { useAuth } from "@/hooks/use-auth";
 import { useTheme } from "expo-router/react-navigation";
 import { useNetwork } from "@/providers/network-provider";
-import database, { resetUserData } from "@/db";
+import { resetUserData } from "@/db";
 import { router, Stack } from "expo-router";
 import { authClient } from "@/lib/auth-client";
 import { pickImage, takePhoto } from "@/lib/image";
 import { BodyScrollView } from "@/components/body-scroll-view";
 import { ThemedText } from "@/components/themed-text";
 import { Image } from "expo-image";
-import * as DocumentPicker from "expo-document-picker";
 import { Ionicons } from "@expo/vector-icons";
 import { useMyProfile } from "../hooks/use-my-profile";
 import { useUpdateProfile } from "../hooks/use-update-profile";
@@ -28,7 +27,7 @@ import {
   useIsWorkingOut,
   useWorkoutSessionStore,
 } from "@/features/activity/workouts/stores/workout-session-store";
-import { importStrongCSV } from "@/features/activity/workouts/lib/csv-import";
+import { useStrongImport } from "@/features/activity/workouts/hooks/use-strong-import";
 
 export default function ProfileScreen() {
   const { user, isLoading } = useAuth();
@@ -39,7 +38,7 @@ export default function ProfileScreen() {
   const { colors } = useTheme();
   const isWorkingOut = useIsWorkingOut();
   const discardWorkout = useWorkoutSessionStore((state) => state.discard);
-  const [importing, setImporting] = useState(false);
+  const { importFile, isPending: importing } = useStrongImport();
   const showMenu = useMenu();
 
   if (isLoading) return <ActivityIndicator />;
@@ -125,31 +124,6 @@ export default function ProfileScreen() {
         : []),
     ]);
 
-  const handleImportCSV = async () => {
-    try {
-      setImporting(true);
-
-      const result = await DocumentPicker.getDocumentAsync({
-        type: "text/csv",
-        copyToCacheDirectory: true,
-      });
-
-      if (!result.canceled && result.assets?.[0]) {
-        const response = await fetch(result.assets[0].uri);
-        const csvContent = await response.text();
-        await importStrongCSV(database, csvContent, user.id);
-        Alert.alert("Success", "Workout data imported successfully");
-      }
-    } catch (err) {
-      Alert.alert(
-        "Error",
-        err instanceof Error ? err.message : "An error occurred during import",
-      );
-    } finally {
-      setImporting(false);
-    }
-  };
-
   return (
     <BodyScrollView style={{ padding: 20 }}>
       <Stack.Screen
@@ -176,7 +150,7 @@ export default function ProfileScreen() {
                     },
                     {
                       label: importing ? "Importing..." : "Import Strong CSV",
-                      onSelect: handleImportCSV,
+                      onSelect: importFile,
                       disabled: importing,
                     },
                     {
