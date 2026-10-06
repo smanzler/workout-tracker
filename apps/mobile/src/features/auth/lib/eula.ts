@@ -1,6 +1,6 @@
 export const EULA = `End-User License Agreement (EULA)
 
-Last updated: ${new Date().toLocaleDateString()}
+Last updated: October 5, 2026
 
 Please read this End-User License Agreement carefully before using the application.
 

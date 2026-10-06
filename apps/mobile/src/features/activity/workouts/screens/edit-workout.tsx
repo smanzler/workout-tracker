@@ -22,7 +22,7 @@ import EditWorkoutExerciseList from "../components/edit-workout-exercise-list";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "expo-router/react-navigation";
 import { Q } from "@nozbe/watermelondb";
-import { useAuth } from "@/providers/auth-provider";
+import { useAuth } from "@/hooks/use-auth";
 import { checkPRs } from "@/features/activity/lib/personal-records";
 import { Button } from "@/components/button";
 const EditWorkout = () => {

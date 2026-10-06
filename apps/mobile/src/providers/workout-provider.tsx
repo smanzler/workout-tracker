@@ -2,7 +2,7 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import database, { setsCollection, workoutExercisesCollection } from "@/db";
 import { Workout } from "@/db/models/workout";
-import { useAuth } from "./auth-provider";
+import { useAuth } from "@/hooks/use-auth";
 import { Routine } from "@/db/models/routine";
 import dayjs from "dayjs";
 

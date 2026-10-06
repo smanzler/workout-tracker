@@ -19,7 +19,7 @@ import database, {
 import { router } from "expo-router";
 import { useWorkout } from "@/providers/workout-provider";
 import { useTheme } from "expo-router/react-navigation";
-import { useAuth } from "@/providers/auth-provider";
+import { useAuth } from "@/hooks/use-auth";
 import { ThemedText } from "@/components/themed-text";
 import ExerciseList from "@/features/activity/components/exercise-list";
 

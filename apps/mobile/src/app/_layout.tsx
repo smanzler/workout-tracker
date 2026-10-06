@@ -1,36 +1,41 @@
 import "@/global.css";
-import { ThemeProvider, useTheme } from "expo-router/react-navigation";
+import { ThemeProvider } from "expo-router/react-navigation";
 import { useFonts } from "expo-font";
-import { router, Stack } from "expo-router";
+import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
 import "react-native-reanimated";
 
-import AuthProvider from "@/providers/auth-provider";
-import { SyncProvider } from "@/providers/sync-provider";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { WorkoutProvider } from "@/providers/workout-provider";
-import { Platform, TouchableOpacity, View } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { View } from "react-native";
 import { NAV_THEME } from "@/lib/theme";
 import { pullDefaultExercises } from "@/features/activity/exercises/lib/default-exercises";
 import { exercisesCollection } from "@/db";
 import { Q } from "@nozbe/watermelondb";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { KeyboardProvider } from "react-native-keyboard-controller";
-import SummaryHeader from "@/features/activity/workouts/components/summary-header";
 import * as Notifications from "expo-notifications";
 import { Toast } from "@/features/notifications/components/toast";
 import { ActionSheetProvider } from "@expo/react-native-action-sheet";
 import { NetworkProvider } from "@/providers/network-provider";
 import { SafeAreaListener } from "react-native-safe-area-context";
 import { Uniwind, useUniwind } from "uniwind";
+import { ApiProvider } from "@/providers/api-provider";
+import { authClient } from "@/lib/auth-client";
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty";
+import { Icon } from "@/components/ui/icon";
+import { Spinner } from "@/components/ui/spinner";
+import { TriangleAlert } from "lucide-react-native";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
-
-const queryClient = new QueryClient();
 
 export default function RootLayout() {
   const { theme } = useUniwind();
@@ -103,25 +108,22 @@ export default function RootLayout() {
       <GestureHandlerRootView style={{ flex: 1 }}>
         <KeyboardProvider>
           <ActionSheetProvider>
-            <QueryClientProvider client={queryClient}>
+            <ApiProvider>
               <ThemeProvider
                 value={NAV_THEME[(theme as "light" | "dark") ?? "light"]}
               >
                 <NetworkProvider>
-                  <AuthProvider>
-                    <WorkoutProvider>
-                      <SyncProvider>
-                        <View className="flex-1">
-                          <RootLayoutNav />
-                          <Toast />
-                          <StatusBar style="auto" />
-                        </View>
-                      </SyncProvider>
-                    </WorkoutProvider>
-                  </AuthProvider>
+                  <WorkoutProvider>
+                    <View className="flex-1">
+                      <RootLayoutNav />
+                      <AuthOverlay />
+                      <Toast />
+                      <StatusBar style="auto" />
+                    </View>
+                  </WorkoutProvider>
                 </NetworkProvider>
               </ThemeProvider>
-            </QueryClientProvider>
+            </ApiProvider>
           </ActionSheetProvider>
         </KeyboardProvider>
       </GestureHandlerRootView>
@@ -130,287 +132,48 @@ export default function RootLayout() {
 }
 
 function RootLayoutNav() {
-  const { colors } = useTheme();
+  const { data: session } = authClient.useSession();
+
   return (
     <Stack>
-      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      <Stack.Screen
-        name="(modals)/workout"
-        options={{
-          presentation: "modal",
-          headerTransparent: Platform.OS === "ios" ? true : false,
-          headerBlurEffect: "systemChromeMaterial",
-          headerShadowVisible: true,
-        }}
-      />
-      <Stack.Screen
-        name="(modals)/add-exercise"
-        options={{
-          title: "Add Exercises",
-          presentation: "fullScreenModal",
-          headerLeft: () => (
-            <TouchableOpacity onPress={() => router.back()}>
-              <Ionicons name="chevron-back" size={24} color={colors.primary} />
-            </TouchableOpacity>
-          ),
-        }}
-      />
-      <Stack.Screen
-        name="(modals)/summary"
-        options={{
-          presentation: "fullScreenModal",
-          headerTransparent: true,
-          header: () => <SummaryHeader handleShare={() => {}} />,
-        }}
-      />
-      <Stack.Screen
-        name="(auth)/signup"
-        options={{
-          headerShown: true,
-          headerTitle: "Sign Up",
-          headerBackTitle: "Log In",
-          ...(Platform.OS !== "ios"
-            ? {}
-            : {
-                headerLargeTitle: true,
-                headerTransparent: true,
-                headerBlurEffect: "systemChromeMaterial",
-                headerLargeTitleShadowVisible: false,
-                headerShadowVisible: true,
-                headerLargeStyle: {
-                  backgroundColor: "transparent",
-                },
-              }),
-        }}
-      />
-      <Stack.Screen
-        name="(modals)/workout-modal"
-        options={{
-          presentation: "modal",
-          ...(Platform.OS !== "ios"
-            ? {}
-            : {
-                headerTransparent: true,
-                headerBlurEffect: "systemChromeMaterial",
-                headerShadowVisible: true,
-              }),
-        }}
-      />
-      <Stack.Screen
-        name="(modals)/edit-workout"
-        options={{
-          presentation: "modal",
-          headerTitle: "Edit Workout",
-          headerBackVisible: false,
-          ...(Platform.OS !== "ios"
-            ? {}
-            : {
-                headerTransparent: true,
-                headerBlurEffect: "systemChromeMaterial",
-                headerShadowVisible: true,
-              }),
-        }}
-      />
-      <Stack.Screen
-        name="(modals)/add-edit-exercises"
-        options={{
-          headerTitle: "Add Exercises",
-        }}
-      />
-      <Stack.Screen
-        name="(modals)/add-routine"
-        options={{
-          headerTitle: "New Routine",
-          headerBackVisible: false,
-          ...(Platform.OS !== "ios"
-            ? {}
-            : {
-                headerTransparent: true,
-                headerBlurEffect: "systemChromeMaterial",
-                headerShadowVisible: true,
-              }),
-        }}
-      />
-      <Stack.Screen
-        name="(modals)/add-routine-exercises"
-        options={{
-          headerTitle: "New Routine",
-          ...(Platform.OS !== "ios"
-            ? {}
-            : {
-                headerTransparent: true,
-                headerBlurEffect: "systemChromeMaterial",
-                headerLargeTitle: true,
-                headerLargeTitleShadowVisible: false,
-                headerShadowVisible: true,
-                headerLargeStyle: {
-                  backgroundColor: "transparent",
-                },
-              }),
-        }}
-      />
-      <Stack.Screen
-        name="(modals)/routine-modal"
-        options={{
-          presentation: "transparentModal",
-          animation: "fade",
-          headerShown: false,
-        }}
-      />
-      <Stack.Screen
-        name="(modals)/exercise-history"
-        options={{
-          headerTitle: "Exercise",
-          headerBackVisible: false,
-          ...(Platform.OS !== "ios"
-            ? {}
-            : {
-                headerTransparent: true,
-                headerBlurEffect: "systemChromeMaterial",
-                headerLargeTitle: true,
-                headerLargeTitleShadowVisible: false,
-                headerShadowVisible: true,
-                headerLargeStyle: {
-                  backgroundColor: "transparent",
-                },
-              }),
-        }}
-      />
-      <Stack.Screen
-        name="(modals)/post"
-        options={{
-          headerTitle: "Post",
-          headerBackVisible: false,
-          ...(Platform.OS !== "ios"
-            ? {}
-            : {
-                headerTransparent: true,
-                headerBlurEffect: "systemChromeMaterial",
-                headerLargeTitle: true,
-                headerLargeTitleShadowVisible: false,
-                headerShadowVisible: true,
-                headerLargeStyle: {
-                  backgroundColor: "transparent",
-                },
-              }),
-        }}
-      />
-      <Stack.Screen
-        name="(modals)/profile"
-        options={{
-          headerTitle: "Profile",
-          headerBackVisible: false,
-          ...(Platform.OS !== "ios"
-            ? {}
-            : {
-                headerBlurEffect: "systemChromeMaterial",
-                headerTransparent: true,
-                headerLargeTitle: true,
-                headerLargeTitleShadowVisible: false,
-                headerShadowVisible: true,
-                headerLargeStyle: {
-                  backgroundColor: "transparent",
-                },
-              }),
-        }}
-      />
-      <Stack.Screen
-        name="(modals)/friends"
-        options={{
-          headerTitle: "Friends",
-          headerBackVisible: false,
-          ...(Platform.OS !== "ios"
-            ? {}
-            : {
-                headerBlurEffect: "systemChromeMaterial",
-                headerTransparent: true,
-              }),
-        }}
-      />
-      <Stack.Screen
-        name="(modals)/create-post"
-        options={{
-          headerTitle: "Create Post",
-          headerBackVisible: false,
-          ...(Platform.OS !== "ios"
-            ? {}
-            : {
-                headerBlurEffect: "systemChromeMaterial",
-                headerTransparent: true,
-              }),
-        }}
-      />
-      <Stack.Screen
-        name="(modals)/workout-picker"
-        options={{
-          headerTitle: "Choose Workout to Add",
-          headerBackVisible: false,
-          ...(Platform.OS !== "ios"
-            ? {}
-            : {
-                headerBlurEffect: "systemChromeMaterial",
-                headerTransparent: true,
-              }),
-        }}
-      />
-      <Stack.Screen
-        name="(modals)/settings"
-        options={{
-          headerTitle: "Settings",
-          headerBackVisible: false,
-          ...(Platform.OS !== "ios"
-            ? {}
-            : {
-                headerBlurEffect: "systemChromeMaterial",
-                headerTransparent: true,
-                headerLargeTitle: true,
-                headerLargeTitleShadowVisible: false,
-                headerShadowVisible: true,
-                headerLargeStyle: {
-                  backgroundColor: "transparent",
-                },
-              }),
-        }}
-      />
-      <Stack.Screen
-        name="(modals)/find-friends"
-        options={{
-          headerTitle: "Find Friends",
-          headerBackVisible: false,
-          ...(Platform.OS !== "ios"
-            ? {}
-            : {
-                headerBlurEffect: "systemChromeMaterial",
-                headerTransparent: true,
-                headerLargeTitle: true,
-                headerLargeTitleShadowVisible: false,
-                headerShadowVisible: true,
-                headerLargeStyle: {
-                  backgroundColor: "transparent",
-                },
-              }),
-        }}
-      />
-      <Stack.Screen
-        name="(modals)/info-modal"
-        options={{
-          presentation: "transparentModal",
-          animation: "fade",
-          headerShown: false,
-        }}
-      />
-      <Stack.Screen
-        name="(modals)/notifications"
-        options={{
-          headerTitle: "Notifications",
-          headerBackVisible: false,
-          headerLeft: () => (
-            <TouchableOpacity onPress={() => router.back()}>
-              <Ionicons name="chevron-back" size={28} color={colors.primary} />
-            </TouchableOpacity>
-          ),
-        }}
-      />
+      <Stack.Protected guard={!session}>
+        <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+      </Stack.Protected>
+      <Stack.Protected guard={!!session}>
+        <Stack.Screen name="(protected)" options={{ headerShown: false }} />
+      </Stack.Protected>
     </Stack>
   );
+}
+
+function AuthOverlay() {
+  const { isPending, error } = authClient.useSession();
+
+  if (error) {
+    return (
+      <View className="absolute inset-0 bg-background">
+        <Empty>
+          <EmptyHeader>
+            <EmptyMedia variant="icon">
+              <Icon as={TriangleAlert} />
+            </EmptyMedia>
+            <EmptyTitle>Oops</EmptyTitle>
+            <EmptyDescription>
+              Couldn&apos;t connect to the server
+            </EmptyDescription>
+          </EmptyHeader>
+        </Empty>
+      </View>
+    );
+  }
+
+  if (isPending) {
+    return (
+      <View className="absolute inset-0 flex-1 justify-center items-center bg-background">
+        <Spinner />
+      </View>
+    );
+  }
+
+  return null;
 }

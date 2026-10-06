@@ -16,7 +16,7 @@ import database, {
 } from "@/db";
 import Button from "@/components/button";
 import { useTheme } from "expo-router/react-navigation";
-import { useAuth } from "@/providers/auth-provider";
+import { useAuth } from "@/hooks/use-auth";
 import {
   useRoutineActions,
   useRoutineExercises,

@@ -12,7 +12,7 @@ import { useTheme } from "expo-router/react-navigation";
 import { useExplorePosts, useFollowingPosts } from "../lib/posts";
 import { FlatList } from "react-native-gesture-handler";
 import PostListItem from "../components/post-list-item";
-import { useAuth } from "@/providers/auth-provider";
+import { useAuth } from "@/hooks/use-auth";
 import { EmptyState } from "@/components/empty-state";
 import { useNetwork } from "@/providers/network-provider";
 import { useMenu } from "@/hooks/use-menu";

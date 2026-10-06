@@ -20,7 +20,7 @@ import {
   useLiveNotifications,
   useNotifications,
 } from "../hooks/use-live-notifications";
-import { useAuth } from "@/providers/auth-provider";
+import { useAuth } from "@/hooks/use-auth";
 import { Ionicons } from "@expo/vector-icons";
 import { supabase } from "@/lib/supabase";
 import { EmptyState } from "@/components/empty-state";

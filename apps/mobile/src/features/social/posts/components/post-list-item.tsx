@@ -20,7 +20,7 @@ import { supabase } from "@/lib/supabase";
 import { router } from "expo-router";
 import { Carousel, Pagination } from "react-native-reanimated-carousel";
 import { useMenu } from "@/hooks/use-menu";
-import { useAuth } from "@/providers/auth-provider";
+import { useAuth } from "@/hooks/use-auth";
 import { useQueryClient } from "@tanstack/react-query";
 import { PostgrestError } from "@supabase/supabase-js";
 import PostWorkoutSummary from "@/components/post-workout-summary";

@@ -20,9 +20,6 @@ import WorkoutExerciseList from "../components/workout-exercise-list";
 import { useTheme } from "expo-router/react-navigation";
 import Button from "@/components/button";
 import { checkPRs } from "@/features/activity/lib/personal-records";
-import { mySync } from "@/db/sync";
-import { useAuth } from "@/providers/auth-provider";
-import { useSync } from "@/providers/sync-provider";
 import {
   KeyboardAwareScrollView,
   KeyboardToolbar,
@@ -33,8 +30,6 @@ const Workout = () => {
   const [workout, setWorkout] = useState<WorkoutModel | undefined>(undefined);
   const [workoutName, setWorkoutName] = useState<string>("");
   const { colors } = useTheme();
-  const { user } = useAuth();
-  const { updateLastSync } = useSync();
   const inputRefs = useRef<(TextInput | null)[][]>([]);
 
   useEffect(() => {
@@ -116,8 +111,6 @@ const Workout = () => {
       await checkPRs(workout, workoutExercises);
 
       await stopWorkout(workoutName);
-
-      await mySync(user, updateLastSync, () => {});
     } catch (error) {
       console.error("Failed to finish workout:", error);
       Alert.alert(

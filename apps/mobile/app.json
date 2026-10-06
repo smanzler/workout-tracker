@@ -5,7 +5,7 @@
     "version": "1.0.8",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "myapp",
+    "scheme": "com.sigh10.workouttracker",
     "userInterfaceStyle": "automatic",
     "ios": {
       "supportsTablet": true,
@@ -62,7 +62,8 @@
             ]
           }
         }
-      ]
+      ],
+      "expo-secure-store"
     ],
     "experiments": {
       "typedRoutes": true

@@ -17,7 +17,7 @@ import { BlurView } from "expo-blur";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 import { updateProfilePrivacy, useProfile } from "../lib/profile";
 import { useQueryClient, useQuery } from "@tanstack/react-query";
-import { useAuth } from "@/providers/auth-provider";
+import { useAuth } from "@/hooks/use-auth";
 
 interface SettingsSectionProps {
   title: string;

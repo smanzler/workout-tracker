@@ -5,7 +5,7 @@ import { WorkoutExercise } from "@/db/models/workout-exercise";
 import { Exercise } from "@/db/models/exercise";
 import { Set } from "@/db/models/set";
 import database, { setsCollection } from "@/db";
-import { useAuth } from "@/providers/auth-provider";
+import { useAuth } from "@/hooks/use-auth";
 import WRExerciseItem from "@/features/activity/components/wr-exercise-item";
 import { Q } from "@nozbe/watermelondb";
 

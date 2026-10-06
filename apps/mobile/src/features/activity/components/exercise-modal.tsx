@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import React, { useState } from "react";
 import database, { exercisesCollection } from "@/db";
-import { useAuth } from "@/providers/auth-provider";
+import { useAuth } from "@/hooks/use-auth";
 import { BlurView } from "expo-blur";
 import { router } from "expo-router";
 import { ThemedText } from "@/components/themed-text";

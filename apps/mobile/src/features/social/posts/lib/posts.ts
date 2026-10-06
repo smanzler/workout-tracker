@@ -1,8 +1,5 @@
-import { mySync } from "@/db/sync";
 import { supabase } from "@/lib/supabase";
 import { Workout } from "@/db/models/workout";
-import { useSync } from "@/providers/sync-provider";
-import { User } from "@supabase/supabase-js";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { decode } from "base64-arraybuffer";
 import * as FileSystem from "expo-file-system";
@@ -63,7 +60,7 @@ export const useFollowingPosts = (enabled = true) => {
 
 export const postPost = async (
   caption: string,
-  user: User,
+  user: { id: string },
   workout_id: string,
   image?: string,
 ) => {
