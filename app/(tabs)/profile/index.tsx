@@ -9,7 +9,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { useAuth } from "@/providers/AuthProvider";
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 import { useNetwork } from "@/providers/NetworkProvider";
 import { mySync } from "@/db/sync";
 import { useSync } from "@/providers/SyncProvider";
@@ -24,14 +24,7 @@ import * as ImagePicker from "expo-image-picker";
 import * as DocumentPicker from "expo-document-picker";
 import { Ionicons } from "@expo/vector-icons";
 import { uploadImageAsync, getProfileImageUrl } from "@/api/profile";
-import {
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuItemIcon,
-  DropdownMenuItemTitle,
-  DropdownMenuRoot,
-  DropdownMenuTrigger,
-} from "@/zeego/drop-down";
+import { useMenu } from "@/hooks/useMenu";
 import { useWorkout } from "@/providers/WorkoutProvider";
 import { removePushTokenFromServer } from "@/api/notifications";
 import { importStrongCSV } from "@/utils/csvImport";
@@ -48,6 +41,7 @@ export default function ProfileScreen() {
   const [status, requestPermission] = ImagePicker.useCameraPermissions();
   const [importing, setImporting] = useState(false);
   const { showActionSheetWithOptions } = useActionSheet();
+  const showMenu = useMenu();
 
   if (isLoading) return <ActivityIndicator />;
 
@@ -291,74 +285,50 @@ export default function ProfileScreen() {
                 />
               </TouchableOpacity>
 
-              <DropdownMenuRoot>
-                <DropdownMenuTrigger>
-                  <TouchableOpacity>
-                    <Ionicons
-                      name="ellipsis-horizontal-sharp"
-                      size={24}
-                      color={colors.primary}
-                    />
-                  </TouchableOpacity>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent>
-                  <DropdownMenuItem
-                    key="settings"
-                    onSelect={() => router.push("/(modals)/settings")}
-                  >
-                    <DropdownMenuItemTitle>Settings</DropdownMenuItemTitle>
-                    <DropdownMenuItemIcon ios={{ name: "gear" }} />
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    key="sync"
-                    onSelect={() => {
-                      if (!isOnline) {
-                        Alert.alert(
-                          "Offline",
-                          "You need to be online to sync your data."
-                        );
-                        return;
-                      }
-                      mySync(user, updateLastSync, () => {});
-                    }}
-                  >
-                    <DropdownMenuItemTitle>Sync</DropdownMenuItemTitle>
-                    <DropdownMenuItemIcon
-                      ios={{ name: "arrow.2.circlepath" }}
-                    />
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    key="import"
-                    onSelect={handleImportCSV}
-                    disabled={importing}
-                  >
-                    <DropdownMenuItemTitle>
-                      {importing ? "Importing..." : "Import Strong CSV"}
-                    </DropdownMenuItemTitle>
-                    <DropdownMenuItemIcon
-                      ios={{ name: "square.and.arrow.down" }}
-                    />
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    destructive
-                    key="logout"
-                    onSelect={handleLogout}
-                  >
-                    <DropdownMenuItemTitle>Logout</DropdownMenuItemTitle>
-                    <DropdownMenuItemIcon ios={{ name: "arrow.left.square" }} />
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    destructive
-                    key="delete-account"
-                    onSelect={showDeleteAccountAlert}
-                  >
-                    <DropdownMenuItemTitle>
-                      Delete account
-                    </DropdownMenuItemTitle>
-                    <DropdownMenuItemIcon ios={{ name: "trash" }} />
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenuRoot>
+              <TouchableOpacity
+                onPress={() =>
+                  showMenu([
+                    {
+                      label: "Settings",
+                      onSelect: () => router.push("/(modals)/settings"),
+                    },
+                    {
+                      label: "Sync",
+                      onSelect: () => {
+                        if (!isOnline) {
+                          Alert.alert(
+                            "Offline",
+                            "You need to be online to sync your data."
+                          );
+                          return;
+                        }
+                        mySync(user, updateLastSync, () => {});
+                      },
+                    },
+                    {
+                      label: importing ? "Importing..." : "Import Strong CSV",
+                      onSelect: handleImportCSV,
+                      disabled: importing,
+                    },
+                    {
+                      label: "Logout",
+                      onSelect: handleLogout,
+                      destructive: true,
+                    },
+                    {
+                      label: "Delete account",
+                      onSelect: showDeleteAccountAlert,
+                      destructive: true,
+                    },
+                  ])
+                }
+              >
+                <Ionicons
+                  name="ellipsis-horizontal-sharp"
+                  size={24}
+                  color={colors.primary}
+                />
+              </TouchableOpacity>
             </View>
           ),
         }}
@@ -373,7 +343,9 @@ export default function ProfileScreen() {
             borderRadius: 75,
             marginBottom: 20,
           }}
-          source={{ uri: getProfileImageUrl(user.id, imageVersion) }}
+          source={{
+            uri: getProfileImageUrl(user.id, imageVersion) ?? undefined,
+          }}
         />
 
         <TouchableOpacity

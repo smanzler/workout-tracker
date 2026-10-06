@@ -11,7 +11,7 @@ import NetInfo, {
 } from "@react-native-community/netinfo";
 import { View } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 
 type NetworkContextType = {
   isOnline: boolean;

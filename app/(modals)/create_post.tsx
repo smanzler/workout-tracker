@@ -13,7 +13,7 @@ import {
 import React, { useState } from "react";
 import { router, Stack } from "expo-router";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 import { ThemedText } from "@/components/ThemedText";
 import Divider from "@/components/Divider";
 import { usePostActions, usePostWorkout } from "@/stores/postStore";

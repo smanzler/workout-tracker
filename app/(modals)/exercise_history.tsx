@@ -5,7 +5,7 @@ import { Exercise } from "@/models/Exercise";
 import { WorkoutExercise } from "@/models/WorkoutExercise";
 import { exercisesCollection, workoutExercisesCollection } from "@/db";
 import { Ionicons } from "@expo/vector-icons";
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 import { BodyScrollView } from "@/components/BodyScrollView";
 import { ThemedText } from "@/components/ThemedText";
 import Animated, {

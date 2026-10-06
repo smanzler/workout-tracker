@@ -12,7 +12,7 @@ import { FontAwesome5 } from "@expo/vector-icons";
 import database from "@/db";
 import { RectButton } from "react-native-gesture-handler";
 import { Q } from "@nozbe/watermelondb";
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 import ReanimatedSwipeable from "react-native-gesture-handler/ReanimatedSwipeable";
 import { SharedValue } from "react-native-reanimated";
 import WRSetItem from "./WRSetItem";

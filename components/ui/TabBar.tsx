@@ -1,7 +1,7 @@
 import { Pressable, StyleSheet, View } from "react-native";
-import { useTheme } from "@react-navigation/native";
-import { Text } from "@react-navigation/elements";
-import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
+import { useTheme } from "expo-router/react-navigation";
+import { Text } from "expo-router/react-navigation";
+import { BottomTabBarProps } from "expo-router/js-tabs";
 import { BlurView } from "expo-blur";
 import { useWorkout } from "@/providers/WorkoutProvider";
 import { ThemedText } from "../ThemedText";

@@ -6,7 +6,7 @@ import { ThemedText } from "../ThemedText";
 import LottieView from "lottie-react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 import * as Haptics from "expo-haptics";
 
 interface SummaryHeaderProps {

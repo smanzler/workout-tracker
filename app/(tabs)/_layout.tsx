@@ -1,11 +1,11 @@
-import { router, Tabs } from "expo-router";
+import { Tabs } from "expo-router/js-tabs";
 import React, { useEffect } from "react";
 import { Platform } from "react-native";
 
 import { HapticTab } from "@/components/HapticTab";
 import TabBarBackground from "@/components/ui/TabBarBackground";
 import { Ionicons } from "@expo/vector-icons";
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 import TabBar from "@/components/ui/TabBar";
 
 export default function TabLayout() {

@@ -7,11 +7,9 @@
     "icon": "./assets/images/icon.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.sigh10.workouttracker",
-      "displayName": "Rep",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       }
@@ -47,12 +45,6 @@
         "expo-image-picker",
         {
           "photosPermission": "Allow $(PRODUCT_NAME) to access your photos",
-          "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera"
-        }
-      ],
-      [
-        "expo-camera",
-        {
           "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera"
         }
       ],

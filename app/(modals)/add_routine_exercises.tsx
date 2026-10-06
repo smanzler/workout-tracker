@@ -8,7 +8,7 @@ import {
 import React, { useState } from "react";
 import { Exercise } from "@/models/Exercise";
 import { router, Stack } from "expo-router";
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 import { ThemedText } from "@/components/ThemedText";
 import { useRoutineActions } from "@/stores/routineStore";
 import ExerciseList from "@/components/ExerciseList";

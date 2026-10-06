@@ -1,22 +1,15 @@
-import { StyleSheet, View } from "react-native";
+import { Pressable, StyleSheet } from "react-native";
 import React from "react";
 import { Workout } from "@/models/Workout";
 import { withObservables } from "@nozbe/watermelondb/react";
 import { WorkoutExercise } from "@/models/WorkoutExercise";
 import database, { setsCollection } from "@/db";
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 import { Set } from "@/models/Set";
 import { Q } from "@nozbe/watermelondb";
 import PostWorkoutSummary, { PostWorkout } from "./PostWorkoutSummary";
 import { Exercise } from "@/models/Exercise";
-import {
-  ContextMenuContent,
-  ContextMenuItem,
-  ContextMenuItemIcon,
-  ContextMenuItemTitle,
-  ContextMenuRoot,
-  ContextMenuTrigger,
-} from "@/zeego/context-menu";
+import { useMenu } from "@/hooks/useMenu";
 import { router } from "expo-router";
 
 const WorkoutListItem = ({
@@ -31,6 +24,7 @@ const WorkoutListItem = ({
   exercises: Exercise[];
 }) => {
   const theme = useTheme();
+  const showMenu = useMenu();
 
   // Create a map of exercise titles
   const exerciseTitles = exercises.reduce((acc, exercise) => {
@@ -88,37 +82,34 @@ const WorkoutListItem = ({
   };
 
   return (
-    <ContextMenuRoot>
-      <ContextMenuTrigger>
-        <View
-          style={{ borderRadius: 20, marginBottom: 20, overflow: "hidden" }}
-        >
-          <PostWorkoutSummary workout={workoutData} />
-        </View>
-      </ContextMenuTrigger>
-      <ContextMenuContent>
-        <ContextMenuItem destructive key="delete" onSelect={handleDelete}>
-          <ContextMenuItemTitle>Delete Workout</ContextMenuItemTitle>
-          <ContextMenuItemIcon ios={{ name: "trash" }} />
-        </ContextMenuItem>
-        <ContextMenuItem
-          key="edit"
-          onSelect={() => {
-            router.push({
-              pathname: "/(modals)/edit_workout",
-              params: { workoutId: workout.id },
-            });
-          }}
-        >
-          <ContextMenuItemTitle>Edit Workout</ContextMenuItemTitle>
-          <ContextMenuItemIcon ios={{ name: "pencil" }} />
-        </ContextMenuItem>
-        <ContextMenuItem key="add_exercise" onSelect={() => {}}>
-          <ContextMenuItemTitle>Share Workout</ContextMenuItemTitle>
-          <ContextMenuItemIcon ios={{ name: "square.and.arrow.up" }} />
-        </ContextMenuItem>
-      </ContextMenuContent>
-    </ContextMenuRoot>
+    <Pressable
+      onPress={() =>
+        router.push({
+          pathname: "/(modals)/workout_modal",
+          params: { workoutId: workout.id },
+        })
+      }
+      onLongPress={() =>
+        showMenu([
+          {
+            label: "Edit Workout",
+            onSelect: () =>
+              router.push({
+                pathname: "/(modals)/edit_workout",
+                params: { workoutId: workout.id },
+              }),
+          },
+          {
+            label: "Delete Workout",
+            onSelect: handleDelete,
+            destructive: true,
+          },
+        ])
+      }
+      style={{ borderRadius: 20, marginBottom: 20, overflow: "hidden" }}
+    >
+      <PostWorkoutSummary workout={workoutData} />
+    </Pressable>
   );
 };
 

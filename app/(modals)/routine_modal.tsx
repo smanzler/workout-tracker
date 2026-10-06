@@ -10,7 +10,7 @@ import { of as of$ } from "rxjs";
 import React, { useEffect, useState } from "react";
 import { Workout } from "@/models/Workout";
 import { BlurView } from "expo-blur";
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 import { withObservables } from "@nozbe/watermelondb/react";
 import { WorkoutExercise } from "@/models/WorkoutExercise";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";

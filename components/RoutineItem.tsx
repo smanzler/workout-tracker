@@ -8,29 +8,14 @@ import {
 import React, { useEffect, useState } from "react";
 import { Routine } from "@/models/Routine";
 import { ThemedText } from "./ThemedText";
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 import { withObservables } from "@nozbe/watermelondb/react";
 import { RoutineExercise } from "@/models/RoutineExercise";
-import {
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuItemIcon,
-  DropdownMenuItemTitle,
-  DropdownMenuRoot,
-  DropdownMenuTrigger,
-} from "@/zeego/drop-down";
 import { Entypo } from "@expo/vector-icons";
 import database from "@/db";
 import { router } from "expo-router";
 import ButtonWithIcon from "./ButtonWithIcon";
-import {
-  ContextMenuContent,
-  ContextMenuItem,
-  ContextMenuItemIcon,
-  ContextMenuItemTitle,
-  ContextMenuRoot,
-  ContextMenuTrigger,
-} from "@/zeego/context-menu";
+import { useMenu } from "@/hooks/useMenu";
 
 const RoutineItem = ({
   routine,
@@ -40,6 +25,7 @@ const RoutineItem = ({
   routineExercises: RoutineExercise[];
 }) => {
   const { colors } = useTheme();
+  const showMenu = useMenu();
 
   const [exerciseNames, setExerciseNames] = useState<string>("");
 
@@ -94,45 +80,44 @@ const RoutineItem = ({
   };
 
   return (
-    <ContextMenuRoot>
-      <ContextMenuTrigger>
-        <Pressable
-          onPress={() => {
-            router.push({
-              pathname: "/(modals)/routine_modal",
-              params: { routineId: routine.id },
-            });
-          }}
-          style={[styles.container, { backgroundColor: colors.card }]}
+    <Pressable
+      onPress={() => {
+        router.push({
+          pathname: "/(modals)/routine_modal",
+          params: { routineId: routine.id },
+        });
+      }}
+      onLongPress={() =>
+        showMenu([
+          {
+            label: "Delete Routine",
+            onSelect: handleDelete,
+            destructive: true,
+          },
+        ])
+      }
+      style={[styles.container, { backgroundColor: colors.card }]}
+    >
+      <View style={styles.rowHeader}>
+        <ThemedText
+          type="subtitle"
+          numberOfLines={1}
+          ellipsizeMode="tail"
+          style={{ flexShrink: 1 }}
         >
-          <View style={styles.rowHeader}>
-            <ThemedText
-              type="subtitle"
-              numberOfLines={1}
-              ellipsizeMode="tail"
-              style={{ flexShrink: 1 }}
-            >
-              {routine.name}
-            </ThemedText>
+          {routine.name}
+        </ThemedText>
 
-            <ThemedText
-              type="default"
-              style={{ opacity: 0.6, fontSize: 12 }}
-            ></ThemedText>
-          </View>
+        <ThemedText
+          type="default"
+          style={{ opacity: 0.6, fontSize: 12 }}
+        ></ThemedText>
+      </View>
 
-          <ThemedText type="default" style={{ opacity: 0.6 }}>
-            {exerciseNames}
-          </ThemedText>
-        </Pressable>
-      </ContextMenuTrigger>
-      <ContextMenuContent>
-        <ContextMenuItem key="delete" onSelect={handleDelete} destructive>
-          <ContextMenuItemTitle>Delete Routine</ContextMenuItemTitle>
-          <ContextMenuItemIcon ios={{ name: "trash" }} />
-        </ContextMenuItem>
-      </ContextMenuContent>
-    </ContextMenuRoot>
+      <ThemedText type="default" style={{ opacity: 0.6 }}>
+        {exerciseNames}
+      </ThemedText>
+    </Pressable>
   );
 };
 

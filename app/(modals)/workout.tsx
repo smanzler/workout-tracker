@@ -17,7 +17,7 @@ import { router, Stack } from "expo-router";
 import database, { workoutsCollection } from "@/db";
 import { Workout as WorkoutModel } from "@/models/Workout";
 import WorkoutExerciseList from "@/components/WorkoutExerciseList";
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 import Button from "@/components/Button";
 import { checkPRs } from "@/utils/PRs";
 import { mySync } from "@/db/sync";
@@ -204,7 +204,7 @@ const Workout = () => {
         value={workoutName}
         onChangeText={setWorkoutName}
         placeholder="Workout Name"
-        placeholderTextColor={colors.text
+        placeholderTextColor={String(colors.text)
           .replace("rgb", "rgba")
           .replace(")", ", 0.4)")}
       />

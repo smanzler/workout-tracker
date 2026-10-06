@@ -8,7 +8,7 @@ import {
   SafeAreaView,
 } from "react-native";
 import { EULA, EULA_SUMMARY_POINTS } from "@/utils/eula";
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 import { ThemedText } from "./ThemedText";
 import { Ionicons } from "@expo/vector-icons";
 import { Stack } from "expo-router";

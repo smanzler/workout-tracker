@@ -15,7 +15,7 @@ import database, {
   routineSetsCollection,
 } from "@/db";
 import Button from "@/components/Button";
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 import { useAuth } from "@/providers/AuthProvider";
 import { useRoutineActions, useRoutineExercises } from "@/stores/routineStore";
 
@@ -114,7 +114,7 @@ const AddRoutine = () => {
         value={routineName}
         onChangeText={setRoutineName}
         placeholder="Routine Name"
-        placeholderTextColor={colors.text
+        placeholderTextColor={String(colors.text)
           .replace("rgb", "rgba")
           .replace(")", ", 0.4)")}
       />

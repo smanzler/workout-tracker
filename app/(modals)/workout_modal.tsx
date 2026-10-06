@@ -7,7 +7,7 @@ import {
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { Workout } from "@/models/Workout";
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 import { WorkoutExercise } from "@/models/WorkoutExercise";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { ThemedText } from "@/components/ThemedText";
@@ -83,7 +83,7 @@ const WorkoutModal = () => {
               style={[
                 styles.closeButton,
                 {
-                  backgroundColor: colors.text
+                  backgroundColor: String(colors.text)
                     .replace("rgb", "rgba")
                     .replace(")", ", 0.1)"),
                 },

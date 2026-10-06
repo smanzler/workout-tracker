@@ -3,7 +3,7 @@ import React, { useEffect } from "react";
 import { WorkoutExercise } from "@/models/WorkoutExercise";
 import { Set } from "@/models/Set";
 import { withObservables } from "@nozbe/watermelondb/react";
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 import { Workout } from "@/models/Workout";
 import { ThemedText } from "./ThemedText";
 import dayjs from "dayjs";

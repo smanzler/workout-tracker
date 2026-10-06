@@ -13,7 +13,7 @@ import { router } from "expo-router";
 import { Entypo, Feather, Ionicons } from "@expo/vector-icons";
 import { useWorkout } from "@/providers/WorkoutProvider";
 import database, { routinesCollection, workoutsCollection } from "@/db";
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 import Button from "@/components/Button";
 import { BodyScrollView } from "@/components/BodyScrollView";
 import { ThemedText } from "@/components/ThemedText";

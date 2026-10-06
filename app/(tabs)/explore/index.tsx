@@ -8,27 +8,21 @@ import {
 import React, { useState, useRef } from "react";
 import { router, Stack } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 import { useExplorePosts, useFollowingPosts } from "@/api/posts";
 import { FlatList } from "react-native-gesture-handler";
 import PostListItem from "@/components/PostListItem";
 import { useAuth } from "@/providers/AuthProvider";
 import { EmptyState } from "@/components/EmptyState";
 import { useNetwork } from "@/providers/NetworkProvider";
-import {
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuItemIcon,
-  DropdownMenuItemTitle,
-  DropdownMenuRoot,
-  DropdownMenuTrigger,
-} from "@/zeego/drop-down";
+import { useMenu } from "@/hooks/useMenu";
 
 const ExplorePage = () => {
   const { colors } = useTheme();
   const { user } = useAuth();
   const { isOnline } = useNetwork();
   const [showExplore, setShowExplore] = useState(false);
+  const showMenu = useMenu();
   const isRefreshingRef = useRef(false);
 
   const explore = useExplorePosts(showExplore);
@@ -95,34 +89,23 @@ const ExplorePage = () => {
         options={{
           headerRight: () => (
             <View style={{ flexDirection: "row", gap: 12 }}>
-              <DropdownMenuRoot>
-                <DropdownMenuTrigger>
-                  <TouchableOpacity>
-                    <Ionicons
-                      name={showExplore ? "globe" : "people"}
-                      size={24}
-                      color={colors.primary}
-                    />
-                  </TouchableOpacity>
-                </DropdownMenuTrigger>
-
-                <DropdownMenuContent>
-                  <DropdownMenuItem
-                    key="explore"
-                    onSelect={() => setShowExplore(true)}
-                  >
-                    <DropdownMenuItemTitle>Explore</DropdownMenuItemTitle>
-                    <DropdownMenuItemIcon ios={{ name: "globe" }} />
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    key="following"
-                    onSelect={() => setShowExplore(false)}
-                  >
-                    <DropdownMenuItemTitle>Following</DropdownMenuItemTitle>
-                    <DropdownMenuItemIcon ios={{ name: "person.2.fill" }} />
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenuRoot>
+              <TouchableOpacity
+                onPress={() =>
+                  showMenu([
+                    { label: "Explore", onSelect: () => setShowExplore(true) },
+                    {
+                      label: "Following",
+                      onSelect: () => setShowExplore(false),
+                    },
+                  ])
+                }
+              >
+                <Ionicons
+                  name={showExplore ? "globe" : "people"}
+                  size={24}
+                  color={colors.primary}
+                />
+              </TouchableOpacity>
 
               <TouchableOpacity
                 onPress={() => router.push("/(modals)/find_friends")}

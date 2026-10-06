@@ -3,7 +3,7 @@ import React from "react";
 import { WorkoutExercise } from "@/models/WorkoutExercise";
 import { Exercise } from "@/models/Exercise";
 import { withObservables } from "@nozbe/watermelondb/react";
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 import { Set } from "@/models/Set";
 import { ThemedText } from "./ThemedText";
 

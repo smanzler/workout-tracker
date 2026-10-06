@@ -16,7 +16,7 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from "react-native-reanimated";
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 import { RoutineSet, useRoutineActions } from "@/stores/routineStore";
 import WRSetItem from "./WRSetItem";
 

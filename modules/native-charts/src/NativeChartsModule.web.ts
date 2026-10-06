@@ -16,4 +16,4 @@ class NativeChartsModule extends NativeModule<NativeChartsModuleEvents> {
   }
 };
 
-export default registerWebModule(NativeChartsModule);
+export default registerWebModule(NativeChartsModule, "NativeCharts");

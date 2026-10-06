@@ -1,6 +1,6 @@
 import { BodyScrollView } from "@/components/BodyScrollView";
 import { ThemedText } from "@/components/ThemedText";
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 import {
   View,
   StyleSheet,
@@ -12,14 +12,6 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
 import { useSettings, useSettingsActions } from "@/stores/settingsStore";
-import {
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuItemIcon,
-  DropdownMenuItemTitle,
-  DropdownMenuRoot,
-} from "@/zeego/drop-down";
-import { DropdownMenuTrigger } from "@/zeego/drop-down";
 import { router, Stack, useRouter } from "expo-router";
 import { BlurView } from "expo-blur";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";

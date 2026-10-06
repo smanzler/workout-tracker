@@ -10,7 +10,7 @@ import React, { useEffect, useState } from "react";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { RectButton } from "react-native-gesture-handler";
 import ReanimatedSwipeable from "react-native-gesture-handler/ReanimatedSwipeable";
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 import { Set } from "@/models/Set";
 import { RoutineSet } from "@/stores/routineStore";
 import { setsCollection } from "@/db";
@@ -223,7 +223,7 @@ const WRSetItem = ({
               placeholder={
                 previousSet?.weight?.toString() || previousSetInExercise?.weight
               }
-              placeholderTextColor={colors.text
+              placeholderTextColor={String(colors.text)
                 .replace("rgb", "rgba")
                 .replace(")", ", 0.5)")}
               keyboardType="numeric"
@@ -266,7 +266,7 @@ const WRSetItem = ({
               placeholder={
                 previousSet?.reps?.toString() || previousSetInExercise?.reps
               }
-              placeholderTextColor={colors.text
+              placeholderTextColor={String(colors.text)
                 .replace("rgb", "rgba")
                 .replace(")", ", 0.5)")}
               submitBehavior="submit"

@@ -1,4 +1,4 @@
-import { synchronize } from "@nozbe/watermelondb/sync";
+import { synchronize, type SyncTableChangeSet } from "@nozbe/watermelondb/sync";
 import { supabase } from "../lib/supabase";
 import { User } from "@supabase/supabase-js";
 import database from ".";
@@ -56,7 +56,11 @@ export async function mySync(
         };
       }
     },
-    pushChanges: async ({ changes }) => {
+    pushChanges: async ({
+      changes,
+    }: {
+      changes: Record<string, SyncTableChangeSet | undefined>;
+    }) => {
       const filteredChanges = {
         ...changes,
         exercises: {

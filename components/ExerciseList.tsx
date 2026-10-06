@@ -9,26 +9,28 @@ import {
 import { withObservables } from "@nozbe/watermelondb/react";
 import { Exercise } from "@/models/Exercise";
 import { exercisesCollection, setsCollection } from "@/db";
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 import { Stack } from "expo-router";
 import { ThemedText } from "@/components/ThemedText";
 import ExerciseModal from "@/components/ExerciseModal";
-import {
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuItemTitle,
-  DropdownMenuRoot,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
-  DropdownMenuTrigger,
-} from "@/zeego/drop-down";
+import { useMenu } from "@/hooks/useMenu";
 import { Ionicons } from "@expo/vector-icons";
 import ExerciseSectionList from "./ExerciseSectionList";
 import { Set } from "@/models/Set";
 import { Q } from "@nozbe/watermelondb";
+
+const MUSCLE_GROUPS = ["Chest", "Shoulders", "Arms", "Legs", "Back", "None"];
+
+const CATEGORIES = [
+  "Barbell",
+  "Dumbbell",
+  "Machine",
+  "Bodyweight",
+  "Assisted Bodyweight",
+  "Reps Only",
+  "Duration",
+  "None",
+];
 
 interface Section {
   title: string;
@@ -70,6 +72,7 @@ function Exercises({
   );
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const theme = useTheme();
+  const showMenu = useMenu();
 
   const filteredData = exercises.filter((item) => {
     const matchesQuery = item.title
@@ -98,6 +101,18 @@ function Exercises({
       setFn([...current, value]);
     }
   };
+
+  const showFilterOptions = (
+    values: string[],
+    current: string[],
+    setFn: (v: string[]) => void
+  ) =>
+    showMenu(
+      values.map((value) => ({
+        label: current.includes(value) ? `✓ ${value}` : value,
+        onSelect: () => toggleSelection(value, current, setFn),
+      }))
+    );
 
   const fetchPreviousBestSet = async (exerciseId: string) => {
     try {
@@ -140,103 +155,44 @@ function Exercises({
             <View
               style={{ flexDirection: "row", gap: 12, alignItems: "center" }}
             >
-              <DropdownMenuRoot>
-                <DropdownMenuTrigger>
-                  <TouchableOpacity>
-                    <Ionicons
-                      name="filter"
-                      size={24}
-                      color={theme.colors.primary}
-                    />
-                  </TouchableOpacity>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent>
-                  <DropdownMenuGroup>
-                    <DropdownMenuSub>
-                      <DropdownMenuSubTrigger key="muscle-group">
-                        <DropdownMenuItemTitle
-                          style={{ marginLeft: 8, opacity: 0.6 }}
-                        >
-                          Muscle Group
-                        </DropdownMenuItemTitle>
-                      </DropdownMenuSubTrigger>
-                      <DropdownMenuSubContent>
-                        {[
-                          "Chest",
-                          "Shoulders",
-                          "Arms",
-                          "Legs",
-                          "Back",
-                          "None",
-                        ].map((group) => (
-                          <DropdownMenuCheckboxItem
-                            key={group}
-                            value={selectedMuscleGroups.includes(group)}
-                            onSelect={() =>
-                              toggleSelection(
-                                group,
-                                selectedMuscleGroups,
-                                setSelectedMuscleGroups
-                              )
-                            }
-                          >
-                            <DropdownMenuItemTitle>
-                              {group}
-                            </DropdownMenuItemTitle>
-                          </DropdownMenuCheckboxItem>
-                        ))}
-                      </DropdownMenuSubContent>
-                    </DropdownMenuSub>
-
-                    <DropdownMenuSub>
-                      <DropdownMenuSubTrigger key="category">
-                        <DropdownMenuItemTitle
-                          style={{ marginLeft: 8, opacity: 0.6 }}
-                        >
-                          Category
-                        </DropdownMenuItemTitle>
-                      </DropdownMenuSubTrigger>
-                      <DropdownMenuSubContent>
-                        {[
-                          "Barbell",
-                          "Dumbbell",
-                          "Machine",
-                          "Bodyweight",
-                          "Assisted Bodyweight",
-                          "Reps Only",
-                          "Duration",
-                          "None",
-                        ].map((cat) => (
-                          <DropdownMenuCheckboxItem
-                            key={cat}
-                            value={selectedCategories.includes(cat)}
-                            onSelect={() =>
-                              toggleSelection(
-                                cat,
-                                selectedCategories,
-                                setSelectedCategories
-                              )
-                            }
-                          >
-                            <DropdownMenuItemTitle>{cat}</DropdownMenuItemTitle>
-                          </DropdownMenuCheckboxItem>
-                        ))}
-                      </DropdownMenuSubContent>
-                    </DropdownMenuSub>
-                  </DropdownMenuGroup>
-
-                  <DropdownMenuItem
-                    key="reset-filters"
-                    destructive
-                    onSelect={() => {
-                      setSelectedMuscleGroups([]);
-                      setSelectedCategories([]);
-                    }}
-                  >
-                    <DropdownMenuItemTitle>Reset Filters</DropdownMenuItemTitle>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenuRoot>
+              <TouchableOpacity
+                onPress={() =>
+                  showMenu([
+                    {
+                      label: "Muscle Group",
+                      onSelect: () =>
+                        showFilterOptions(
+                          MUSCLE_GROUPS,
+                          selectedMuscleGroups,
+                          setSelectedMuscleGroups
+                        ),
+                    },
+                    {
+                      label: "Category",
+                      onSelect: () =>
+                        showFilterOptions(
+                          CATEGORIES,
+                          selectedCategories,
+                          setSelectedCategories
+                        ),
+                    },
+                    {
+                      label: "Reset Filters",
+                      onSelect: () => {
+                        setSelectedMuscleGroups([]);
+                        setSelectedCategories([]);
+                      },
+                      destructive: true,
+                    },
+                  ])
+                }
+              >
+                <Ionicons
+                  name="filter"
+                  size={24}
+                  color={theme.colors.primary}
+                />
+              </TouchableOpacity>
 
               <Button title="New" onPress={() => setVisible(true)} />
             </View>
@@ -263,7 +219,7 @@ function Exercises({
                 style={[
                   styles.item,
                   selectedItems?.some((i) => i.id === item.id) && {
-                    backgroundColor: theme.colors.primary
+                    backgroundColor: String(theme.colors.primary)
                       .replace("rgb", "rgba")
                       .replace(")", ", 0.2)"),
                   },

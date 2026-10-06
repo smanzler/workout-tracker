@@ -3,7 +3,7 @@ import React from "react";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import { usePost } from "@/api/posts";
 import { Ionicons } from "@expo/vector-icons";
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 import PostListItem from "@/components/PostListItem";
 import { BodyScrollView } from "@/components/BodyScrollView";
 

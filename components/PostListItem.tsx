@@ -7,29 +7,19 @@ import {
   ScrollView,
   Dimensions,
 } from "react-native";
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import { ThemedText } from "./ThemedText";
 import { formatDuration } from "@/utils/format";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 import { Entypo, FontAwesome, FontAwesome5 } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { getProfileImageUrl } from "@/api/profile";
 import { supabase } from "@/lib/supabase";
 import { router } from "expo-router";
-import Carousel, {
-  ICarouselInstance,
-  Pagination,
-} from "react-native-reanimated-carousel";
-import {
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuItemTitle,
-  DropdownMenuItemIcon,
-  DropdownMenuRoot,
-  DropdownMenuTrigger,
-} from "@/zeego/drop-down";
+import { Carousel, Pagination } from "react-native-reanimated-carousel";
+import { useMenu } from "@/hooks/useMenu";
 import { useAuth } from "@/providers/AuthProvider";
 import { useQueryClient } from "@tanstack/react-query";
 import { PostgrestError } from "@supabase/supabase-js";
@@ -93,11 +83,11 @@ const PostListItem = ({ post }: { post: Post }) => {
   const [likeCount, setLikeCount] = useState(post.like_count);
   const { user } = useAuth();
   const queryClient = useQueryClient();
+  const showMenu = useMenu();
   const [isLoading, setIsLoading] = useState(false);
   const scale = useSharedValue(0);
 
   const progress = useSharedValue<number>(0);
-  const ref = useRef<ICarouselInstance>(null);
 
   const handleDelete = async () => {
     try {
@@ -217,19 +207,17 @@ const PostListItem = ({ post }: { post: Post }) => {
       <GestureDetector gesture={doubleTap}>
         <View style={{ position: "relative" }}>
           <Carousel
-            ref={ref}
             loop={false}
-            width={width - 40}
-            height={width - 40}
             data={pages}
-            onProgressChange={progress}
+            progress={progress}
             renderItem={({ item }) => item}
             style={{
+              width: width - 40,
+              height: width - 40,
               marginBottom: 10,
               borderRadius: 20,
             }}
             onConfigurePanGesture={(g) => {
-              "worklet";
               g.activeOffsetY([-999999, 999999]);
               g.activeOffsetX([-20, 20]);
             }}
@@ -245,8 +233,8 @@ const PostListItem = ({ post }: { post: Post }) => {
                 alignItems: "center",
               }}
             >
-              <Pagination.Basic
-                data={pages}
+              <Pagination
+                count={pages.length}
                 progress={progress}
                 dotStyle={{
                   backgroundColor: colors.border,
@@ -263,7 +251,6 @@ const PostListItem = ({ post }: { post: Post }) => {
                 containerStyle={{
                   gap: 5,
                 }}
-                horizontal
               />
             </View>
           )}
@@ -340,7 +327,7 @@ const PostListItem = ({ post }: { post: Post }) => {
                 width: "100%",
                 height: "100%",
               }}
-              source={{ uri: getProfileImageUrl(post.user.id) }}
+              source={{ uri: getProfileImageUrl(post.user.id) ?? undefined }}
               cachePolicy="memory"
             />
           </View>
@@ -353,37 +340,25 @@ const PostListItem = ({ post }: { post: Post }) => {
           </View>
         </TouchableOpacity>
 
-        <DropdownMenuRoot>
-          <DropdownMenuTrigger>
-            <Entypo
-              name="dots-three-horizontal"
-              size={18}
-              color={colors.text}
-            />
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            {user?.id === post.user.id && (
-              <DropdownMenuItem
-                key="delete"
-                onSelect={handleDelete}
-                destructive
-              >
-                <DropdownMenuItemIcon ios={{ name: "trash" }} />
-                <DropdownMenuItemTitle>Delete Post</DropdownMenuItemTitle>
-              </DropdownMenuItem>
-            )}
-            {user?.id !== post.user.id && (
-              <DropdownMenuItem
-                key="report"
-                onSelect={handleReport}
-                destructive
-              >
-                <DropdownMenuItemIcon ios={{ name: "flag" }} />
-                <DropdownMenuItemTitle>Report Post</DropdownMenuItemTitle>
-              </DropdownMenuItem>
-            )}
-          </DropdownMenuContent>
-        </DropdownMenuRoot>
+        <TouchableOpacity
+          onPress={() =>
+            showMenu([
+              user?.id === post.user.id
+                ? {
+                    label: "Delete Post",
+                    onSelect: handleDelete,
+                    destructive: true,
+                  }
+                : {
+                    label: "Report Post",
+                    onSelect: handleReport,
+                    destructive: true,
+                  },
+            ])
+          }
+        >
+          <Entypo name="dots-three-horizontal" size={18} color={colors.text} />
+        </TouchableOpacity>
       </View>
 
       {renderContent()}

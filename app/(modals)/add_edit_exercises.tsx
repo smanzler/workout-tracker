@@ -2,7 +2,7 @@ import React, { View, Text, StyleSheet } from "react-native";
 import ExerciseList from "@/components/ExerciseList";
 import { Exercise } from "@/models/Exercise";
 import { useWorkoutActions } from "@/stores/workoutStore";
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 import { router, Stack } from "expo-router";
 import { SafeAreaView } from "react-native";
 import { TouchableOpacity } from "react-native";

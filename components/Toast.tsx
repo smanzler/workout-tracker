@@ -1,5 +1,5 @@
 import { getProfileImageUrl, useProfile } from "@/api/profile";
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 import { useEffect } from "react";
 import { StyleSheet, View, Dimensions, Pressable } from "react-native";
 import Animated, {
@@ -73,7 +73,7 @@ export const Toast = () => {
       <View style={[styles.toast, { backgroundColor: colors.card }]}>
         {actorProfile?.profile.id && (
           <Image
-            source={{ uri: getProfileImageUrl(actorProfile.profile.id) }}
+            source={{ uri: getProfileImageUrl(actorProfile.profile.id) ?? undefined }}
             style={styles.avatar}
             cachePolicy="memory"
           />

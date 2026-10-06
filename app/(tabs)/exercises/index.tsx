@@ -1,7 +1,7 @@
 import React from "react";
 import { View, StyleSheet, Pressable } from "react-native";
 import { Exercise } from "@/models/Exercise";
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 import { router } from "expo-router";
 import { ThemedText } from "@/components/ThemedText";
 import ExerciseList from "@/components/ExerciseList";

@@ -4,7 +4,7 @@ import { ThemedText } from "./ThemedText";
 import { Exercise } from "@/models/Exercise";
 import { Set } from "@/models/Set";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 
 const WorkoutExerciseItem = ({
   workoutName,

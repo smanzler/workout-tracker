@@ -3,7 +3,7 @@ import React from "react";
 import RoutineExerciseListItem from "./RoutineExerciseListItem";
 import { RoutineExercise } from "@/stores/routineStore";
 import { EmptyState } from "./EmptyState";
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 
 const RoutineExerciseList = ({
   exercises,

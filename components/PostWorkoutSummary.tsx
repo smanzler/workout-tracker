@@ -1,5 +1,5 @@
 import { StyleProp, View, ViewStyle } from "react-native";
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { ThemedText } from "./ThemedText";
 import dayjs from "dayjs";

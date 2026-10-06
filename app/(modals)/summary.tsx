@@ -9,7 +9,7 @@ import {
   Share,
 } from "react-native";
 import React from "react";
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 import { workoutsCollection } from "@/db";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import { Workout } from "@/models/Workout";

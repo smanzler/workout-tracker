@@ -14,7 +14,7 @@ import {
 } from "@/api/profile";
 import { BodyScrollView } from "@/components/BodyScrollView";
 import { Image } from "expo-image";
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 import { ThemedText } from "@/components/ThemedText";
 import { Ionicons } from "@expo/vector-icons";
 import Button from "@/components/Button";
@@ -85,7 +85,7 @@ const Profile = () => {
       <View style={styles.profileHeader}>
         <Image
           style={[styles.profileImage, { backgroundColor: colors.card }]}
-          source={{ uri: getProfileImageUrl(userId) }}
+          source={{ uri: getProfileImageUrl(userId) ?? undefined }}
           cachePolicy="memory"
         />
 

@@ -1,9 +1,9 @@
-import { ThemeProvider, useTheme } from "@react-navigation/native";
+import { ThemeProvider, useTheme } from "expo-router/react-navigation";
 import { useFonts } from "expo-font";
 import { router, Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import "react-native-reanimated";
 
 import { useColorScheme } from "@/hooks/useColorScheme";
@@ -35,8 +35,6 @@ export default function RootLayout() {
 
   const [notification, setNotification] =
     useState<Notifications.Notification>();
-  const notificationListener = useRef<Notifications.EventSubscription>();
-  const responseListener = useRef<Notifications.EventSubscription>();
 
   const [loaded] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
@@ -74,21 +72,19 @@ export default function RootLayout() {
   useEffect(() => {
     checkAndSyncDefaults();
 
-    notificationListener.current =
+    const notificationSubscription =
       Notifications.addNotificationReceivedListener((notification) => {
         setNotification(notification);
       });
 
-    responseListener.current =
+    const responseSubscription =
       Notifications.addNotificationResponseReceivedListener((response) => {
         console.log(response);
       });
 
     return () => {
-      Notifications.removeNotificationSubscription(
-        notificationListener.current!
-      );
-      Notifications.removeNotificationSubscription(responseListener.current!);
+      notificationSubscription.remove();
+      responseSubscription.remove();
     };
   }, []);
 

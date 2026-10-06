@@ -1,6 +1,6 @@
 import { StyleSheet, TouchableOpacity } from "react-native";
 import React from "react";
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 
 const ButtonWithIcon = ({
   onPress,
@@ -17,7 +17,7 @@ const ButtonWithIcon = ({
         height: 25,
         justifyContent: "center",
         paddingHorizontal: 10,
-        backgroundColor: colors.text
+        backgroundColor: String(colors.text)
           .replace("rgb", "rgba")
           .replace(")", ", 0.1)"),
       }}

@@ -1,12 +1,4 @@
-import React, {
-  createContext,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
-import { AppState, AppStateStatus } from "react-native";
-import BackgroundTimer from "react-native-background-timer";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import database, { setsCollection, workoutExercisesCollection } from "@/db";
 import { Workout } from "@/models/Workout";
@@ -29,29 +21,26 @@ export const WorkoutProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const [seconds, setSeconds] = useState(0);
-  const timerRef = useRef<number | null>(null);
+  const [startTime, setStartTime] = useState<number | undefined>(undefined);
+  const [now, setNow] = useState(() => Date.now());
   const [activeWorkoutId, setActiveWorkoutId] = useState<string | undefined>(
     undefined
   );
-  const appState = useRef(AppState.currentState);
   const { user } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
 
-  const startTimer = () => {
-    if (!timerRef.current) {
-      timerRef.current = BackgroundTimer.setInterval(() => {
-        setSeconds((prev) => prev + 1);
-      }, 1000);
-    }
-  };
+  // JS timers stop in the background, so count from the start time.
+  useEffect(() => {
+    if (startTime === undefined) return;
 
-  const stopTimer = async () => {
-    if (timerRef.current) {
-      BackgroundTimer.clearInterval(timerRef.current);
-      timerRef.current = null;
-    }
-  };
+    const interval = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(interval);
+  }, [startTime]);
+
+  const seconds =
+    startTime === undefined
+      ? 0
+      : Math.max(0, Math.floor((now - startTime) / 1000));
 
   const loadStartTime = async () => {
     try {
@@ -63,9 +52,7 @@ export const WorkoutProvider = ({
           .get<Workout>("workouts")
           .find(storedWorkoutId);
         if (workout && workout.startTime) {
-          const elapsed = Math.floor((Date.now() - workout.startTime) / 1000);
-          setSeconds(elapsed);
-          startTimer();
+          setStartTime(workout.startTime);
         }
       }
     } catch (error) {
@@ -73,25 +60,8 @@ export const WorkoutProvider = ({
     }
   };
 
-  const handleAppStateChange = (nextAppState: AppStateStatus) => {
-    if (appState.current === "active" && nextAppState === "background") {
-      startTimer();
-    }
-    appState.current = nextAppState;
-  };
-
   useEffect(() => {
     loadStartTime();
-
-    const appStateListener = AppState.addEventListener(
-      "change",
-      handleAppStateChange
-    );
-
-    return () => {
-      stopTimer();
-      appStateListener.remove();
-    };
   }, []);
 
   const startWorkout = async (routine?: Routine) => {
@@ -146,8 +116,7 @@ export const WorkoutProvider = ({
 
       await AsyncStorage.setItem("activeWorkoutId", newWorkout.id);
       setActiveWorkoutId(newWorkout.id);
-      setSeconds(0);
-      startTimer();
+      setStartTime(newWorkout.startTime);
     } catch (error) {
       console.error("Failed to start workout", error);
     } finally {
@@ -177,9 +146,7 @@ export const WorkoutProvider = ({
       });
       await AsyncStorage.removeItem("activeWorkoutId");
       setActiveWorkoutId(undefined);
-
-      stopTimer();
-      setSeconds(0);
+      setStartTime(undefined);
     } catch (error) {
       console.error("Failed to stop workout", error);
       throw error;

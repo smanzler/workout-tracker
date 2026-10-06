@@ -3,7 +3,7 @@ import React from "react";
 import { BodyScrollView } from "@/components/BodyScrollView";
 import { router, Stack } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 import WorkoutListShort from "@/components/WorkoutListShort";
 
 const WorkoutPicker = () => {

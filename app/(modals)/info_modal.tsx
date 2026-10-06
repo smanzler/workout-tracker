@@ -7,7 +7,7 @@ import {
 } from "react-native";
 import { BlurView } from "expo-blur";
 import { ThemedText } from "@/components/ThemedText";
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, router } from "expo-router";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";

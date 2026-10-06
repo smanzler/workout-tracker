@@ -1,4 +1,4 @@
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 import { View, type ViewProps } from "react-native";
 
 export function ThemedView({ style, ...otherProps }: ViewProps) {

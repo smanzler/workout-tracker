@@ -5,7 +5,7 @@ import { ThemedText } from "./ThemedText";
 import { Exercise } from "@/models/Exercise";
 import { Set } from "@/models/Set";
 import { MaterialCommunityIcons, Ionicons } from "@expo/vector-icons";
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 import Animated, { FadeIn, Layout } from "react-native-reanimated";
 import { withObservables } from "@nozbe/watermelondb/react";
 import WorkoutExerciseItem from "./WorkoutExerciseItem";

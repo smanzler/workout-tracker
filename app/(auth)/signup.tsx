@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Alert, SafeAreaView, StyleSheet, Text, View } from "react-native";
 import { router, Stack } from "expo-router";
 import { supabase } from "@/lib/supabase";
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 import TextInput from "@/components/TextInput";
 import Button from "@/components/Button";
 import { migrateUserData } from "@/db";
@@ -60,9 +60,9 @@ export default function SignupScreen() {
   };
 
   const getUsernameIconColor = () => {
-    if (!isValidUsername(username)) return theme.colors.notification;
-    if (!isUsernameAvailable) return theme.colors.notification;
-    return theme.colors.primary;
+    if (!isValidUsername(username)) return String(theme.colors.notification);
+    if (!isUsernameAvailable) return String(theme.colors.notification);
+    return String(theme.colors.primary);
   };
 
   const handleSignUpPress = () => {

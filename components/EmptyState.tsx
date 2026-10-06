@@ -6,7 +6,7 @@ import {
 } from "react-native";
 import React from "react";
 import { Ionicons } from "@expo/vector-icons";
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 import { ThemedText } from "./ThemedText";
 import { ScrollView } from "react-native-gesture-handler";
 

@@ -1,13 +1,9 @@
 import { StyleSheet, TextInput, View } from "react-native";
 import React from "react";
-import { DropdownMenuItemIcon } from "@/zeego/drop-down";
-import { DropdownMenuItemTitle } from "@/zeego/drop-down";
-import { DropdownMenuItem } from "@/zeego/drop-down";
-import { DropdownMenuContent } from "@/zeego/drop-down";
 import ButtonWithIcon from "./ButtonWithIcon";
-import { DropdownMenuRoot, DropdownMenuTrigger } from "@/zeego/drop-down";
+import { useMenu } from "@/hooks/useMenu";
 import { Entypo, Feather, FontAwesome5 } from "@expo/vector-icons";
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 import { Exercise } from "@/models/Exercise";
 import { WorkoutExercise } from "@/models/WorkoutExercise";
 import { Set } from "@/models/Set";
@@ -42,6 +38,7 @@ const WRExerciseItem = ({
   handleAddSet: () => void;
 }) => {
   const { colors } = useTheme();
+  const showMenu = useMenu();
 
   const title = "title" in exercise ? exercise.title : exercise.exercise.title;
 
@@ -55,23 +52,19 @@ const WRExerciseItem = ({
         >
           {title}
         </ThemedText>
-        <DropdownMenuRoot>
-          <DropdownMenuTrigger>
-            <ButtonWithIcon>
-              <Entypo
-                name="dots-three-horizontal"
-                size={24}
-                color={colors.text}
-              />
-            </ButtonWithIcon>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuItem destructive key="delete" onSelect={handleDelete}>
-              <DropdownMenuItemTitle>Remove Exercise</DropdownMenuItemTitle>
-              <DropdownMenuItemIcon ios={{ name: "trash" }} />
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenuRoot>
+        <ButtonWithIcon
+          onPress={() =>
+            showMenu([
+              {
+                label: "Remove Exercise",
+                onSelect: handleDelete,
+                destructive: true,
+              },
+            ])
+          }
+        >
+          <Entypo name="dots-three-horizontal" size={24} color={colors.text} />
+        </ButtonWithIcon>
       </View>
       <View style={styles.setsHeader}>
         <ThemedText

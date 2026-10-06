@@ -8,7 +8,7 @@ import {
 import React, { useState } from "react";
 import { BodyScrollView } from "@/components/BodyScrollView";
 import { ThemedText } from "@/components/ThemedText";
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 import { router, Stack } from "expo-router";
 import { useDebounce } from "@/hooks/useDebounce";
 import { supabase } from "@/lib/supabase";
@@ -79,7 +79,7 @@ const UserItem = ({ user, colors }: UserItemProps) => (
       <View style={styles.avatarContainer}>
         <Image
           style={[styles.avatar, { backgroundColor: colors.card }]}
-          source={{ uri: getProfileImageUrl(user.id) }}
+          source={{ uri: getProfileImageUrl(user.id) ?? undefined }}
           cachePolicy="memory"
         />
       </View>

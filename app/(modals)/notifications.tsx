@@ -10,7 +10,7 @@ import {
 import { router, Stack } from "expo-router";
 import { BodyScrollView } from "@/components/BodyScrollView";
 import { ThemedText } from "@/components/ThemedText";
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 import { Image } from "expo-image";
 import { getProfileImageUrl, useProfile } from "@/api/profile";
 import {
@@ -83,7 +83,7 @@ const NotificationItem: React.FC<{
                 style={[
                   styles.button,
                   {
-                    backgroundColor: colors.text
+                    backgroundColor: String(colors.text)
                       .replace("rgb", "rgba")
                       .replace(")", ", 0.2)"),
                   },
@@ -161,7 +161,7 @@ const NotificationItem: React.FC<{
       onPress={pushPage}
     >
       <Image
-        source={{ uri: getProfileImageUrl(notification.actor_id) }}
+        source={{ uri: getProfileImageUrl(notification.actor_id) ?? undefined }}
         style={styles.avatar}
         cachePolicy="memory"
       />

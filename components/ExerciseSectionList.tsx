@@ -3,7 +3,7 @@ import React from "react";
 import { withObservables } from "@nozbe/watermelondb/react";
 import { exercisesCollection } from "@/db";
 import { Exercise } from "@/models/Exercise";
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 
 const ExerciseSectionList = ({
   sections,

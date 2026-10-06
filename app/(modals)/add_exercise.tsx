@@ -18,7 +18,7 @@ import database, {
 } from "@/db";
 import { router } from "expo-router";
 import { useWorkout } from "@/providers/WorkoutProvider";
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 import { useAuth } from "@/providers/AuthProvider";
 import { ThemedText } from "@/components/ThemedText";
 import ExerciseList from "@/components/ExerciseList";

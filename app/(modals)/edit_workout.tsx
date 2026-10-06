@@ -17,7 +17,7 @@ import {
 import { useWorkoutActions, useWorkoutExercises } from "@/stores/workoutStore";
 import EditWorkoutExerciseList from "@/components/EditWorkoutExerciseList";
 import { Ionicons } from "@expo/vector-icons";
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "expo-router/react-navigation";
 import { Q } from "@nozbe/watermelondb";
 import { useAuth } from "@/providers/AuthProvider";
 import { checkPRs } from "@/utils/PRs";
@@ -200,7 +200,7 @@ const EditWorkout = () => {
               style={[
                 styles.closeButton,
                 {
-                  backgroundColor: colors.text
+                  backgroundColor: String(colors.text)
                     .replace("rgb", "rgba")
                     .replace(")", ", 0.1)"),
                 },
@@ -229,7 +229,7 @@ const EditWorkout = () => {
           value={workoutName}
           onChangeText={setWorkoutName}
           placeholder="Workout Name"
-          placeholderTextColor={colors.text
+          placeholderTextColor={String(colors.text)
             .replace("rgb", "rgba")
             .replace(")", ", 0.4)")}
         />
