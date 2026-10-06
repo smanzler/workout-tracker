@@ -2,7 +2,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { BodyScrollView } from "@/components/ui/body-scroll-view";
 import { Icon } from "@/components/ui/icon";
 import { Spinner } from "@/components/ui/spinner";
-import { resetUserData } from "@/db";
 import { useStrongImport } from "@/features/activity/workouts/hooks/use-strong-import";
 import { useRemovePushToken } from "@/features/notifications/hooks/use-remove-push-token";
 import {
@@ -104,7 +103,6 @@ export default function Settings() {
         onPress: async () => {
           await removePushToken().catch(() => undefined);
           await authClient.signOut();
-          await resetUserData();
         },
       },
     ]);
@@ -121,10 +119,7 @@ export default function Settings() {
           style: "destructive",
           onPress: () =>
             deleteAccount(undefined, {
-              onSuccess: () => {
-                discardWorkout();
-                resetUserData();
-              },
+              onSuccess: discardWorkout,
               onError: () =>
                 Alert.alert(
                   "Could not delete account",

@@ -10,16 +10,13 @@ import { Spinner } from "@/components/ui/spinner";
 import { useNotificationTaps } from "@/features/notifications/hooks/use-notification-taps";
 import { usePushNotificationRegistration } from "@/features/notifications/hooks/use-push-notification-registration";
 import { useMyProfile } from "@/features/social/profile/hooks/use-my-profile";
-import { Ionicons } from "@expo/vector-icons";
-import { router, Stack } from "expo-router";
-import { useTheme } from "expo-router/react-navigation";
+import { Stack } from "expo-router";
 import { TriangleAlert } from "lucide-react-native";
-import { Platform, TouchableOpacity, View } from "react-native";
+import { Platform, View } from "react-native";
 
 export default function Layout() {
   usePushNotificationRegistration();
   useNotificationTaps();
-  const { colors } = useTheme();
   const { data: profile, isPending, isError } = useMyProfile();
 
   if (isPending) {
@@ -115,22 +112,7 @@ export default function Layout() {
           name="(modals)"
           options={{ headerShown: false, presentation: "modal" }}
         />
-        <Stack.Screen
-          name="notifications"
-          options={{
-            headerTitle: "Notifications",
-            headerBackVisible: false,
-            headerLeft: () => (
-              <TouchableOpacity onPress={() => router.back()}>
-                <Ionicons
-                  name="chevron-back"
-                  size={28}
-                  color={colors.primary}
-                />
-              </TouchableOpacity>
-            ),
-          }}
-        />
+        <Stack.Screen name="notifications" />
       </Stack.Protected>
       <Stack.Protected guard={!profile}>
         <Stack.Screen name="profile/create" />
