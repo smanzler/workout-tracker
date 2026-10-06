@@ -3,12 +3,16 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
+    "start": "docker compose -f docker/docker-compose.yml up",
+    "stop": "docker compose -f docker/docker-compose.yml down",
     "prepare": "husky",
     "test": "pnpm -r test",
     "lint": "pnpm -r lint",
     "format": "pnpm -r format",
     "check": "pnpm -r check",
-    "typecheck": "pnpm -r typecheck"
+    "typecheck": "pnpm -r typecheck",
+    "dev": "./dev.sh",
+    "down": "./down.sh"
   },
   "lint-staged": {
     "apps/mobile/**/*.{js,jsx,ts,tsx}": "pnpm --filter @rep/mobile exec eslint --fix",

@@ -42,12 +42,21 @@ A modern, social workout tracking app built with React Native and Expo. Track yo
 
 ## Development
 
-The repo is a pnpm workspace. The Expo app lives in `apps/mobile`.
+The repo is a pnpm workspace:
+
+- `apps/mobile`: the Expo app
+- `packages/api`: the Fastify + tRPC + Drizzle API
+
+Copy `docker/.env.example` to `docker/.env` and `packages/api/.env.example` to `packages/api/.env`, then:
 
 ```bash
 pnpm install
-pnpm --filter @rep/mobile start
+pnpm --filter @rep/api exec drizzle-kit migrate  # with the database up
+pnpm dev   # Postgres, pgAdmin and mailpit in Docker, then the API and Metro in tmux
+pnpm down  # stops all of it
 ```
+
+Sign-in codes go to mailpit at http://localhost:8026.
 
 ## Author
 
