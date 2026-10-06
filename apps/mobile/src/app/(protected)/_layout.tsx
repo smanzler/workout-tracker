@@ -182,23 +182,8 @@ export default function Layout() {
           }}
         />
         <Stack.Screen
-          name="(modals)/settings"
-          options={{
-            headerTitle: "Settings",
-            headerBackVisible: false,
-            ...(Platform.OS !== "ios"
-              ? {}
-              : {
-                  headerBlurEffect: "systemChromeMaterial",
-                  headerTransparent: true,
-                  headerLargeTitle: true,
-                  headerLargeTitleShadowVisible: false,
-                  headerShadowVisible: true,
-                  headerLargeStyle: {
-                    backgroundColor: "transparent",
-                  },
-                }),
-          }}
+          name="(modals)"
+          options={{ headerShown: false, presentation: "modal" }}
         />
         <Stack.Screen
           name="find-friends"

@@ -6,7 +6,6 @@ import { useIsWorkingOut } from "@/features/activity/workouts/stores/workout-ses
 import { ThemedText } from "./themed-text";
 import { router } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useSettings } from "@/features/social/profile/stores/settings-store";
 
 export default function TabBar({
   state,
@@ -16,17 +15,8 @@ export default function TabBar({
   const { colors } = useTheme();
   const isWorkingOut = useIsWorkingOut();
   const { bottom } = useSafeAreaInsets();
-  const showExploreTab = useSettings();
 
-  const visibleRoutes = state.routes.filter((route) => {
-    if (
-      (route.name === "explore" && !showExploreTab) ||
-      route.name === "index"
-    ) {
-      return false;
-    }
-    return true;
-  });
+  const visibleRoutes = state.routes.filter(({ name }) => name !== "index");
 
   return (
     <View

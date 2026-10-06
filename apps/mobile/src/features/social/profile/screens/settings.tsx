@@ -1,283 +1,241 @@
-import { BodyScrollView } from "@/components/body-scroll-view";
-import { ThemedText } from "@/components/themed-text";
-import { useTheme } from "expo-router/react-navigation";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { BodyScrollView } from "@/components/ui/body-scroll-view";
+import { Icon } from "@/components/ui/icon";
+import { Spinner } from "@/components/ui/spinner";
+import { resetUserData } from "@/db";
+import { useStrongImport } from "@/features/activity/workouts/hooks/use-strong-import";
 import {
-  View,
-  StyleSheet,
-  TouchableOpacity,
-  Switch,
-  Pressable,
-  Dimensions,
-} from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import React, { useState } from "react";
-import { useSettings, useSettingsActions } from "../stores/settings-store";
-import { router, Stack, useRouter } from "expo-router";
-import { BlurView } from "expo-blur";
-import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
-import { updateProfilePrivacy, useProfile } from "../lib/profile";
-import { useQueryClient, useQuery } from "@tanstack/react-query";
-import { useAuth } from "@/hooks/use-auth";
+  useIsWorkingOut,
+  useWorkoutSessionStore,
+} from "@/features/activity/workouts/stores/workout-session-store";
+import { useMenu } from "@/hooks/use-menu";
+import { authClient } from "@/lib/auth-client";
+import { pickImage, takePhoto } from "@/lib/image";
+import { router } from "expo-router";
+import {
+  FileUp,
+  LogOut,
+  Mail,
+  Moon,
+  ReceiptText,
+  Trash2,
+} from "lucide-react-native";
+import { Pressable } from "@/components/ui/pressable";
+import { Alert, View } from "react-native";
+import { useUniwind } from "uniwind";
+import {
+  Section,
+  SectionContent,
+  SectionHeader,
+  SectionItem,
+  SectionItemContent,
+  SectionItemTitle,
+  SectionTitle,
+} from "../components/section";
+import { useDeleteAccount } from "../hooks/use-delete-account";
+import { useMyProfile } from "../hooks/use-my-profile";
+import { useUpdateProfile } from "../hooks/use-update-profile";
 
-interface SettingsSectionProps {
-  title: string;
-  children: React.ReactNode;
-}
+export default function Settings() {
+  const { theme, hasAdaptiveThemes } = useUniwind();
+  const { data: session } = authClient.useSession();
+  const { data: profile } = useMyProfile();
+  const { mutate: updateAvatar, isPending: isUpdatingAvatar } =
+    useUpdateProfile();
+  const { mutate: deleteAccount, isPending: isDeletingAccount } =
+    useDeleteAccount();
+  const { importFile, isPending: isImporting } = useStrongImport();
+  const isWorkingOut = useIsWorkingOut();
+  const discardWorkout = useWorkoutSessionStore((state) => state.discard);
+  const showMenu = useMenu();
 
-function SettingsSection({ title, children }: SettingsSectionProps) {
-  const { colors } = useTheme();
-  return (
-    <View style={{ marginBottom: 32 }}>
-      <ThemedText
-        type="defaultSemiBold"
-        style={{
-          marginLeft: 16,
-          marginBottom: 8,
-          opacity: 0.6,
-          textTransform: "uppercase",
-          fontSize: 13,
-        }}
-      >
-        {title}
-      </ThemedText>
-      <View
-        style={[
-          styles.section,
-          {
-            backgroundColor: colors.card,
-          },
-        ]}
-      >
-        {children}
-      </View>
-    </View>
-  );
-}
+  const handleUpdateAvatar = (avatar: string | null) =>
+    updateAvatar(
+      { avatar },
+      {
+        onError: () =>
+          Alert.alert("Could not update photo", "Try again in a moment."),
+      },
+    );
 
-interface SettingsItemProps {
-  label: string;
-  icon?: keyof typeof Ionicons.glyphMap;
-  iconColor?: string;
-  onPress?: () => void;
-  value?: string;
-  isToggle?: boolean;
-  toggleValue?: boolean;
-  onToggle?: (value: boolean) => void;
-  description?: string;
-}
+  const handleAvatarPress = () =>
+    showMenu([
+      {
+        label: "Take Photo",
+        onSelect: async () => {
+          const uri = await takePhoto();
+          if (uri) handleUpdateAvatar(uri);
+        },
+      },
+      {
+        label: "Photo Library",
+        onSelect: async () => {
+          const uri = await pickImage();
+          if (uri) handleUpdateAvatar(uri);
+        },
+      },
+      ...(profile?.avatarUrl
+        ? [
+            {
+              label: "Remove Photo",
+              destructive: true,
+              onSelect: () => handleUpdateAvatar(null),
+            },
+          ]
+        : []),
+    ]);
 
-function SettingsItem({
-  label,
-  icon,
-  iconColor,
-  onPress,
-  value,
-  isToggle,
-  toggleValue,
-  onToggle,
-  description,
-}: SettingsItemProps) {
-  const { colors } = useTheme();
-
-  const content = (
-    <>
-      <View style={styles.itemContent}>
-        {icon && (
-          <View
-            style={[
-              styles.iconContainer,
-              {
-                backgroundColor: iconColor || colors.primary,
-              },
-            ]}
-          >
-            <Ionicons name={icon} size={18} color="white" />
-          </View>
-        )}
-        <View style={{ flex: 1 }}>
-          <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
-            <ThemedText type="default">{label}</ThemedText>
-            {description && (
-              <Pressable
-                onPress={(event) => {
-                  const { pageX, pageY } = event.nativeEvent;
-                  router.push({
-                    pathname: "/info-modal",
-                    params: {
-                      description,
-                      title: label,
-                      x: pageX,
-                      y: pageY,
-                    },
-                  });
-                }}
-                style={({ pressed }) => ({
-                  opacity: pressed ? 0.5 : 1,
-                })}
-              >
-                <Ionicons
-                  name="information-circle"
-                  size={16}
-                  color={colors.text}
-                  style={{ opacity: 0.6 }}
-                />
-              </Pressable>
-            )}
-          </View>
-        </View>
-      </View>
-      <View style={styles.itemRight}>
-        {isToggle ? (
-          <Switch
-            value={toggleValue}
-            onValueChange={onToggle}
-            ios_backgroundColor={colors.border}
-          />
-        ) : (
-          <>
-            {value && <ThemedText style={{ opacity: 0.6 }}>{value}</ThemedText>}
-            {onPress && !value && (
-              <Ionicons
-                name="chevron-forward"
-                size={20}
-                color={colors.text}
-                style={{ opacity: 0.3 }}
-              />
-            )}
-          </>
-        )}
-      </View>
-    </>
-  );
-
-  const containerStyle = [
-    styles.item,
-    {
-      borderBottomColor: colors.border,
-    },
-  ];
-
-  return (
-    <View>
-      {isToggle ? (
-        <View style={containerStyle}>{content}</View>
-      ) : (
-        <TouchableOpacity onPress={onPress} style={containerStyle}>
-          {content}
-        </TouchableOpacity>
-      )}
-    </View>
-  );
-}
-
-export default function SettingsScreen() {
-  const { colors } = useTheme();
-  const showExploreTab = useSettings();
-  const { setShowExploreTab } = useSettingsActions();
-  const queryClient = useQueryClient();
-  const { user } = useAuth();
-  const { data: profileData } = useProfile(user?.id);
-
-  const handlePrivacyToggle = async (value: boolean) => {
-    if (!user?.id) return;
-    try {
-      await updateProfilePrivacy(value, user?.id);
-
-      if (user?.id) {
-        queryClient.invalidateQueries({ queryKey: ["profile", user.id] });
-      }
-    } catch (error) {
-      console.error("Failed to update privacy setting:", error);
+  const handleSignOut = () => {
+    if (isWorkingOut) {
+      Alert.alert(
+        "Workout in progress",
+        "Finish or discard your workout before you sign out.",
+      );
+      return;
     }
+
+    Alert.alert("Sign Out", "Do you want to sign out?", [
+      { text: "Cancel", style: "cancel" },
+      {
+        text: "Sign Out",
+        style: "destructive",
+        onPress: async () => {
+          await authClient.signOut();
+          await resetUserData();
+        },
+      },
+    ]);
   };
 
+  const handleDeleteAccount = () =>
+    Alert.alert(
+      "Delete Account",
+      "This deletes your profile, workouts, routines, exercises, follows, kudos and notifications. You cannot undo this.",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: () =>
+            deleteAccount(undefined, {
+              onSuccess: () => {
+                discardWorkout();
+                resetUserData();
+              },
+              onError: () =>
+                Alert.alert(
+                  "Could not delete account",
+                  "Try again in a moment.",
+                ),
+            }),
+        },
+      ],
+    );
+
   return (
-    <BodyScrollView style={styles.container}>
-      <Stack.Screen
-        options={{
-          headerLeft: () => (
-            <TouchableOpacity onPress={() => router.back()}>
-              <Ionicons name="chevron-back" size={28} color={colors.primary} />
-            </TouchableOpacity>
-          ),
-        }}
-      />
+    <BodyScrollView>
+      <View className="gap-8">
+        <Pressable
+          onPress={handleAvatarPress}
+          disabled={isUpdatingAvatar}
+          accessibilityLabel="Change photo"
+        >
+          <Avatar alt={profile?.username ?? ""} className="size-32">
+            <AvatarImage source={{ uri: profile?.avatarUrl ?? undefined }} />
+            <AvatarFallback />
+            {isUpdatingAvatar && (
+              <View className="absolute inset-0 items-center justify-center bg-black/40">
+                <Spinner className="text-white" />
+              </View>
+            )}
+          </Avatar>
+        </Pressable>
 
-      <SettingsSection title="Privacy">
-        <SettingsItem
-          label="Public Profile"
-          icon="lock-open"
-          iconColor="#32CD32"
-          isToggle
-          toggleValue={profileData?.profile.is_public ?? true}
-          onToggle={handlePrivacyToggle}
-          description="When enabled, your profile and workouts will be visible to everyone. When disabled, only approved followers can see your content."
-        />
-      </SettingsSection>
+        <Section>
+          <SectionHeader>
+            <SectionTitle>Profile</SectionTitle>
+          </SectionHeader>
+          <SectionContent>
+            <SectionItem onPress={() => router.push("/profile/edit-username")}>
+              <SectionItemTitle>Username</SectionItemTitle>
+              <SectionItemContent>{profile?.username}</SectionItemContent>
+            </SectionItem>
+          </SectionContent>
+        </Section>
 
-      <SettingsSection title="Features">
-        <SettingsItem
-          label="Explore Tab"
-          icon="compass"
-          iconColor="#007AFF"
-          isToggle
-          toggleValue={showExploreTab}
-          onToggle={setShowExploreTab}
-          description="Enable or disable the Explore tab where you can discover new workouts and routines from the community"
-        />
-      </SettingsSection>
+        <Section>
+          <SectionHeader>
+            <SectionTitle>Appearance</SectionTitle>
+          </SectionHeader>
+          <SectionContent>
+            <SectionItem onPress={() => router.push("/theme")}>
+              <Icon as={Moon} />
+              <SectionItemTitle>Theme</SectionItemTitle>
+              <SectionItemContent textClassName="capitalize">
+                {hasAdaptiveThemes ? "system" : theme}
+              </SectionItemContent>
+            </SectionItem>
+          </SectionContent>
+        </Section>
+
+        <Section>
+          <SectionHeader>
+            <SectionTitle>Data</SectionTitle>
+          </SectionHeader>
+          <SectionContent>
+            <SectionItem onPress={isImporting ? undefined : importFile}>
+              <Icon as={FileUp} />
+              <SectionItemTitle>Import from Strong</SectionItemTitle>
+              <SectionItemContent>
+                {isImporting ? <Spinner /> : undefined}
+              </SectionItemContent>
+            </SectionItem>
+          </SectionContent>
+        </Section>
+
+        <Section>
+          <SectionHeader>
+            <SectionTitle>Support</SectionTitle>
+          </SectionHeader>
+          <SectionContent>
+            <SectionItem onPress={() => router.push("/terms")}>
+              <Icon as={ReceiptText} />
+              <SectionItemTitle>Terms of Use</SectionItemTitle>
+              <SectionItemContent />
+            </SectionItem>
+          </SectionContent>
+        </Section>
+
+        <Section>
+          <SectionHeader>
+            <SectionTitle>Account</SectionTitle>
+          </SectionHeader>
+          <SectionContent>
+            <SectionItem>
+              <Icon as={Mail} />
+              <SectionItemTitle>Email</SectionItemTitle>
+              <SectionItemContent>{session?.user.email}</SectionItemContent>
+            </SectionItem>
+            <SectionItem onPress={handleSignOut}>
+              <Icon as={LogOut} />
+              <SectionItemTitle>Sign Out</SectionItemTitle>
+            </SectionItem>
+            <SectionItem
+              onPress={isDeletingAccount ? undefined : handleDeleteAccount}
+            >
+              <Icon as={Trash2} className="text-destructive" />
+              <SectionItemTitle className="text-destructive">
+                Delete Account
+              </SectionItemTitle>
+              {isDeletingAccount && (
+                <SectionItemContent>
+                  <Spinner />
+                </SectionItemContent>
+              )}
+            </SectionItem>
+          </SectionContent>
+        </Section>
+      </View>
     </BodyScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingTop: 20,
-  },
-  section: {
-    borderRadius: 16,
-    overflow: "hidden",
-    marginHorizontal: 12,
-  },
-  item: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderBottomWidth: 0.5,
-  },
-  itemContent: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-    flex: 1,
-    paddingRight: 16,
-  },
-  itemRight: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-  },
-  iconContainer: {
-    width: 32,
-    height: 32,
-    borderRadius: 8,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  infoBox: {
-    width: Dimensions.get("window").width - 48,
-    padding: 16,
-    borderRadius: 16,
-    borderWidth: 1,
-    gap: 12,
-    overflow: "visible",
-  },
-  infoHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-  },
-});

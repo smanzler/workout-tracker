@@ -10,6 +10,7 @@ import "react-native-reanimated";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { View } from "react-native";
 import { NAV_THEME } from "@/lib/theme";
+import { restoreTheme } from "@/features/social/profile/lib/theme";
 import { KeyboardProvider } from "react-native-keyboard-controller";
 import * as Notifications from "expo-notifications";
 import { Toast } from "@/features/notifications/components/toast";
@@ -32,6 +33,7 @@ import { TriangleAlert } from "lucide-react-native";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
+restoreTheme();
 
 export default function RootLayout() {
   const { theme } = useUniwind();
