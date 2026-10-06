@@ -20,13 +20,7 @@ export default function RoutineModal() {
     router.back();
     startWorkout({
       name: routine.name,
-      exercises: toDraft(
-        routine.exercises.map(({ exerciseId, exercise, sets }) => ({
-          exercise: { id: exerciseId, ...exercise },
-          sets,
-        })),
-        { completed: false },
-      ),
+      exercises: toDraft(routine.exercises, { completed: false }),
     });
   };
 

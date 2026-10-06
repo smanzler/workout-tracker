@@ -24,6 +24,7 @@ export type DraftSet = {
 export type DraftExercise = {
   id: string;
   exercise: DraftExerciseInfo;
+  notes?: string;
   sets: DraftSet[];
 };
 
@@ -64,14 +65,22 @@ const updateDraftSet = (
     sets: exercise.sets.map((set) => (set.id === setId ? update(set) : set)),
   }));
 
-/** Builds a draft from saved exercises, such as a routine or a workout. */
+/** An exercise of a saved routine or workout, as the API returns it. */
+export type SavedExercise = {
+  exerciseId: string;
+  exercise: Omit<DraftExerciseInfo, "id">;
+  notes?: string | null;
+  sets: WorkoutSetInput[];
+};
+
 export const toDraft = (
-  exercises: { exercise: DraftExerciseInfo; sets: WorkoutSetInput[] }[],
+  exercises: SavedExercise[],
   { completed }: { completed: boolean },
 ): Draft =>
-  exercises.map(({ exercise, sets }) => ({
+  exercises.map(({ exerciseId, exercise, notes, sets }) => ({
     id: randomUUID(),
-    exercise,
+    exercise: { id: exerciseId, ...exercise },
+    ...(notes && { notes }),
     sets: sets.map((set) => createSet(set, completed)),
   }));
 
@@ -187,7 +196,8 @@ export const toSetInput = ({
 };
 
 export const toExerciseInputs = (draft: Draft): WorkoutExerciseInput[] =>
-  draft.map(({ exercise, sets }) => ({
+  draft.map(({ exercise, notes, sets }) => ({
     exerciseId: exercise.id,
+    ...(notes && { notes }),
     sets: sets.map(toSetInput),
   }));

@@ -1,6 +1,7 @@
 import type { Outputs } from "@rep/api";
-import { useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { useState } from "react";
+import { Pressable } from "@/components/ui/pressable";
 import { ScrollView, Share, View } from "react-native";
 import { QueryView } from "../../components/query-view";
 import { SummaryHeader } from "../components/summary-header";
@@ -43,7 +44,16 @@ export default function Summary() {
             contentContainerClassName="px-4 pb-safe-offset-4"
             contentContainerStyle={{ paddingTop: headerHeight + 16 }}
           >
-            <WorkoutSummary workout={workout} />
+            <Pressable
+              onPress={() =>
+                router.push({
+                  pathname: "/(modals)/workout-details",
+                  params: { workoutId: workout.id },
+                })
+              }
+            >
+              <WorkoutSummary workout={workout} />
+            </Pressable>
           </ScrollView>
         )}
       </QueryView>

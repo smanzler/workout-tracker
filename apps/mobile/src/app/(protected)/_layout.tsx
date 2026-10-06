@@ -68,38 +68,16 @@ export default function Layout() {
           options={{ presentation: "fullScreenModal", headerShown: false }}
         />
         <Stack.Screen
-          name="(modals)/workout-modal"
-          options={{
-            presentation: "modal",
-            ...(Platform.OS !== "ios"
-              ? {}
-              : {
-                  headerTransparent: true,
-                  headerBlurEffect: "systemChromeMaterial",
-                  headerShadowVisible: true,
-                }),
-          }}
+          name="(modals)/workout-details"
+          options={{ presentation: "modal" }}
         />
         <Stack.Screen
           name="(modals)/edit-workout"
-          options={{
-            presentation: "modal",
-            headerTitle: "Edit Workout",
-            headerBackVisible: false,
-            ...(Platform.OS !== "ios"
-              ? {}
-              : {
-                  headerTransparent: true,
-                  headerBlurEffect: "systemChromeMaterial",
-                  headerShadowVisible: true,
-                }),
-          }}
+          options={{ title: "Edit Workout", presentation: "modal" }}
         />
         <Stack.Screen
           name="(modals)/add-edit-exercises"
-          options={{
-            headerTitle: "Add Exercises",
-          }}
+          options={{ title: "Add Exercises", presentation: "modal" }}
         />
         <Stack.Screen
           name="(modals)/add-routine"

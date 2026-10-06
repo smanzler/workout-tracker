@@ -12,12 +12,19 @@ import {
   updateSet,
   type Draft,
   type DraftExerciseInfo,
+  type SavedExercise,
 } from "./draft";
 
 jest.mock("expo-crypto", () => {
   let count = 0;
   return { randomUUID: () => `id-${(count += 1)}` };
 });
+
+const saved = (
+  { id, ...exercise }: DraftExerciseInfo,
+  sets: SavedExercise["sets"],
+  notes?: string,
+): SavedExercise => ({ exerciseId: id, exercise, notes, sets });
 
 const bench: DraftExerciseInfo = {
   id: "bench",
@@ -139,12 +146,9 @@ describe("toggleSet", () => {
   });
 
   it("marks a done set not done and keeps its values", () => {
-    const draft = toDraft(
-      [{ exercise: bench, sets: [{ weight: 100, reps: 5 }] }],
-      {
-        completed: true,
-      },
-    );
+    const draft = toDraft([saved(bench, [{ weight: 100, reps: 5 }])], {
+      completed: true,
+    });
     const { exerciseId, setId } = firstSet(draft);
 
     expect(firstSet(toggleSet(draft, { exerciseId, setId })).set).toMatchObject(
@@ -155,10 +159,9 @@ describe("toggleSet", () => {
 
 describe("hasIncompleteSets", () => {
   it("is true while any set is not done", () => {
-    const draft = toDraft(
-      [{ exercise: bench, sets: [{ weight: 100, reps: 5 }] }],
-      { completed: true },
-    );
+    const draft = toDraft([saved(bench, [{ weight: 100, reps: 5 }])], {
+      completed: true,
+    });
 
     expect(hasIncompleteSets(draft)).toBe(false);
     expect(hasIncompleteSets(addSet(draft, draft[0]?.id ?? ""))).toBe(true);
@@ -169,14 +172,11 @@ describe("keepCompletedSets", () => {
   it("removes the sets that are not done and the exercises left empty", () => {
     const draft = toDraft(
       [
-        {
-          exercise: bench,
-          sets: [
-            { weight: 100, reps: 5 },
-            { weight: 100, reps: 5 },
-          ],
-        },
-        { exercise: squat, sets: [{ weight: 200, reps: 3 }] },
+        saved(bench, [
+          { weight: 100, reps: 5 },
+          { weight: 100, reps: 5 },
+        ]),
+        saved(squat, [{ weight: 200, reps: 3 }]),
       ],
       { completed: false },
     );
@@ -192,10 +192,9 @@ describe("keepCompletedSets", () => {
 
 describe("toExerciseInputs", () => {
   it("parses the typed text and turns empty or invalid text into null", () => {
-    const draft = toDraft(
-      [{ exercise: bench, sets: [{ weight: null, reps: null }] }],
-      { completed: false },
-    );
+    const draft = toDraft([saved(bench, [{ weight: null, reps: null }])], {
+      completed: false,
+    });
     const { exerciseId, setId } = firstSet(draft);
     const values = [
       { weight: "137.5", reps: "8" },
@@ -213,5 +212,18 @@ describe("toExerciseInputs", () => {
       { weight: null, reps: 7 },
     ]);
     expect(inputs[0]?.[0]?.exerciseId).toBe("bench");
+  });
+});
+
+describe("toDraft and toExerciseInputs", () => {
+  it("keep the notes of an exercise", () => {
+    const draft = toDraft([saved(bench, [{ weight: 100, reps: 5 }], "Pause")], {
+      completed: true,
+    });
+
+    expect(draft[0]?.exercise).toEqual(bench);
+    expect(toExerciseInputs(draft)).toEqual([
+      { exerciseId: "bench", notes: "Pause", sets: [{ weight: 100, reps: 5 }] },
+    ]);
   });
 });
