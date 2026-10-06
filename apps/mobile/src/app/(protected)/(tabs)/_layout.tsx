@@ -22,15 +22,6 @@ export default function TabLayout() {
       }}
     >
       <Tabs.Screen
-        name="explore"
-        options={{
-          title: "Explore",
-          tabBarIcon: ({ color }) => (
-            <Ionicons size={26} name="home" color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
         name="history"
         options={{
           title: "History",
@@ -60,7 +51,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="you"
         options={{
-          title: "Profile",
+          title: "You",
           tabBarIcon: ({ color }) => (
             <Ionicons size={26} name="person" color={color} />
           ),

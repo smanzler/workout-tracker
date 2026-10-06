@@ -6,7 +6,7 @@ import { Alert, View } from "react-native";
 import { DraftForm } from "../../components/draft-form";
 import { useElapsedSeconds } from "../hooks/use-elapsed-seconds";
 import { useFinishWorkout } from "../hooks/use-finish-workout";
-import { formatTimer } from "../lib/duration";
+import { formatTimer } from "@/lib/duration";
 import { useWorkoutSessionStore } from "../stores/workout-session-store";
 
 export default function Workout() {

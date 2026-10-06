@@ -4,7 +4,7 @@ import { useStartWorkout } from "@/features/activity/workouts/hooks/use-start-wo
 import type { Outputs } from "@rep/api";
 import { router, useLocalSearchParams } from "expo-router";
 import { View } from "react-native";
-import { QueryView } from "../../components/query-view";
+import { QueryView } from "@/components/query-view";
 import { toDraft } from "../../lib/draft";
 import { muscleGroupLabels } from "../../lib/labels";
 import { useRoutine } from "../hooks/use-routine";

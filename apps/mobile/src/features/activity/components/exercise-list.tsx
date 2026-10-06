@@ -19,10 +19,10 @@ import {
   groupByFirstLetter,
   type ExerciseFilter,
 } from "../lib/exercises";
-import { formatSet } from "../lib/format";
+import { formatSet } from "@/lib/format";
 import { exerciseCategoryLabels, muscleGroupLabels } from "../lib/labels";
 import { MenuSelect } from "./menu-select";
-import { QueryView } from "./query-view";
+import { QueryView } from "@/components/query-view";
 
 type Exercise = Outputs["activity"]["exercise"]["getAll"][number];
 

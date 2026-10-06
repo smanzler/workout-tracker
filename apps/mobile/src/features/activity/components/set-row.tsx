@@ -8,7 +8,7 @@ import { Check, Trash2 } from "lucide-react-native";
 import { Pressable } from "@/components/ui/pressable";
 import { View } from "react-native";
 import ReanimatedSwipeable from "react-native-gesture-handler/ReanimatedSwipeable";
-import { formatSet } from "../lib/format";
+import { formatSet } from "@/lib/format";
 import { canCompleteSet, type DraftSet } from "../lib/draft";
 
 export function SetHeader({ completable }: { completable: boolean }) {

@@ -5,13 +5,10 @@ import { Text } from "@/components/ui/text";
 import type { Outputs } from "@rep/api";
 import { Calendar, Clock, Trophy, type LucideIcon } from "lucide-react-native";
 import { View } from "react-native";
-import { formatDate, formatTime } from "../../lib/date";
-import { findBestSet, formatSet } from "../../lib/format";
-import { formatDuration } from "../lib/duration";
-import {
-  countPersonalRecords,
-  isPersonalRecord,
-} from "../lib/personal-records";
+import { formatDate, formatTime } from "@/lib/date";
+import { findBestSet, formatSet } from "@/lib/format";
+import { formatDuration } from "@/lib/duration";
+import { countPersonalRecords, isPersonalRecord } from "@/lib/personal-records";
 
 type Workout = Outputs["activity"]["workout"]["get"];
 

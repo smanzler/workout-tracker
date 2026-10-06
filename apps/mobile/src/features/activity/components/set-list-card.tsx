@@ -5,7 +5,7 @@ import { Text } from "@/components/ui/text";
 import type { PersonalRecordFlags, SetPerformance } from "@rep/shared";
 import { Trophy } from "lucide-react-native";
 import { View } from "react-native";
-import { formatSet } from "../lib/format";
+import { formatSet } from "@/lib/format";
 import { keysOf } from "../lib/keys-of";
 
 const recordLabels: Record<keyof PersonalRecordFlags, string> = {

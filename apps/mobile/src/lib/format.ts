@@ -1,27 +1,18 @@
-export function formatDuration(startTime: number, endTime: number): string {
-  const durationInSeconds = Math.floor(
-    ((endTime ?? startTime) - startTime) / 1000,
-  );
+import type { SetPerformance } from "@rep/shared";
 
-  if (durationInSeconds < 60) {
-    return `${durationInSeconds}s`;
-  }
-
-  const minutes = Math.floor(durationInSeconds / 60);
-  const hours = Math.floor(minutes / 60);
-  const remainingMinutes = minutes % 60;
-
-  if (hours > 0) {
-    return remainingMinutes > 0
-      ? `${hours}h ${remainingMinutes}m`
-      : `${hours}h`;
-  }
-
-  return `${minutes}m`;
-}
-
-export const chunkArray = (arr: any[], size: number) => {
-  return Array.from({ length: Math.ceil(arr.length / size) }, (_, i) =>
-    arr.slice(i * size, i * size + size),
-  );
+/** "135 lb × 8", "× 12" without a weight, or "—" when empty. */
+export const formatSet = ({ weight, reps }: SetPerformance) => {
+  if (weight === null && reps === null) return "—";
+  if (weight === null) return `× ${reps}`;
+  return `${weight} lb × ${reps ?? "—"}`;
 };
+
+/** The heaviest set, and the one with more reps on a tie. */
+export const findBestSet = <TSet extends SetPerformance>(sets: TSet[]) =>
+  sets.reduce<TSet | undefined>((best, set) => {
+    if (!best) return set;
+    const bestWeight = best.weight ?? 0;
+    const weight = set.weight ?? 0;
+    if (weight !== bestWeight) return weight > bestWeight ? set : best;
+    return (set.reps ?? 0) > (best.reps ?? 0) ? set : best;
+  }, undefined);

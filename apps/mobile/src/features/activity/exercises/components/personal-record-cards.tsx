@@ -2,7 +2,7 @@ import { Card } from "@/components/ui/card";
 import { Text } from "@/components/ui/text";
 import type { PersonalRecord, PersonalRecordMetric } from "@rep/shared";
 import { View } from "react-native";
-import { formatDate } from "../../lib/date";
+import { formatDate } from "@/lib/date";
 import { keysOf } from "../../lib/keys-of";
 
 const recordViews: Record<

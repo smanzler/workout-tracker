@@ -14,9 +14,9 @@ import { router } from "expo-router";
 import { History as HistoryIcon } from "lucide-react-native";
 import { Pressable } from "@/components/ui/pressable";
 import { FlatList } from "react-native";
-import { QueryView } from "../../components/query-view";
-import { RefetchControl } from "../components/refetch-control";
-import { WorkoutSummary } from "../components/workout-summary";
+import { QueryView } from "@/components/query-view";
+import { RefetchControl } from "@/components/refetch-control";
+import { WorkoutSummary } from "@/components/workout-summary";
 import { useWorkoutMenu } from "../hooks/use-workout-menu";
 import { useWorkouts } from "../hooks/use-workouts";
 

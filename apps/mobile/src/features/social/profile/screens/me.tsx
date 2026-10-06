@@ -1,10 +1,8 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { BodyScrollView } from "@/components/ui/body-scroll-view";
-import { Text } from "@/components/ui/text";
 import { Stack } from "expo-router";
-import { Bell, Settings } from "lucide-react-native";
+import { Bell, Settings, Users } from "lucide-react-native";
 import { View } from "react-native";
-import { HeaderLink } from "../components/header-link";
+import { HeaderLink } from "../../components/header-link";
+import { ProfileView } from "../components/profile-view";
 import { useMyProfile } from "../hooks/use-my-profile";
 
 export default function Me() {
@@ -14,6 +12,7 @@ export default function Me() {
     <>
       <Stack.Screen
         options={{
+          title: "You",
           headerLeft: () => (
             <HeaderLink
               icon={Settings}
@@ -22,23 +21,18 @@ export default function Me() {
             />
           ),
           headerRight: () => (
-            <HeaderLink
-              icon={Bell}
-              label="Notifications"
-              href="/notifications"
-            />
+            <View className="flex-row items-center">
+              <HeaderLink
+                icon={Bell}
+                label="Notifications"
+                href="/notifications"
+              />
+              <HeaderLink icon={Users} label="Friends" href="/friends" />
+            </View>
           ),
         }}
       />
-      <BodyScrollView>
-        <View className="items-center gap-4">
-          <Avatar alt={profile?.username ?? ""} className="size-32">
-            <AvatarImage source={{ uri: profile?.avatarUrl ?? undefined }} />
-            <AvatarFallback />
-          </Avatar>
-          <Text className="text-xl font-bold">{profile?.username}</Text>
-        </View>
-      </BodyScrollView>
+      <ProfileView profileId={profile?.id} />
     </>
   );
 }

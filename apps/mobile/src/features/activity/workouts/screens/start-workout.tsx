@@ -15,7 +15,7 @@ import { useRoutines } from "@/features/activity/routines/hooks/use-routines";
 import { router } from "expo-router";
 import { ClipboardList, Plus } from "lucide-react-native";
 import { View } from "react-native";
-import { QueryView } from "../../components/query-view";
+import { QueryView } from "@/components/query-view";
 import { useStartWorkout } from "../hooks/use-start-workout";
 
 const openNewRoutine = () => router.push("/add-routine");

@@ -1,5 +1,5 @@
 import TabStack from "@/components/tab-stack";
 
-export default function ProfileLayout() {
-  return <TabStack name="index" headerTitle="Profile" />;
+export default function YouLayout() {
+  return <TabStack name="index" headerTitle="You" />;
 }

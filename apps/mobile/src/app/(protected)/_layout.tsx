@@ -104,113 +104,12 @@ export default function Layout() {
           name="new-exercise"
           options={{ title: "New Exercise", presentation: "modal" }}
         />
-        <Stack.Screen
-          name="post"
-          options={{
-            headerTitle: "Post",
-            headerBackVisible: false,
-            ...(Platform.OS !== "ios"
-              ? {}
-              : {
-                  headerTransparent: true,
-                  headerBlurEffect: "systemChromeMaterial",
-                  headerLargeTitle: true,
-                  headerLargeTitleShadowVisible: false,
-                  headerShadowVisible: true,
-                  headerLargeStyle: {
-                    backgroundColor: "transparent",
-                  },
-                }),
-          }}
-        />
-        <Stack.Screen
-          name="profile"
-          options={{
-            headerTitle: "Profile",
-            headerBackVisible: false,
-            ...(Platform.OS !== "ios"
-              ? {}
-              : {
-                  headerBlurEffect: "systemChromeMaterial",
-                  headerTransparent: true,
-                  headerLargeTitle: true,
-                  headerLargeTitleShadowVisible: false,
-                  headerShadowVisible: true,
-                  headerLargeStyle: {
-                    backgroundColor: "transparent",
-                  },
-                }),
-          }}
-        />
-        <Stack.Screen
-          name="friends"
-          options={{
-            headerTitle: "Friends",
-            headerBackVisible: false,
-            ...(Platform.OS !== "ios"
-              ? {}
-              : {
-                  headerBlurEffect: "systemChromeMaterial",
-                  headerTransparent: true,
-                }),
-          }}
-        />
-        <Stack.Screen
-          name="create-post"
-          options={{
-            headerTitle: "Create Post",
-            headerBackVisible: false,
-            ...(Platform.OS !== "ios"
-              ? {}
-              : {
-                  headerBlurEffect: "systemChromeMaterial",
-                  headerTransparent: true,
-                }),
-          }}
-        />
-        <Stack.Screen
-          name="workout-picker"
-          options={{
-            headerTitle: "Choose Workout to Add",
-            headerBackVisible: false,
-            ...(Platform.OS !== "ios"
-              ? {}
-              : {
-                  headerBlurEffect: "systemChromeMaterial",
-                  headerTransparent: true,
-                }),
-          }}
-        />
+        <Stack.Screen name="friends" />
+        <Stack.Screen name="add-friends" />
+        <Stack.Screen name="profile" options={{ title: "" }} />
         <Stack.Screen
           name="(modals)"
           options={{ headerShown: false, presentation: "modal" }}
-        />
-        <Stack.Screen
-          name="find-friends"
-          options={{
-            headerTitle: "Find Friends",
-            headerBackVisible: false,
-            ...(Platform.OS !== "ios"
-              ? {}
-              : {
-                  headerBlurEffect: "systemChromeMaterial",
-                  headerTransparent: true,
-                  headerLargeTitle: true,
-                  headerLargeTitleShadowVisible: false,
-                  headerShadowVisible: true,
-                  headerLargeStyle: {
-                    backgroundColor: "transparent",
-                  },
-                }),
-          }}
-        />
-        <Stack.Screen
-          name="info-modal"
-          options={{
-            presentation: "transparentModal",
-            animation: "fade",
-            headerShown: false,
-          }}
         />
         <Stack.Screen
           name="notifications"

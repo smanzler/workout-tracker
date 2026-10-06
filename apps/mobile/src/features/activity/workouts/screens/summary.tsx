@@ -3,11 +3,11 @@ import { router, useLocalSearchParams } from "expo-router";
 import { useState } from "react";
 import { Pressable } from "@/components/ui/pressable";
 import { ScrollView, Share, View } from "react-native";
-import { QueryView } from "../../components/query-view";
+import { QueryView } from "@/components/query-view";
 import { SummaryHeader } from "../components/summary-header";
-import { WorkoutSummary } from "../components/workout-summary";
+import { WorkoutSummary } from "@/components/workout-summary";
 import { useWorkout } from "../hooks/use-workout";
-import { formatDuration } from "../lib/duration";
+import { formatDuration } from "@/lib/duration";
 
 const toShareMessage = (workout: Outputs["activity"]["workout"]["get"]) =>
   [
