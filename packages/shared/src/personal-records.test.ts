@@ -1,5 +1,9 @@
 import { describe, expect, test } from "vitest";
-import { estimateOneRepMax, markPersonalRecords } from "./personal-records";
+import {
+  estimateOneRepMax,
+  markPersonalRecords,
+  summarizePersonalRecords,
+} from "./personal-records";
 
 const set = (weight: number | null, reps: number | null) => ({ weight, reps });
 
@@ -82,5 +86,38 @@ describe("markPersonalRecords", () => {
     const [entry] = markPersonalRecords([[{ id: "a", ...set(50, 5) }]]);
 
     expect(entry?.[0]).toMatchObject({ id: "a", weight: 50, reps: 5 });
+  });
+});
+
+describe("summarizePersonalRecords", () => {
+  const monday = new Date("2026-01-05");
+  const friday = new Date("2026-01-09");
+
+  test("finds the best value of each metric and when it happened", () => {
+    const records = summarizePersonalRecords([
+      { startedAt: friday, sets: [set(110, 3)] },
+      { startedAt: monday, sets: [set(100, 10)] },
+    ]);
+
+    expect(records.weight).toEqual({ value: 110, date: friday });
+    expect(records.volume).toEqual({ value: 1000, date: monday });
+    expect(records.oneRepMax?.date).toEqual(monday);
+  });
+
+  test("gives the earlier date for a tie", () => {
+    const records = summarizePersonalRecords([
+      { startedAt: friday, sets: [set(100, 5)] },
+      { startedAt: monday, sets: [set(100, 5)] },
+    ]);
+
+    expect(records.weight?.date).toEqual(monday);
+  });
+
+  test("returns null without a weighted set", () => {
+    const records = summarizePersonalRecords([
+      { startedAt: monday, sets: [set(null, 20)] },
+    ]);
+
+    expect(records).toEqual({ weight: null, volume: null, oneRepMax: null });
   });
 });

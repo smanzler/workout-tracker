@@ -27,3 +27,11 @@ export const muscleGroups = [
 export const muscleGroupSchema = z.enum(muscleGroups);
 
 export type MuscleGroup = z.infer<typeof muscleGroupSchema>;
+
+export const createExerciseSchema = z.object({
+  title: z.string().trim().min(1).max(100),
+  category: exerciseCategorySchema.nullable(),
+  muscleGroup: muscleGroupSchema.nullable(),
+});
+
+export type CreateExerciseInput = z.infer<typeof createExerciseSchema>;

@@ -83,3 +83,33 @@ export const markPersonalRecords = <TSet extends SetPerformance>(
     },
     { bests: { weight: 0, volume: 0, oneRepMax: 0 }, marked: [] },
   ).marked;
+
+export type PersonalRecord = { value: number; date: Date };
+
+const findPersonalRecord = (
+  entries: { startedAt: Date; sets: SetPerformance[] }[],
+  metric: PersonalRecordMetric,
+) =>
+  entries.reduce<PersonalRecord | null>((record, { startedAt, sets }) => {
+    const value = Math.max(0, ...sets.map(metricValues[metric]));
+
+    if (value === 0) return record;
+    if (!record || value > record.value) return { value, date: startedAt };
+    if (value === record.value && startedAt < record.date) {
+      return { value, date: startedAt };
+    }
+
+    return record;
+  }, null);
+
+/**
+ * Finds the best weight, volume and estimated one-rep max over the entries of
+ * one exercise, with the date of the first entry that reached each.
+ */
+export const summarizePersonalRecords = (
+  entries: { startedAt: Date; sets: SetPerformance[] }[],
+): Record<PersonalRecordMetric, PersonalRecord | null> => ({
+  weight: findPersonalRecord(entries, "weight"),
+  volume: findPersonalRecord(entries, "volume"),
+  oneRepMax: findPersonalRecord(entries, "oneRepMax"),
+});
