@@ -89,7 +89,7 @@ export default function EditWorkout() {
         exercises={exercises}
         completable={true}
         onUpdate={updateExercises}
-        onAddExercises={() => router.push("/(modals)/add-edit-exercises")}
+        onAddExercises={() => router.push("/add-edit-exercises")}
       />
     </>
   );

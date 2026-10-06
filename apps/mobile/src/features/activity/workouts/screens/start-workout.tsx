@@ -18,7 +18,7 @@ import { View } from "react-native";
 import { QueryView } from "../../components/query-view";
 import { useStartWorkout } from "../hooks/use-start-workout";
 
-const openNewRoutine = () => router.push("/(modals)/add-routine");
+const openNewRoutine = () => router.push("/add-routine");
 
 export default function StartWorkout() {
   const startWorkout = useStartWorkout();

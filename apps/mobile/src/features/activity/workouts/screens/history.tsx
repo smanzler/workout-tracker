@@ -65,7 +65,7 @@ export default function History() {
             <Pressable
               onPress={() =>
                 router.push({
-                  pathname: "/(modals)/workout-details",
+                  pathname: "/workout-details",
                   params: { workoutId: item.id },
                 })
               }

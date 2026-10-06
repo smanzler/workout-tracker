@@ -41,7 +41,7 @@ export default function TabBar({
       {isWorkingOut && (
         <Pressable
           style={[styles.resumeContainer, { backgroundColor: colors.card }]}
-          onPress={() => router.push("/(modals)/workout")}
+          onPress={() => router.push("/workout")}
         >
           <ThemedText type="defaultSemiBold">Resume Workout</ThemedText>
         </Pressable>

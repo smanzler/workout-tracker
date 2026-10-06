@@ -303,7 +303,7 @@ const PostListItem = ({ post }: { post: Post }) => {
         <TouchableOpacity
           onPress={() => {
             router.push({
-              pathname: "/(modals)/profile",
+              pathname: "/profile",
               params: { userId: post.user.id },
             });
           }}

@@ -15,7 +15,7 @@ export default function Exercises() {
               size="icon"
               className="rounded-full"
               accessibilityLabel="New exercise"
-              onPress={() => router.push("/(modals)/new-exercise")}
+              onPress={() => router.push("/new-exercise")}
             >
               <Icon as={Plus} />
             </Button>
@@ -25,7 +25,7 @@ export default function Exercises() {
       <ExerciseList
         onPress={({ id, title }) =>
           router.push({
-            pathname: "/(modals)/exercise-history",
+            pathname: "/exercise-history",
             params: { exerciseId: id, title },
           })
         }

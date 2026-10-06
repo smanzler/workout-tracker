@@ -56,7 +56,7 @@ export default function AddRoutine() {
         exercises={exercises}
         completable={false}
         onUpdate={updateExercises}
-        onAddExercises={() => router.push("/(modals)/add-routine-exercises")}
+        onAddExercises={() => router.push("/add-routine-exercises")}
       />
     </>
   );

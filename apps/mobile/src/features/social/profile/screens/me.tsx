@@ -131,9 +131,7 @@ export default function ProfileScreen() {
           headerTitle: profile?.username ?? "Profile",
           headerRight: () => (
             <View style={{ flexDirection: "row", gap: 10 }}>
-              <TouchableOpacity
-                onPress={() => router.push("/(modals)/notifications")}
-              >
+              <TouchableOpacity onPress={() => router.push("/notifications")}>
                 <Ionicons
                   name="notifications"
                   size={24}

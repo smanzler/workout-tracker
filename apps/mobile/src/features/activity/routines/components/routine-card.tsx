@@ -40,7 +40,7 @@ export function RoutineCard({ routine }: { routine: Routine }) {
         accessibilityRole="button"
         onPress={() =>
           router.push({
-            pathname: "/(modals)/routine-modal",
+            pathname: "/routine",
             params: { routineId: routine.id },
           })
         }

@@ -71,7 +71,7 @@ export const Toast = () => {
   return (
     <AnimatedPressable
       style={[styles.container, animatedStyle]}
-      onPress={() => router.push("/(modals)/notifications")}
+      onPress={() => router.push("/notifications")}
     >
       <View style={[styles.toast, { backgroundColor: colors.card }]}>
         {actorProfile?.profile.id && (

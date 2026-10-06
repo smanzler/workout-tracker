@@ -11,7 +11,7 @@ export const useStartWorkout = () => {
   const start = useWorkoutSessionStore((state) => state.start);
 
   return (session?: { name: string; exercises: Draft }) => {
-    const open = () => router.push("/(modals)/workout");
+    const open = () => router.push("/workout");
 
     if (useWorkoutSessionStore.getState().startedAt === null) {
       start(session);

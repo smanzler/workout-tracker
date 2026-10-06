@@ -70,7 +70,7 @@ const UserItem = ({ user, colors }: UserItemProps) => (
     style={[styles.userItem, { borderBottomColor: colors.border }]}
     onPress={() => {
       router.push({
-        pathname: "/(modals)/profile",
+        pathname: "/profile",
         params: { userId: user.id },
       });
     }}

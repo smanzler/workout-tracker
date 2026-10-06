@@ -30,7 +30,7 @@ export function ExercisePicker({
             <Button
               variant="ghost"
               size="sm"
-              onPress={() => router.push("/(modals)/new-exercise")}
+              onPress={() => router.push("/new-exercise")}
             >
               <Text>New</Text>
             </Button>

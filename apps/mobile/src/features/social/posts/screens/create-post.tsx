@@ -153,7 +153,7 @@ const CreatePost = () => {
         <ThemedText type="defaultSemiBold">Workout</ThemedText>
 
         <TouchableOpacity
-          onPress={() => router.push("/(modals)/workout-picker")}
+          onPress={() => router.push("/workout-picker")}
           style={{ flexDirection: "row", gap: 10 }}
         >
           {workout && <ThemedText>{workout.name || "New Workout"}</ThemedText>}

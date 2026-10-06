@@ -51,7 +51,7 @@ export default function Layout() {
           options={{ headerShown: false, title: "Home", animation: "none" }}
         />
         <Stack.Screen
-          name="(modals)/workout"
+          name="workout"
           options={{
             presentation: "modal",
             headerTransparent: Platform.OS === "ios",
@@ -60,35 +60,35 @@ export default function Layout() {
           }}
         />
         <Stack.Screen
-          name="(modals)/add-exercise"
+          name="add-exercise"
           options={{ title: "Add Exercises", presentation: "modal" }}
         />
         <Stack.Screen
-          name="(modals)/summary"
+          name="workout-summary"
           options={{ presentation: "fullScreenModal", headerShown: false }}
         />
         <Stack.Screen
-          name="(modals)/workout-details"
+          name="workout-details"
           options={{ presentation: "modal" }}
         />
         <Stack.Screen
-          name="(modals)/edit-workout"
+          name="edit-workout"
           options={{ title: "Edit Workout", presentation: "modal" }}
         />
         <Stack.Screen
-          name="(modals)/add-edit-exercises"
+          name="add-edit-exercises"
           options={{ title: "Add Exercises", presentation: "modal" }}
         />
         <Stack.Screen
-          name="(modals)/add-routine"
+          name="add-routine"
           options={{ title: "New Routine", presentation: "modal" }}
         />
         <Stack.Screen
-          name="(modals)/add-routine-exercises"
+          name="add-routine-exercises"
           options={{ title: "Add Exercises", presentation: "modal" }}
         />
         <Stack.Screen
-          name="(modals)/routine-modal"
+          name="routine"
           options={{
             presentation: "formSheet",
             sheetAllowedDetents: "fitToContents",
@@ -97,15 +97,15 @@ export default function Layout() {
           }}
         />
         <Stack.Screen
-          name="(modals)/exercise-history"
+          name="exercise-history"
           options={{ headerBackButtonDisplayMode: "minimal" }}
         />
         <Stack.Screen
-          name="(modals)/new-exercise"
+          name="new-exercise"
           options={{ title: "New Exercise", presentation: "modal" }}
         />
         <Stack.Screen
-          name="(modals)/post"
+          name="post"
           options={{
             headerTitle: "Post",
             headerBackVisible: false,
@@ -124,7 +124,7 @@ export default function Layout() {
           }}
         />
         <Stack.Screen
-          name="(modals)/profile"
+          name="profile"
           options={{
             headerTitle: "Profile",
             headerBackVisible: false,
@@ -143,7 +143,7 @@ export default function Layout() {
           }}
         />
         <Stack.Screen
-          name="(modals)/friends"
+          name="friends"
           options={{
             headerTitle: "Friends",
             headerBackVisible: false,
@@ -156,7 +156,7 @@ export default function Layout() {
           }}
         />
         <Stack.Screen
-          name="(modals)/create-post"
+          name="create-post"
           options={{
             headerTitle: "Create Post",
             headerBackVisible: false,
@@ -169,7 +169,7 @@ export default function Layout() {
           }}
         />
         <Stack.Screen
-          name="(modals)/workout-picker"
+          name="workout-picker"
           options={{
             headerTitle: "Choose Workout to Add",
             headerBackVisible: false,
@@ -201,7 +201,7 @@ export default function Layout() {
           }}
         />
         <Stack.Screen
-          name="(modals)/find-friends"
+          name="find-friends"
           options={{
             headerTitle: "Find Friends",
             headerBackVisible: false,
@@ -220,7 +220,7 @@ export default function Layout() {
           }}
         />
         <Stack.Screen
-          name="(modals)/info-modal"
+          name="info-modal"
           options={{
             presentation: "transparentModal",
             animation: "fade",
@@ -228,7 +228,7 @@ export default function Layout() {
           }}
         />
         <Stack.Screen
-          name="(modals)/notifications"
+          name="notifications"
           options={{
             headerTitle: "Notifications",
             headerBackVisible: false,

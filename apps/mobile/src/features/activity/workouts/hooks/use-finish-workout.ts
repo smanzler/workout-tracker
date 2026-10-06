@@ -33,7 +33,7 @@ export const useFinishWorkout = () => {
       {
         onSuccess: ({ workoutId }) => {
           router.replace({
-            pathname: "/(modals)/summary",
+            pathname: "/workout-summary",
             params: { workoutId },
           });
           discard();

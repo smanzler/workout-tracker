@@ -170,7 +170,7 @@ const Profile = () => {
                       ]}
                       onPress={() =>
                         router.push({
-                          pathname: "/(modals)/post",
+                          pathname: "/post",
                           params: { postId: post.id },
                         })
                       }

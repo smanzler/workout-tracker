@@ -55,7 +55,7 @@ export default function Workout() {
           exercises={exercises}
           completable
           onUpdate={updateExercises}
-          onAddExercises={() => router.push("/(modals)/add-exercise")}
+          onAddExercises={() => router.push("/add-exercise")}
         >
           <Button variant="ghost" onPress={confirmDiscard}>
             <Text className="text-destructive">Discard Workout</Text>

@@ -13,7 +13,7 @@ export const useEditWorkout = () => {
       exercises: toDraft(workout.exercises, { completed: true }),
     });
     router.push({
-      pathname: "/(modals)/edit-workout",
+      pathname: "/edit-workout",
       params: { workoutId: workout.id },
     });
   };

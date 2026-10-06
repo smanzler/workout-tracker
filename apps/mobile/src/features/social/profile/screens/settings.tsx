@@ -102,7 +102,7 @@ function SettingsItem({
                 onPress={(event) => {
                   const { pageX, pageY } = event.nativeEvent;
                   router.push({
-                    pathname: "/(modals)/info-modal",
+                    pathname: "/info-modal",
                     params: {
                       description,
                       title: label,

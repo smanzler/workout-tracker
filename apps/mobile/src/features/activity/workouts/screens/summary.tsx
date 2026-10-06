@@ -47,7 +47,7 @@ export default function Summary() {
             <Pressable
               onPress={() =>
                 router.push({
-                  pathname: "/(modals)/workout-details",
+                  pathname: "/workout-details",
                   params: { workoutId: workout.id },
                 })
               }

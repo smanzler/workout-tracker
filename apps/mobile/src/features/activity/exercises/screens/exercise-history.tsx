@@ -70,7 +70,7 @@ export default function ExerciseHistory() {
                     key={entry.id}
                     onPress={() =>
                       router.push({
-                        pathname: "/(modals)/workout-details",
+                        pathname: "/workout-details",
                         params: { workoutId: entry.workoutId },
                       })
                     }

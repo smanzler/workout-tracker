@@ -142,7 +142,7 @@ const NotificationItem: React.FC<{
     ) {
       console.log("pushing profile", notification.actor_id);
       router.push({
-        pathname: "/(modals)/profile",
+        pathname: "/profile",
         params: {
           userId: notification.actor_id,
         },
@@ -150,7 +150,7 @@ const NotificationItem: React.FC<{
     } else if (notification.type === "like") {
       console.log("pushing post", notification.post_id);
       router.push({
-        pathname: "/(modals)/post",
+        pathname: "/post",
         params: {
           postId: notification.post_id,
         },

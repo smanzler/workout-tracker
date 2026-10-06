@@ -107,15 +107,11 @@ const ExplorePage = () => {
                 />
               </TouchableOpacity>
 
-              <TouchableOpacity
-                onPress={() => router.push("/(modals)/find-friends")}
-              >
+              <TouchableOpacity onPress={() => router.push("/find-friends")}>
                 <Ionicons name="person-add" size={22} color={colors.primary} />
               </TouchableOpacity>
 
-              <TouchableOpacity
-                onPress={() => router.push("/(modals)/create-post")}
-              >
+              <TouchableOpacity onPress={() => router.push("/create-post")}>
                 <Ionicons name="add" color={colors.primary} size={24} />
               </TouchableOpacity>
             </View>
@@ -145,9 +141,7 @@ const ExplorePage = () => {
           buttonText={showExplore ? "Create Post" : "Find Friends"}
           buttonIcon={showExplore ? "add" : "person-add"}
           onButtonPress={() =>
-            router.push(
-              showExplore ? "/(modals)/create-post" : "/(modals)/find-friends",
-            )
+            router.push(showExplore ? "/create-post" : "/find-friends")
           }
           isRefetching={isRefetching}
           onRefresh={handleRefresh}
