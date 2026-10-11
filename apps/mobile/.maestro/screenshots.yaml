@@ -1,0 +1,117 @@
+# Captures the store screenshots. Run it through `fastlane ios screenshots`
+# or `fastlane android screenshots`, which build the app, set
+# MAESTRO_REVIEW_EMAIL and MAESTRO_REVIEW_OTP, and file the images for upload.
+# Each takeScreenshot name is the image's file name, and sets its store order.
+appId: com.sigh10.workouttracker
+name: Store screenshots
+---
+# clearState keeps the iOS Keychain, where the app stores the session.
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - clearKeychain
+- launchApp:
+    clearState: true
+    permissions:
+      all: allow
+
+# Onboarding. Every permission is granted above, so a system prompt shows
+# only where the simulator can't pre-grant one. A tap during launch can have
+# no effect, so the Continue tap is tried again until the screen changes.
+- extendedWaitUntil:
+    visible: "Stay in the loop"
+    timeout: 30000
+- tapOn:
+    text: "Continue"
+    retryTapIfNoChange: true
+- tapOn:
+    text: "Allow"
+    optional: true
+
+- extendedWaitUntil:
+    visible:
+      id: "email-input"
+    timeout: 15000
+- tapOn:
+    id: "email-input"
+- inputText: ${MAESTRO_REVIEW_EMAIL}
+- tapOn: "Continue"
+- extendedWaitUntil:
+    visible: "Enter code"
+    timeout: 15000
+# The code field is focused when the screen opens.
+- inputText: ${MAESTRO_REVIEW_OTP}
+- tapOn: "Continue"
+
+- extendedWaitUntil:
+    visible:
+      id: "routine-card"
+    timeout: 30000
+- tapOn:
+    id: "routine-card"
+    index: 0
+- tapOn: "Start Workout"
+- extendedWaitUntil:
+    visible: "Mark set 1 done"
+    timeout: 15000
+# A done button changes its label, so index 0 is always the first exercise.
+- tapOn:
+    text: "Mark set 1 done"
+    index: 0
+- tapOn:
+    text: "Mark set 2 done"
+    index: 0
+- waitForAnimationToEnd:
+    timeout: 10000
+- takeScreenshot: 01-workout
+# Discard, so the review account doesn't gain a workout on every capture.
+- scrollUntilVisible:
+    element: "Discard Workout"
+    direction: DOWN
+- tapOn: "Discard Workout"
+- tapOn: "Discard"
+
+- tapOn: "History"
+- extendedWaitUntil:
+    visible:
+      id: "workout-card"
+    timeout: 15000
+- waitForAnimationToEnd:
+    timeout: 10000
+- takeScreenshot: 02-history
+
+- tapOn:
+    id: "workout-card"
+    index: 0
+- extendedWaitUntil:
+    visible: "Volume"
+    timeout: 15000
+- waitForAnimationToEnd:
+    timeout: 10000
+- takeScreenshot: 03-workout-details
+
+# A relaunch goes back to the tabs on every platform.
+- stopApp
+- launchApp
+- tapOn: "Exercises"
+- tapOn: "Search exercises"
+- inputText: "bench press barbell"
+- tapOn: "Bench Press \\(Barbell\\), Chest.*"
+- extendedWaitUntil:
+    visible: "Max Weight"
+    timeout: 15000
+- waitForAnimationToEnd:
+    timeout: 10000
+- takeScreenshot: 04-exercise
+
+- stopApp
+- launchApp
+- tapOn: "You"
+- tapOn: "Friends"
+- extendedWaitUntil:
+    visible: "(Give|Remove) kudos"
+    timeout: 15000
+- waitForAnimationToEnd:
+    timeout: 10000
+- takeScreenshot: 05-friends

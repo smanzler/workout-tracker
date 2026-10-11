@@ -4,41 +4,51 @@ A modern, social workout tracking app built with React Native and Expo. Track yo
 
 ## Features
 
-### Workout Management
+### Workouts
 
-- Create and customize workouts
-- Track sets, reps, and weights
-- Efficient keyboard navigation between sets
-- Real-time progress tracking
+- Record sets, reps and weights, with the sets from your last workout as
+  suggestions
+- Start a workout from a routine
+- Browse and edit your history, with personal records for weight, volume
+  and estimated one-rep max
+- See the records and progress of each exercise
+- Import your workouts from Strong
 
-### Social Features
+### Social
 
-- Public/Private profile options
-- Follow other users
-- Share your workouts
-- Discover workouts from the community
+- Follow people and see their workouts in your friends feed
+- Give kudos, and get push notifications for follows and kudos
 
-### Modern UI/UX
+### App
 
-- Dark/Light theme support
-- Smooth animations
-- Intuitive gesture controls
-- Clean, minimalist design
-
-### Privacy & Security
-
-- Customizable privacy settings
-- Secure authentication
-- Zero-tolerance policy for objectionable content
-- Follow request system for private profiles
+- Sign in with a code sent to your email
+- Light, dark and system themes
 
 ## Tech Stack
 
-- **Frontend**: React Native, Expo
-- **State Management**: React Query, WatermelonDB, Zustand
-- **Backend**: Supabase
-- **UI Components**: Custom components with native feel
-- **Authentication**: Supabase Auth
+- **Mobile**: React Native, Expo, Expo Router, uniwind, TanStack Query,
+  Zustand
+- **API**: Fastify, tRPC, Drizzle with Postgres, better-auth, pg-boss
+- **Shared**: zod schemas and personal record logic in `packages/shared`
+
+## Development
+
+The repo is a pnpm workspace:
+
+- `apps/mobile`: the Expo app
+- `packages/api`: the Fastify + tRPC + Drizzle API
+- `packages/shared`: code that the app and the API share
+
+Copy `docker/.env.example` to `docker/.env` and `packages/api/.env.example` to `packages/api/.env`, then:
+
+```bash
+pnpm install
+pnpm --filter @rep/api exec drizzle-kit migrate  # with the database up
+pnpm dev   # Postgres, pgAdmin and mailpit in Docker, then the API and Metro in tmux
+pnpm down  # stops all of it
+```
+
+Sign-in codes go to mailpit at http://localhost:8026.
 
 ## Author
 

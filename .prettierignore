@@ -1,0 +1,9 @@
+# Ignore artifacts:
+build
+coverage
+
+# deps
+pnpm-lock.yaml
+
+# generated
+apps/mobile/src/uniwind-types.d.ts
