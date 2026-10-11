@@ -72,11 +72,12 @@ export function DraftForm({
 
         <View className="flex-row gap-2 p-4">
           <Button
-            variant="outline"
-            className="h-12 flex-1 border-[1.5px] border-foreground"
+            variant="strong"
+            size="xl"
+            className="flex-1"
             onPress={onAddExercises}
           >
-            <Text className="text-[15px] font-semibold">Add Exercises</Text>
+            <Text>Add Exercises</Text>
           </Button>
           {children}
         </View>

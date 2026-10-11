@@ -1,11 +1,11 @@
-import {
-  metricValues,
-  type ExerciseCategory,
-  type MuscleGroup,
-  type WorkoutExerciseInput,
-  type WorkoutSetInput,
+import type {
+  ExerciseCategory,
+  MuscleGroup,
+  WorkoutExerciseInput,
+  WorkoutSetInput,
 } from "@rep/shared";
 import { randomUUID } from "expo-crypto";
+import { sumVolume } from "@/lib/volume";
 
 export type DraftExerciseInfo = {
   id: string;
@@ -210,9 +210,7 @@ export const buildDraftStats = (draft: Draft) => {
   return {
     totalSets: sets.length,
     completedSets: completedSets.length,
-    volume: completedSets
-      .map(toSetInput)
-      .reduce((total, set) => total + metricValues.volume(set), 0),
+    volume: sumVolume(completedSets.map(toSetInput)),
   };
 };
 
