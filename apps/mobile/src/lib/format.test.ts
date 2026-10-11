@@ -1,4 +1,4 @@
-import { findBestSet, formatSet } from "./format";
+import { findBestSet, formatSet, formatWeight } from "./format";
 
 describe("formatSet", () => {
   it("shows weight and reps", () => {
@@ -11,6 +11,12 @@ describe("formatSet", () => {
 
   it("shows a dash when empty", () => {
     expect(formatSet({ weight: null, reps: null })).toBe("—");
+  });
+});
+
+describe("formatWeight", () => {
+  it("groups the thousands", () => {
+    expect(formatWeight(2160)).toBe("2,160 lb");
   });
 });
 
