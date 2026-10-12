@@ -1,51 +1,35 @@
-import { BodyScrollView } from "@/components/ui/body-scroll-view";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/ui/icon";
+import { Pressable } from "@/components/ui/pressable";
 import { Text } from "@/components/ui/text";
+import { useProfile } from "@/hooks/use-profile";
 import { authClient } from "@/lib/auth-client";
-import type { Outputs } from "@rep/api";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import { Ellipsis } from "lucide-react-native";
-import { View } from "react-native";
+import { ScrollView } from "react-native";
 import { QueryView } from "@/components/query-view";
-import { SetListCard } from "../../components/set-list-card";
+import { WorkoutReceipt } from "../components/workout-receipt";
 import { useWorkout } from "../hooks/use-workout";
 import { useWorkoutMenu } from "../hooks/use-workout-menu";
-import { formatDate, formatTime } from "@/lib/date";
-import { formatDuration, getWorkoutLength } from "@/lib/duration";
-import { formatWeight } from "@/lib/format";
-import { sumVolume } from "@/lib/volume";
-import { countPersonalRecords } from "@/lib/personal-records";
 
-type Workout = Outputs["activity"]["workout"]["get"];
-
-function Stat({ label, value }: { label: string; value: string }) {
-  return (
-    <View className="flex-1 gap-1">
-      <Text variant="muted">{label}</Text>
-      <Text className="text-lg font-semibold">{value}</Text>
-    </View>
-  );
-}
-
-function WorkoutStats({ workout }: { workout: Workout }) {
-  const sets = workout.exercises.flatMap(({ sets }) => sets);
-  const volume = sumVolume(sets);
+function Author({ userId }: { userId: string }) {
+  const { data: profile } = useProfile(userId);
+  if (!profile) return null;
 
   return (
-    <View className="gap-3">
-      <Text variant="muted">
-        {formatDate(workout.startedAt)} at {formatTime(workout.startedAt)}
-      </Text>
-      <View className="flex-row gap-3">
-        <Stat
-          label="Duration"
-          value={formatDuration(getWorkoutLength(workout))}
-        />
-        <Stat label="Volume" value={formatWeight(volume)} />
-        <Stat label="PRs" value={countPersonalRecords(sets).toString()} />
-      </View>
-    </View>
+    <Pressable
+      onPress={() =>
+        router.push({ pathname: "/profile", params: { profileId: userId } })
+      }
+      className="flex-row items-center gap-2.5 self-start pb-2"
+    >
+      <Avatar alt="" className="size-8">
+        <AvatarImage source={{ uri: profile.avatarUrl ?? undefined }} />
+        <AvatarFallback />
+      </Avatar>
+      <Text className="text-[15px] font-semibold">{profile.username}</Text>
+    </Pressable>
   );
 }
 
@@ -57,42 +41,44 @@ export default function WorkoutDetails() {
 
   return (
     <QueryView query={workoutQuery} errorTitle="Couldn't load workout">
-      {(workout) => (
-        <>
-          <Stack.Screen
-            options={{
-              title: workout.name,
-              headerRight: () =>
-                workout.userId === session?.user.id && (
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="rounded-full"
-                    accessibilityLabel="Workout options"
-                    onPress={() =>
-                      showWorkoutMenu(workout, {
-                        onDeleted: () => router.back(),
-                      })
-                    }
-                  >
-                    <Icon as={Ellipsis} />
-                  </Button>
-                ),
-            }}
-          />
-          <BodyScrollView>
-            <WorkoutStats workout={workout} />
-            {workout.exercises.map(({ id, exercise, notes, sets }) => (
-              <SetListCard
-                key={id}
-                title={exercise.title}
-                description={notes}
-                sets={sets}
-              />
-            ))}
-          </BodyScrollView>
-        </>
-      )}
+      {(workout) => {
+        const isMine = workout.userId === session?.user.id;
+
+        return (
+          <>
+            <Stack.Screen
+              options={{
+                title: "",
+                headerShadowVisible: false,
+                headerRight: () =>
+                  isMine && (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="rounded-full"
+                      accessibilityLabel="Workout options"
+                      onPress={() =>
+                        showWorkoutMenu(workout, {
+                          onDeleted: () => router.back(),
+                        })
+                      }
+                    >
+                      <Icon as={Ellipsis} />
+                    </Button>
+                  ),
+              }}
+            />
+            <ScrollView
+              contentInsetAdjustmentBehavior="automatic"
+              contentContainerClassName="pb-safe-offset-4"
+            >
+              <WorkoutReceipt workout={workout}>
+                {!isMine && <Author userId={workout.userId} />}
+              </WorkoutReceipt>
+            </ScrollView>
+          </>
+        );
+      }}
     </QueryView>
   );
 }

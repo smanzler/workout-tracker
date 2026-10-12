@@ -7,14 +7,13 @@ import { formatSet, formatWeight } from "@/lib/format";
 import { isPersonalRecord } from "@/lib/personal-records";
 import { sumVolume } from "@/lib/volume";
 
-type WorkoutExercise =
-  Outputs["activity"]["workout"]["get"]["exercises"][number];
+type Item = Outputs["activity"]["workout"]["get"]["exercises"][number];
 
-/** The sets of one exercise. A set that broke a record gets a highlight. */
-export function SummaryExercise({
-  exercise: { exercise, sets },
+/** The notes and sets of one exercise. A set that broke a record gets a highlight. */
+export function WorkoutExercise({
+  exercise: { exercise, notes, sets },
 }: {
-  exercise: WorkoutExercise;
+  exercise: Item;
 }) {
   return (
     <View className="gap-0.5 border-b border-border pb-2.5 pt-3">
@@ -26,6 +25,11 @@ export function SummaryExercise({
           {formatWeight(sumVolume(sets))}
         </Text>
       </View>
+      {!!notes && (
+        <Text className="mx-5 mb-1.5 border-l-2 border-border pl-2.5 text-[13px] text-muted-foreground">
+          {notes}
+        </Text>
+      )}
 
       {sets.map((set, index) =>
         isPersonalRecord(set) ? (
