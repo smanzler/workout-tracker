@@ -1,7 +1,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { BodyScrollView } from "@/components/ui/body-scroll-view";
-import { Icon } from "@/components/ui/icon";
+import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
+import { Text } from "@/components/ui/text";
 import { useStrongImport } from "@/features/activity/workouts/hooks/use-strong-import";
 import { signOutOfGoogle } from "@/features/auth/lib/google";
 import { useRemovePushToken } from "@/features/notifications/hooks/use-remove-push-token";
@@ -13,32 +13,22 @@ import { useMenu } from "@/hooks/use-menu";
 import { authClient } from "@/lib/auth-client";
 import { pickImage, takePhoto } from "@/lib/image";
 import { router } from "expo-router";
-import {
-  FileUp,
-  LogOut,
-  Mail,
-  Moon,
-  ReceiptText,
-  Trash2,
-} from "lucide-react-native";
-import { Pressable } from "@/components/ui/pressable";
-import { Alert, View } from "react-native";
-import { useUniwind } from "uniwind";
-import {
-  Section,
-  SectionContent,
-  SectionHeader,
-  SectionItem,
-  SectionItemContent,
-  SectionItemTitle,
-  SectionTitle,
-} from "../components/section";
+import { Alert, ScrollView, View } from "react-native";
+import { SettingsRow } from "../components/settings-row";
+import { ThemePicker } from "../components/theme-picker";
 import { useDeleteAccount } from "../hooks/use-delete-account";
 import { useMyProfile } from "../hooks/use-my-profile";
 import { useUpdateProfile } from "../hooks/use-update-profile";
 
+function SectionTitle({ children }: { children: string }) {
+  return (
+    <Text className="border-b border-foreground px-5 pb-1.5 pt-5 font-mono text-[11px] font-semibold tracking-wider">
+      {children}
+    </Text>
+  );
+}
+
 export default function Settings() {
-  const { theme, hasAdaptiveThemes } = useUniwind();
   const { data: session } = authClient.useSession();
   const { data: profile } = useMyProfile();
   const { mutate: updateAvatar, isPending: isUpdatingAvatar } =
@@ -133,109 +123,75 @@ export default function Settings() {
     );
 
   return (
-    <BodyScrollView>
-      <View className="gap-8">
-        <Pressable
-          onPress={handleAvatarPress}
+    <ScrollView
+      contentInsetAdjustmentBehavior="automatic"
+      contentContainerClassName="pb-safe-offset-6"
+    >
+      <View className="flex-row items-center gap-3.5 border-y border-border px-5 py-4">
+        <Avatar alt={profile?.username ?? ""} className="size-[60px]">
+          <AvatarImage source={{ uri: profile?.avatarUrl ?? undefined }} />
+          <AvatarFallback />
+          {isUpdatingAvatar && (
+            <View className="absolute inset-0 items-center justify-center bg-black/40">
+              <Spinner className="text-white" />
+            </View>
+          )}
+        </Avatar>
+        <View className="flex-1 gap-0.5">
+          <Text className="text-lg font-semibold" numberOfLines={1}>
+            {profile?.username}
+          </Text>
+          <Text
+            className="font-mono text-xs text-muted-foreground"
+            numberOfLines={1}
+          >
+            {session?.user.email}
+          </Text>
+        </View>
+        <Button
+          variant="strong"
+          size="sm"
           disabled={isUpdatingAvatar}
-          accessibilityLabel="Change photo"
+          onPress={handleAvatarPress}
         >
-          <Avatar alt={profile?.username ?? ""} className="size-32">
-            <AvatarImage source={{ uri: profile?.avatarUrl ?? undefined }} />
-            <AvatarFallback />
-            {isUpdatingAvatar && (
-              <View className="absolute inset-0 items-center justify-center bg-black/40">
-                <Spinner className="text-white" />
-              </View>
-            )}
-          </Avatar>
-        </Pressable>
-
-        <Section>
-          <SectionHeader>
-            <SectionTitle>Profile</SectionTitle>
-          </SectionHeader>
-          <SectionContent>
-            <SectionItem onPress={() => router.push("/profile/edit-username")}>
-              <SectionItemTitle>Username</SectionItemTitle>
-              <SectionItemContent>{profile?.username}</SectionItemContent>
-            </SectionItem>
-          </SectionContent>
-        </Section>
-
-        <Section>
-          <SectionHeader>
-            <SectionTitle>Appearance</SectionTitle>
-          </SectionHeader>
-          <SectionContent>
-            <SectionItem onPress={() => router.push("/theme")}>
-              <Icon as={Moon} />
-              <SectionItemTitle>Theme</SectionItemTitle>
-              <SectionItemContent textClassName="capitalize">
-                {hasAdaptiveThemes ? "system" : theme}
-              </SectionItemContent>
-            </SectionItem>
-          </SectionContent>
-        </Section>
-
-        <Section>
-          <SectionHeader>
-            <SectionTitle>Data</SectionTitle>
-          </SectionHeader>
-          <SectionContent>
-            <SectionItem onPress={isImporting ? undefined : importFile}>
-              <Icon as={FileUp} />
-              <SectionItemTitle>Import from Strong</SectionItemTitle>
-              <SectionItemContent>
-                {isImporting ? <Spinner /> : undefined}
-              </SectionItemContent>
-            </SectionItem>
-          </SectionContent>
-        </Section>
-
-        <Section>
-          <SectionHeader>
-            <SectionTitle>Support</SectionTitle>
-          </SectionHeader>
-          <SectionContent>
-            <SectionItem onPress={() => router.push("/terms")}>
-              <Icon as={ReceiptText} />
-              <SectionItemTitle>Terms of Use</SectionItemTitle>
-              <SectionItemContent />
-            </SectionItem>
-          </SectionContent>
-        </Section>
-
-        <Section>
-          <SectionHeader>
-            <SectionTitle>Account</SectionTitle>
-          </SectionHeader>
-          <SectionContent>
-            <SectionItem>
-              <Icon as={Mail} />
-              <SectionItemTitle>Email</SectionItemTitle>
-              <SectionItemContent>{session?.user.email}</SectionItemContent>
-            </SectionItem>
-            <SectionItem onPress={handleSignOut}>
-              <Icon as={LogOut} />
-              <SectionItemTitle>Sign Out</SectionItemTitle>
-            </SectionItem>
-            <SectionItem
-              onPress={isDeletingAccount ? undefined : handleDeleteAccount}
-            >
-              <Icon as={Trash2} className="text-destructive" />
-              <SectionItemTitle className="text-destructive">
-                Delete Account
-              </SectionItemTitle>
-              {isDeletingAccount && (
-                <SectionItemContent>
-                  <Spinner />
-                </SectionItemContent>
-              )}
-            </SectionItem>
-          </SectionContent>
-        </Section>
+          <Text>Edit Photo</Text>
+        </Button>
       </View>
-    </BodyScrollView>
+
+      <SectionTitle>PROFILE</SectionTitle>
+      <SettingsRow
+        label="Username"
+        value={profile?.username}
+        chevron
+        onPress={() => router.push("/profile/edit-username")}
+      />
+
+      <SectionTitle>THEME</SectionTitle>
+      <ThemePicker />
+
+      <SectionTitle>DATA</SectionTitle>
+      <SettingsRow
+        label="Import from Strong"
+        chevron
+        trailing={isImporting ? <Spinner /> : undefined}
+        onPress={isImporting ? undefined : importFile}
+      />
+
+      <SectionTitle>SUPPORT</SectionTitle>
+      <SettingsRow
+        label="Terms of Use"
+        chevron
+        onPress={() => router.push("/terms")}
+      />
+
+      <SectionTitle>ACCOUNT</SectionTitle>
+      <SettingsRow label="Sign Out" onPress={handleSignOut} />
+      <SettingsRow
+        label="Delete Account"
+        destructive
+        trailing={isDeletingAccount ? <Spinner /> : undefined}
+        onPress={isDeletingAccount ? undefined : handleDeleteAccount}
+      />
+    </ScrollView>
   );
 }

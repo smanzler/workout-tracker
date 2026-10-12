@@ -8,7 +8,6 @@ export default function Layout() {
         options={{ title: "Settings", headerLargeTitle: true }}
       />
       <Stack.Screen name="profile/edit-username" />
-      <Stack.Screen name="theme" />
     </Stack>
   );
 }
