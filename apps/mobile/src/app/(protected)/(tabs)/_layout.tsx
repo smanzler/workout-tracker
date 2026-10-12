@@ -4,7 +4,10 @@ import { NativeTabs } from "expo-router/unstable-native-tabs";
 export function TabLayout() {
   return (
     <Stack>
-      <Stack.Screen name="index" options={{ headerShown: true }} />
+      <Stack.Screen
+        name="index"
+        options={{ headerShown: true, headerLargeTitle: true }}
+      />
     </Stack>
   );
 }
