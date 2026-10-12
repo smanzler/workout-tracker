@@ -1,12 +1,9 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import { Icon } from "@/components/ui/icon";
 import { Pressable } from "@/components/ui/pressable";
 import { Text } from "@/components/ui/text";
 import { useProfile } from "@/hooks/use-profile";
 import { authClient } from "@/lib/auth-client";
 import { router, Stack, useLocalSearchParams } from "expo-router";
-import { Ellipsis } from "lucide-react-native";
 import { ScrollView } from "react-native";
 import { QueryView } from "@/components/query-view";
 import { WorkoutReceipt } from "../components/workout-receipt";
@@ -50,24 +47,21 @@ export default function WorkoutDetails() {
               options={{
                 title: "",
                 headerShadowVisible: false,
-                headerRight: () =>
-                  isMine && (
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="rounded-full"
-                      accessibilityLabel="Workout options"
-                      onPress={() =>
-                        showWorkoutMenu(workout, {
-                          onDeleted: () => router.back(),
-                        })
-                      }
-                    >
-                      <Icon as={Ellipsis} />
-                    </Button>
-                  ),
               }}
             />
+            {isMine && (
+              <Stack.Toolbar placement="right">
+                <Stack.Toolbar.Button
+                  icon="ellipsis"
+                  accessibilityLabel="Workout options"
+                  onPress={() =>
+                    showWorkoutMenu(workout, {
+                      onDeleted: () => router.back(),
+                    })
+                  }
+                />
+              </Stack.Toolbar>
+            )}
             <ScrollView
               contentInsetAdjustmentBehavior="automatic"
               contentContainerClassName="pb-safe-offset-4"

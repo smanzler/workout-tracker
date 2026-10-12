@@ -4,9 +4,7 @@ import { Button } from "@/components/ui/button";
 import { EmptyRow } from "@/components/empty-row";
 import { Text } from "@/components/ui/text";
 import { router, Stack } from "expo-router";
-import { UserPlus } from "lucide-react-native";
 import { FlatList } from "react-native";
-import { HeaderLink } from "../../components/header-link";
 import { FeedWorkoutCard } from "../components/feed-workout-card";
 import { useFriendsFeed } from "../hooks/use-friends-feed";
 
@@ -36,15 +34,15 @@ export default function Friends() {
         options={{
           title: "Friends",
           headerBackButtonDisplayMode: "minimal",
-          headerRight: () => (
-            <HeaderLink
-              icon={UserPlus}
-              label="Add friends"
-              href="/add-friends"
-            />
-          ),
         }}
       />
+      <Stack.Toolbar placement="right">
+        <Stack.Toolbar.Button
+          icon="person.badge.plus"
+          accessibilityLabel="Add friends"
+          onPress={() => router.push("/add-friends")}
+        />
+      </Stack.Toolbar>
       <QueryView query={feedQuery} errorTitle="Couldn't load your feed">
         {(feed) => (
           <FlatList

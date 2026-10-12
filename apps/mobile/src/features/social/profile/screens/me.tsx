@@ -1,35 +1,41 @@
 import { WorkoutIndicator } from "@/features/activity/workouts/components/workout-indicator";
-import { NotificationsBellButton } from "@/features/notifications/components/notifications-bell-button";
-import { Stack } from "expo-router";
-import { Settings, Users } from "lucide-react-native";
-import { View } from "react-native";
-import { HeaderLink } from "../../components/header-link";
+import { useHasUnreadNotifications } from "@/features/notifications/hooks/use-has-unread-notifications";
+import { router, Stack } from "expo-router";
 import { ProfileView } from "../components/profile-view";
 import { useMyProfile } from "../hooks/use-my-profile";
 
 export default function Me() {
   const { data: profile } = useMyProfile();
+  const hasUnread = useHasUnreadNotifications();
 
   return (
     <>
       <Stack.Screen
         options={{
           title: "You",
-          headerLeft: () => (
-            <HeaderLink
-              icon={Settings}
-              label="Settings"
-              href="/(modals)/settings"
-            />
-          ),
-          headerRight: () => (
-            <View className="flex-row items-center">
-              <NotificationsBellButton />
-              <HeaderLink icon={Users} label="Friends" href="/friends" />
-            </View>
-          ),
         }}
       />
+      <Stack.Toolbar placement="left">
+        <Stack.Toolbar.Button
+          icon="gearshape"
+          accessibilityLabel="Settings"
+          onPress={() => router.push("/(modals)/settings")}
+        />
+      </Stack.Toolbar>
+      <Stack.Toolbar placement="right">
+        <Stack.Toolbar.Button
+          icon={hasUnread ? "bell.badge" : "bell"}
+          accessibilityLabel={
+            hasUnread ? "Notifications, unread" : "Notifications"
+          }
+          onPress={() => router.push("/notifications")}
+        />
+        <Stack.Toolbar.Button
+          icon="person.2"
+          accessibilityLabel="Friends"
+          onPress={() => router.push("/friends")}
+        />
+      </Stack.Toolbar>
       <ProfileView profileId={profile?.id} />
       <WorkoutIndicator />
     </>

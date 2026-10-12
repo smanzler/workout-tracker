@@ -7,6 +7,7 @@ import { DraftForm } from "../../components/draft-form";
 import { buildDraftStats, type Draft } from "../../lib/draft";
 import { useElapsedSeconds } from "../hooks/use-elapsed-seconds";
 import { useFinishWorkout } from "../hooks/use-finish-workout";
+import { useHeaderItems } from "@/hooks/use-header-items";
 import { formatTimer } from "@/lib/duration";
 import { formatWeight } from "@/lib/format";
 import { useWorkoutSessionStore } from "../stores/workout-session-store";
@@ -27,6 +28,7 @@ function WorkoutStats({ exercises }: { exercises: Draft }) {
 }
 
 export default function Workout() {
+  const headerItems = useHeaderItems();
   const startedAt = useWorkoutSessionStore((state) => state.startedAt);
   const name = useWorkoutSessionStore((state) => state.name);
   const exercises = useWorkoutSessionStore((state) => state.exercises);
@@ -59,13 +61,17 @@ export default function Workout() {
           headerTitle: ({ children }) => (
             <Text className="font-mono text-base font-medium">{children}</Text>
           ),
-          headerRight: () => (
-            <Button size="sm" disabled={isPending} onPress={finish}>
-              <Text>Finish</Text>
-            </Button>
-          ),
         }}
       />
+      <Stack.Toolbar placement="right">
+        <Stack.Toolbar.Button
+          {...headerItems.prominent}
+          disabled={isPending}
+          onPress={finish}
+        >
+          Finish
+        </Stack.Toolbar.Button>
+      </Stack.Toolbar>
 
       {startedAt !== null && (
         <DraftForm

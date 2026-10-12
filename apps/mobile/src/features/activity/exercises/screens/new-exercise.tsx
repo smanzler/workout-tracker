@@ -1,6 +1,6 @@
 import { LineField } from "@/components/line-field";
-import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
+import { useHeaderItems } from "@/hooks/use-header-items";
 import { router, Stack } from "expo-router";
 import { useState } from "react";
 import { Keyboard, ScrollView, View } from "react-native";
@@ -16,6 +16,7 @@ import { OptionSheet } from "../../components/option-sheet";
 import { useCreateExercise } from "../hooks/use-create-exercise";
 
 export default function NewExercise() {
+  const headerItems = useHeaderItems();
   const [title, setTitle] = useState("");
   const [options, setOptions] = useState<ExerciseOptions>({
     muscleGroup: null,
@@ -41,24 +42,23 @@ export default function NewExercise() {
 
   return (
     <>
-      <Stack.Screen
-        options={{
-          headerLeft: () => (
-            <Button variant="ghost" size="sm" onPress={() => router.back()}>
-              <Text>Cancel</Text>
-            </Button>
-          ),
-          headerRight: () => (
-            <Button
-              size="sm"
-              disabled={title.trim() === "" || isPending}
-              onPress={save}
-            >
-              <Text>Save</Text>
-            </Button>
-          ),
-        }}
-      />
+      <Stack.Toolbar placement="left">
+        <Stack.Toolbar.Button
+          {...headerItems.plain}
+          onPress={() => router.back()}
+        >
+          Cancel
+        </Stack.Toolbar.Button>
+      </Stack.Toolbar>
+      <Stack.Toolbar placement="right">
+        <Stack.Toolbar.Button
+          {...headerItems.prominent}
+          disabled={title.trim() === "" || isPending}
+          onPress={save}
+        >
+          Save
+        </Stack.Toolbar.Button>
+      </Stack.Toolbar>
 
       <ScrollView
         contentInsetAdjustmentBehavior="automatic"
