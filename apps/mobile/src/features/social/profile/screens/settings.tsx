@@ -9,6 +9,7 @@ import {
   useIsWorkingOut,
   useWorkoutSessionStore,
 } from "@/features/activity/workouts/stores/workout-session-store";
+import { useOnboardingStore } from "@/features/onboarding/stores/onboarding-store";
 import { useMenu } from "@/hooks/use-menu";
 import { authClient } from "@/lib/auth-client";
 import { pickImage, takePhoto } from "@/lib/image";
@@ -39,6 +40,7 @@ export default function Settings() {
   const isWorkingOut = useIsWorkingOut();
   const discardWorkout = useWorkoutSessionStore((state) => state.discard);
   const { mutateAsync: removePushToken } = useRemovePushToken();
+  const resetOnboarding = useOnboardingStore((state) => state.reset);
   const showMenu = useMenu();
 
   const handleUpdateAvatar = (avatar: string | null) =>
@@ -94,10 +96,30 @@ export default function Settings() {
         onPress: async () => {
           await removePushToken().catch(() => undefined);
           await authClient.signOut();
+          resetOnboarding();
           await signOutOfGoogle();
         },
       },
     ]);
+  };
+
+  const handleResetOnboarding = () => {
+    if (isWorkingOut) {
+      Alert.alert(
+        "Workout in progress",
+        "Finish or discard your workout before you reset onboarding.",
+      );
+      return;
+    }
+
+    Alert.alert(
+      "Reset Onboarding",
+      "The welcome screen and the notification step show again.",
+      [
+        { text: "Cancel", style: "cancel" },
+        { text: "Reset", style: "destructive", onPress: resetOnboarding },
+      ],
+    );
   };
 
   const handleDeleteAccount = () =>
@@ -111,7 +133,10 @@ export default function Settings() {
           style: "destructive",
           onPress: () =>
             deleteAccount(undefined, {
-              onSuccess: discardWorkout,
+              onSuccess: () => {
+                discardWorkout();
+                resetOnboarding();
+              },
               onError: () =>
                 Alert.alert(
                   "Could not delete account",
@@ -183,6 +208,16 @@ export default function Settings() {
         chevron
         onPress={() => router.push("/terms")}
       />
+
+      {__DEV__ && (
+        <>
+          <SectionTitle>DEVELOPER</SectionTitle>
+          <SettingsRow
+            label="Reset Onboarding"
+            onPress={handleResetOnboarding}
+          />
+        </>
+      )}
 
       <SectionTitle>ACCOUNT</SectionTitle>
       <SettingsRow label="Sign Out" onPress={handleSignOut} />
