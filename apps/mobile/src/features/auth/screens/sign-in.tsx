@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { LineField } from "@/components/line-field";
 import { Spinner } from "@/components/ui/spinner";
 import { Text } from "@/components/ui/text";
 import { Wordmark } from "@/components/wordmark";
@@ -58,30 +58,21 @@ export function SignIn() {
         <View className="flex-1" />
 
         <View className="gap-3.5">
-          <View className="gap-1.5">
-            <Text
-              nativeID="email-label"
-              className="font-mono text-[11px] font-semibold tracking-wider"
-            >
-              EMAIL
-            </Text>
-            <Input
-              testID="email-input"
-              accessibilityLabelledBy="email-label"
-              placeholder="you@example.com"
-              autoCapitalize="none"
-              keyboardType="email-address"
-              autoComplete="email"
-              returnKeyType="go"
-              onSubmitEditing={handleSubmit}
-              className="h-12 rounded-none border-0 border-b-[1.5px] border-foreground bg-transparent px-0 text-[17px] shadow-none dark:bg-transparent"
-              value={email}
-              onChangeText={(text) => {
-                setEmail(text);
-                setError(null);
-              }}
-            />
-          </View>
+          <LineField
+            label="EMAIL"
+            testID="email-input"
+            placeholder="you@example.com"
+            autoCapitalize="none"
+            keyboardType="email-address"
+            autoComplete="email"
+            returnKeyType="go"
+            onSubmitEditing={handleSubmit}
+            value={email}
+            onChangeText={(text) => {
+              setEmail(text);
+              setError(null);
+            }}
+          />
 
           {error && <Text className="text-sm text-destructive">{error}</Text>}
 
