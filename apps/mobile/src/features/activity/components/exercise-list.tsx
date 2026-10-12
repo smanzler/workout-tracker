@@ -161,6 +161,8 @@ export function ExerciseList({
     <>
       <Stack.SearchBar
         placeholder="Search exercises"
+        // iOS 26 puts an automatic search bar in the bottom toolbar, over the picked exercises.
+        placement="stacked"
         hideNavigationBar={false}
         hideWhenScrolling={false}
         onChangeText={(event) => {

@@ -32,6 +32,7 @@ export function ExercisePicker({
     <>
       <Stack.Screen
         options={{
+          headerShadowVisible: false,
           headerRight: () => (
             <Button
               variant="ghost"
