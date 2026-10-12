@@ -1,6 +1,8 @@
 import "@/global.css";
 import { ThemeProvider } from "expo-router/react-navigation";
 import { Stack } from "expo-router";
+import { useQueryClient } from "@tanstack/react-query";
+import { useEffect } from "react";
 import { StatusBar } from "expo-status-bar";
 import "react-native-reanimated";
 
@@ -61,6 +63,13 @@ export default function RootLayout() {
 function RootLayoutNav() {
   const { data: session } = authClient.useSession();
   const welcomed = useOnboardingStore((state) => state.welcomed);
+  const queryClient = useQueryClient();
+  const userId = session?.user.id;
+
+  // Remove the data of the last account, so the next sign in cannot show it.
+  useEffect(() => {
+    if (!userId) queryClient.clear();
+  }, [userId, queryClient]);
 
   return (
     <Stack>
