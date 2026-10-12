@@ -1,28 +1,17 @@
 import { QueryView } from "@/components/query-view";
 import { RefetchControl } from "@/components/refetch-control";
-import {
-  Empty,
-  EmptyHeader,
-  EmptyMedia,
-  EmptyTitle,
-} from "@/components/ui/empty";
-import { Icon } from "@/components/ui/icon";
+import { EmptyRow } from "@/components/empty-row";
 import { Stack } from "expo-router";
-import { Bell } from "lucide-react-native";
 import { FlatList } from "react-native";
 import { NotificationCard } from "../components/notification-card";
 import { useNotifications } from "../hooks/use-notifications";
 
 function NoNotifications() {
   return (
-    <Empty>
-      <EmptyHeader>
-        <EmptyMedia variant="icon">
-          <Icon as={Bell} />
-        </EmptyMedia>
-        <EmptyTitle>No notifications yet</EmptyTitle>
-      </EmptyHeader>
-    </Empty>
+    <EmptyRow
+      title="No notifications yet"
+      description="New followers and kudos on your workouts show here."
+    />
   );
 }
 
@@ -46,7 +35,9 @@ export default function Notifications() {
             data={notifications}
             keyExtractor={({ id }) => id}
             contentInsetAdjustmentBehavior="automatic"
-            contentContainerClassName="grow gap-3 p-4"
+            contentContainerClassName={
+              notifications.length > 0 ? "gap-3 p-4" : undefined
+            }
             refreshControl={
               <RefetchControl refetch={notificationsQuery.refetch} />
             }

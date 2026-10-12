@@ -1,19 +1,10 @@
 import { Button } from "@/components/ui/button";
-import {
-  Empty,
-  EmptyContent,
-  EmptyDescription,
-  EmptyHeader,
-  EmptyMedia,
-  EmptyTitle,
-} from "@/components/ui/empty";
-import { Icon } from "@/components/ui/icon";
 import { Spinner } from "@/components/ui/spinner";
 import { Text } from "@/components/ui/text";
 import { router, Stack } from "expo-router";
-import { History as HistoryIcon } from "lucide-react-native";
 import { Pressable } from "@/components/ui/pressable";
 import { SectionList } from "react-native";
+import { EmptyRow } from "@/components/empty-row";
 import { QueryView } from "@/components/query-view";
 import { RefetchControl } from "@/components/refetch-control";
 import { HistoryRow } from "../components/history-row";
@@ -26,22 +17,21 @@ import { groupByMonth } from "../lib/months";
 
 function EmptyHistory() {
   return (
-    <Empty>
-      <EmptyHeader>
-        <EmptyMedia variant="icon">
-          <Icon as={HistoryIcon} />
-        </EmptyMedia>
-        <EmptyTitle>No workouts yet</EmptyTitle>
-        <EmptyDescription>
-          Your finished workouts will show here.
-        </EmptyDescription>
-      </EmptyHeader>
-      <EmptyContent>
-        <Button onPress={() => router.navigate("/start-workout")}>
+    <>
+      <MonthHeader startedAt={new Date()} />
+      <EmptyRow
+        title="No workouts yet"
+        description="Finish a workout and it shows here, with its sets and records."
+      >
+        <Button
+          size="sm"
+          className="mt-2"
+          onPress={() => router.navigate("/start-workout")}
+        >
           <Text>Start a Workout</Text>
         </Button>
-      </EmptyContent>
-    </Empty>
+      </EmptyRow>
+    </>
   );
 }
 
@@ -61,7 +51,6 @@ export default function History() {
             sections={groupByMonth(pages.flatMap(({ items }) => items))}
             keyExtractor={({ id }) => id}
             contentInsetAdjustmentBehavior="automatic"
-            contentContainerClassName="grow"
             stickySectionHeadersEnabled
             refreshControl={
               <RefetchControl

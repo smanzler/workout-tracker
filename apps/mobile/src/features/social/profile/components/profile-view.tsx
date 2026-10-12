@@ -2,14 +2,7 @@ import { QueryView } from "@/components/query-view";
 import { RefetchControl } from "@/components/refetch-control";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import {
-  Empty,
-  EmptyDescription,
-  EmptyHeader,
-  EmptyMedia,
-  EmptyTitle,
-} from "@/components/ui/empty";
-import { Icon } from "@/components/ui/icon";
+import { EmptyRow } from "@/components/empty-row";
 import { Spinner } from "@/components/ui/spinner";
 import { Text } from "@/components/ui/text";
 import { WorkoutSummary } from "@/features/social/components/workout-summary";
@@ -20,7 +13,6 @@ import { useFollowCounts } from "@/features/social/follows/hooks/use-follow-coun
 import { authClient } from "@/lib/auth-client";
 import type { Outputs } from "@rep/api";
 import { router } from "expo-router";
-import { Dumbbell } from "lucide-react-native";
 import { Pressable } from "@/components/ui/pressable";
 import { FlatList, View } from "react-native";
 import { formatCount } from "@/lib/format";
@@ -103,7 +95,6 @@ export function ProfileView({ profileId }: { profileId?: string }) {
           data={workoutsQuery.data?.pages.flatMap(({ items }) => items) ?? []}
           keyExtractor={({ id }) => id}
           contentInsetAdjustmentBehavior="automatic"
-          contentContainerClassName="grow"
           refreshControl={
             <RefetchControl
               refetch={() =>
@@ -121,19 +112,24 @@ export function ProfileView({ profileId }: { profileId?: string }) {
             workoutsQuery.isPending ? (
               <Spinner />
             ) : (
-              <Empty>
-                <EmptyHeader>
-                  <EmptyMedia variant="icon">
-                    <Icon as={Dumbbell} />
-                  </EmptyMedia>
-                  <EmptyTitle>No workouts yet</EmptyTitle>
-                  <EmptyDescription>
-                    {isOwnProfile
-                      ? "Your finished workouts will show here."
-                      : `${profile.username} has not logged a workout yet.`}
-                  </EmptyDescription>
-                </EmptyHeader>
-              </Empty>
+              <EmptyRow
+                title="No workouts yet"
+                description={
+                  isOwnProfile
+                    ? "Finish a workout and it shows here for your friends."
+                    : `${profile.username} has not finished a workout yet.`
+                }
+              >
+                {isOwnProfile && (
+                  <Button
+                    size="sm"
+                    className="mt-2"
+                    onPress={() => router.navigate("/start-workout")}
+                  >
+                    <Text>Start a Workout</Text>
+                  </Button>
+                )}
+              </EmptyRow>
             )
           }
           ListFooterComponent={isFetchingNextPage ? <Spinner /> : null}
