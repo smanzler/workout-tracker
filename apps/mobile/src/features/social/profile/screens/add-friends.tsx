@@ -1,17 +1,8 @@
 import { QueryView } from "@/components/query-view";
-import {
-  Empty,
-  EmptyDescription,
-  EmptyHeader,
-  EmptyMedia,
-  EmptyTitle,
-} from "@/components/ui/empty";
-import { Icon } from "@/components/ui/icon";
 import { Text } from "@/components/ui/text";
 import { Stack } from "expo-router";
-import { SearchX, UserSearch, type LucideIcon } from "lucide-react-native";
 import { useState } from "react";
-import { FlatList } from "react-native";
+import { FlatList, View } from "react-native";
 import { ProfileRow } from "../components/profile-row";
 import { useDebounce } from "../hooks/use-debounce";
 import { useProfiles, useSuggestedProfiles } from "../hooks/use-profiles";
@@ -21,23 +12,22 @@ type Mode = "search" | "suggested";
 const modeStates: Record<
   Mode,
   {
-    icon: LucideIcon;
+    heading: (count: number) => string;
     title: string;
     description: (search: string) => string;
-    heading: (count: number) => string;
   }
 > = {
   search: {
     heading: (count) => `RESULTS · ${count}`,
-    icon: SearchX,
-    title: "No results found",
-    description: (search) => `No one matches "${search}".`,
+    title: "No one found",
+    description: (search) =>
+      `No username matches "${search}". Check the spelling, or try part of the name.`,
   },
   suggested: {
     heading: () => "NEW ON REP",
-    icon: UserSearch,
-    title: "No suggestions yet",
-    description: () => "Check back later for people to follow.",
+    title: "No one new yet",
+    description: () =>
+      "New people show here when they join. Search by username to find a friend.",
   },
 };
 
@@ -66,7 +56,6 @@ export default function AddFriends() {
       />
       <Stack.SearchBar
         placeholder="Search for friends"
-        placement="stacked"
         hideNavigationBar={false}
         obscureBackground={false}
         onChangeText={(event) => setSearch(event.nativeEvent.text)}
@@ -85,24 +74,17 @@ export default function AddFriends() {
             keyboardDismissMode="on-drag"
             keyboardShouldPersistTaps="handled"
             ListHeaderComponent={
-              profiles.length > 0 ? (
-                <Text className="border-b border-foreground px-5 pb-1.5 pt-2.5 font-mono text-[11px] font-semibold tracking-wider">
-                  {state.heading(profiles.length)}
-                </Text>
-              ) : null
+              <Text className="border-b border-foreground px-5 pb-1.5 pt-2.5 font-mono text-[11px] font-semibold tracking-wider">
+                {state.heading(profiles.length)}
+              </Text>
             }
             ListEmptyComponent={
-              <Empty>
-                <EmptyHeader>
-                  <EmptyMedia variant="icon">
-                    <Icon as={state.icon} />
-                  </EmptyMedia>
-                  <EmptyTitle>{state.title}</EmptyTitle>
-                  <EmptyDescription>
-                    {state.description(trimmedSearch)}
-                  </EmptyDescription>
-                </EmptyHeader>
-              </Empty>
+              <View className="gap-1.5 border-b border-border px-5 py-4">
+                <Text className="text-[15px] font-medium">{state.title}</Text>
+                <Text className="text-sm leading-5 text-muted-foreground">
+                  {state.description(trimmedSearch)}
+                </Text>
+              </View>
             }
             renderItem={({ item }) => <ProfileRow profile={item} />}
           />
