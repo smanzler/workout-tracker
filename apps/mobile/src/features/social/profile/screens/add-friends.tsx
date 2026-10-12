@@ -7,26 +7,34 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty";
 import { Icon } from "@/components/ui/icon";
+import { Text } from "@/components/ui/text";
 import { Stack } from "expo-router";
 import { SearchX, UserSearch, type LucideIcon } from "lucide-react-native";
 import { useState } from "react";
 import { FlatList } from "react-native";
-import { ProfileCard } from "../components/profile-card";
+import { ProfileRow } from "../components/profile-row";
 import { useDebounce } from "../hooks/use-debounce";
 import { useProfiles, useSuggestedProfiles } from "../hooks/use-profiles";
 
 type Mode = "search" | "suggested";
 
-const emptyStates: Record<
+const modeStates: Record<
   Mode,
-  { icon: LucideIcon; title: string; description: (search: string) => string }
+  {
+    icon: LucideIcon;
+    title: string;
+    description: (search: string) => string;
+    heading: (count: number) => string;
+  }
 > = {
   search: {
+    heading: (count) => `RESULTS · ${count}`,
     icon: SearchX,
     title: "No results found",
     description: (search) => `No one matches "${search}".`,
   },
   suggested: {
+    heading: () => "NEW ON REP",
     icon: UserSearch,
     title: "No suggestions yet",
     description: () => "Check back later for people to follow.",
@@ -45,7 +53,7 @@ export default function AddFriends() {
   const suggestedQuery = useSuggestedProfiles({
     enabled: mode === "suggested",
   });
-  const empty = emptyStates[mode];
+  const state = modeStates[mode];
 
   return (
     <>
@@ -53,10 +61,12 @@ export default function AddFriends() {
         options={{
           title: "Add Friends",
           headerBackButtonDisplayMode: "minimal",
+          headerShadowVisible: false,
         }}
       />
       <Stack.SearchBar
         placeholder="Search for friends"
+        placement="stacked"
         hideNavigationBar={false}
         obscureBackground={false}
         onChangeText={(event) => setSearch(event.nativeEvent.text)}
@@ -74,21 +84,27 @@ export default function AddFriends() {
             contentInsetAdjustmentBehavior="automatic"
             keyboardDismissMode="on-drag"
             keyboardShouldPersistTaps="handled"
-            contentContainerClassName="gap-3 p-4"
+            ListHeaderComponent={
+              profiles.length > 0 ? (
+                <Text className="border-b border-foreground px-5 pb-1.5 pt-2.5 font-mono text-[11px] font-semibold tracking-wider">
+                  {state.heading(profiles.length)}
+                </Text>
+              ) : null
+            }
             ListEmptyComponent={
               <Empty>
                 <EmptyHeader>
                   <EmptyMedia variant="icon">
-                    <Icon as={empty.icon} />
+                    <Icon as={state.icon} />
                   </EmptyMedia>
-                  <EmptyTitle>{empty.title}</EmptyTitle>
+                  <EmptyTitle>{state.title}</EmptyTitle>
                   <EmptyDescription>
-                    {empty.description(trimmedSearch)}
+                    {state.description(trimmedSearch)}
                   </EmptyDescription>
                 </EmptyHeader>
               </Empty>
             }
-            renderItem={({ item }) => <ProfileCard profile={item} />}
+            renderItem={({ item }) => <ProfileRow profile={item} />}
           />
         )}
       </QueryView>
