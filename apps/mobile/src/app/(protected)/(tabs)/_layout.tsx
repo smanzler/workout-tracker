@@ -26,9 +26,9 @@ export default function Layout() {
         <NativeTabs.Trigger.Label>History</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon sf="clock.arrow.circlepath" md="history" />
       </NativeTabs.Trigger>
-      <NativeTabs.Trigger name="exercises">
-        <NativeTabs.Trigger.Label>Exercises</NativeTabs.Trigger.Label>
-        <NativeTabs.Trigger.Icon sf="dumbbell.fill" md="exercise" />
+      <NativeTabs.Trigger name="friends">
+        <NativeTabs.Trigger.Label>Friends</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon sf="person.2.fill" md="group" />
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="you">
         <NativeTabs.Trigger.Label>You</NativeTabs.Trigger.Label>

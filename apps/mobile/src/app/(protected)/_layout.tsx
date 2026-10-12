@@ -90,7 +90,6 @@ export default function Layout() {
           name="new-exercise"
           options={{ title: "New Exercise", presentation: "modal" }}
         />
-        <Stack.Screen name="friends" />
         <Stack.Screen name="add-friends" />
         <Stack.Screen name="profile" options={{ title: "" }} />
         <Stack.Screen

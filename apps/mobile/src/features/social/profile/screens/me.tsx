@@ -30,11 +30,6 @@ export default function Me() {
           }
           onPress={() => router.push("/notifications")}
         />
-        <Stack.Toolbar.Button
-          icon="person.2"
-          accessibilityLabel="Friends"
-          onPress={() => router.push("/friends")}
-        />
       </Stack.Toolbar>
       <ProfileView profileId={profile?.id} />
       <WorkoutIndicator />
