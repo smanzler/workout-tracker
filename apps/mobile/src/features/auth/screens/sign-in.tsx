@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import { Text } from "@/components/ui/text";
+import { Wordmark } from "@/components/wordmark";
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "expo-router";
 import { useState } from "react";
@@ -52,18 +53,7 @@ export function SignIn() {
   return (
     <KeyboardAvoidingView behavior="padding" className="flex-1 bg-background">
       <View className="flex-1 px-6 pb-safe-offset-6 pt-safe-offset-20">
-        <View className="gap-2.5">
-          <Text
-            role="heading"
-            accessibilityLabel="Rep"
-            className="text-[64px] font-bold leading-[68px] tracking-tighter"
-          >
-            rep<Text className="text-[64px] font-bold text-brand">.</Text>
-          </Text>
-          <Text className="font-mono text-[13px] tracking-widest text-muted-foreground">
-            LOG EVERY SET. SEE EVERY RECORD.
-          </Text>
-        </View>
+        <Wordmark />
 
         <View className="flex-1" />
 
