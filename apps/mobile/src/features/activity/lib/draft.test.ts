@@ -1,7 +1,9 @@
 import {
   addExercises,
   addSet,
+  buildDraftStats,
   canCompleteSet,
+  findCurrentSet,
   hasIncompleteSets,
   keepCompletedSets,
   removeExercise,
@@ -225,5 +227,59 @@ describe("toDraft and toExerciseInputs", () => {
     expect(toExerciseInputs(draft)).toEqual([
       { exerciseId: "bench", notes: "Pause", sets: [{ weight: 100, reps: 5 }] },
     ]);
+  });
+});
+
+describe("findCurrentSet", () => {
+  it("finds the first set that is not done, across exercises", () => {
+    const draft = [
+      ...toDraft([saved(bench, [{ weight: 100, reps: 5 }])], {
+        completed: true,
+      }),
+      ...toDraft(
+        [
+          saved(squat, [
+            { weight: 200, reps: 5 },
+            { weight: 200, reps: 5 },
+          ]),
+        ],
+        { completed: false },
+      ),
+    ];
+
+    expect(findCurrentSet(draft)).toBe(draft[1]?.sets[0]);
+  });
+
+  it("returns undefined when every set is done", () => {
+    const draft = toDraft([saved(bench, [{ weight: 100, reps: 5 }])], {
+      completed: true,
+    });
+
+    expect(findCurrentSet(draft)).toBeUndefined();
+  });
+});
+
+describe("buildDraftStats", () => {
+  it("counts all sets and adds up the volume of the done sets", () => {
+    const draft = [
+      ...toDraft(
+        [
+          saved(bench, [
+            { weight: 135, reps: 8 },
+            { weight: null, reps: 10 },
+          ]),
+        ],
+        { completed: true },
+      ),
+      ...toDraft([saved(squat, [{ weight: 200, reps: 5 }])], {
+        completed: false,
+      }),
+    ];
+
+    expect(buildDraftStats(draft)).toEqual({
+      totalSets: 3,
+      completedSets: 2,
+      volume: 1080,
+    });
   });
 });

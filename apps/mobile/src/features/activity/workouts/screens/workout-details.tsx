@@ -14,6 +14,7 @@ import { useWorkout } from "../hooks/use-workout";
 import { useWorkoutMenu } from "../hooks/use-workout-menu";
 import { formatDate, formatTime } from "@/lib/date";
 import { formatDuration } from "@/lib/duration";
+import { formatWeight } from "@/lib/format";
 import { countPersonalRecords } from "@/lib/personal-records";
 
 type Workout = Outputs["activity"]["workout"]["get"];
@@ -46,7 +47,7 @@ function WorkoutStats({ workout }: { workout: Workout }) {
             workout.endedAt.getTime() - workout.startedAt.getTime(),
           )}
         />
-        <Stat label="Volume" value={`${volume.toLocaleString("en-US")} lb`} />
+        <Stat label="Volume" value={formatWeight(volume)} />
         <Stat label="PRs" value={countPersonalRecords(sets).toString()} />
       </View>
     </View>

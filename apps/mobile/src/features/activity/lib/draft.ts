@@ -1,8 +1,9 @@
-import type {
-  ExerciseCategory,
-  MuscleGroup,
-  WorkoutExerciseInput,
-  WorkoutSetInput,
+import {
+  metricValues,
+  type ExerciseCategory,
+  type MuscleGroup,
+  type WorkoutExerciseInput,
+  type WorkoutSetInput,
 } from "@rep/shared";
 import { randomUUID } from "expo-crypto";
 
@@ -192,6 +193,26 @@ export const toSetInput = ({
   return {
     weight: parseAmount(weight),
     reps: parsedReps === null ? null : Math.trunc(parsedReps),
+  };
+};
+
+const listSets = (draft: Draft) => draft.flatMap(({ sets }) => sets);
+
+/** The first set that is not done, in draft order. */
+export const findCurrentSet = (draft: Draft) =>
+  listSets(draft).find(({ completed }) => !completed);
+
+/** Counts the sets, and adds up the volume of the done sets. */
+export const buildDraftStats = (draft: Draft) => {
+  const sets = listSets(draft);
+  const completedSets = sets.filter(({ completed }) => completed);
+
+  return {
+    totalSets: sets.length,
+    completedSets: completedSets.length,
+    volume: completedSets
+      .map(toSetInput)
+      .reduce((total, set) => total + metricValues.volume(set), 0),
   };
 };
 

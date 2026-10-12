@@ -7,6 +7,29 @@ const googleIosClientId = process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID;
 const reverseClientId = (clientId: string) =>
   clientId.split(".").reverse().join(".");
 
+const fontWeights = {
+  400: "Regular",
+  500: "Medium",
+  600: "SemiBold",
+  700: "Bold",
+};
+
+const buildFontFamily = (fontFamily: string) => {
+  const name = fontFamily.replaceAll(" ", "");
+  const slug = fontFamily.toLowerCase().replaceAll(" ", "-");
+  return {
+    fontFamily,
+    fontDefinitions: Object.entries(fontWeights).map(([weight, label]) => ({
+      path: `./node_modules/@expo-google-fonts/${slug}/${weight}${label}/${name}_${weight}${label}.ttf`,
+      weight: Number(weight),
+    })),
+  };
+};
+
+// Keep the family names the same as --font-sans and --font-mono in global.css
+// and the navigation fonts in src/lib/theme.ts.
+const fontFamilies = ["IBM Plex Sans", "IBM Plex Mono"].map(buildFontFamily);
+
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
   name: "Rep",
@@ -79,7 +102,18 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
         },
       },
     ],
-    "expo-font",
+    [
+      "expo-font",
+      {
+        // iOS gets the family name from each file.
+        ios: {
+          fonts: fontFamilies.flatMap(({ fontDefinitions }) =>
+            fontDefinitions.map(({ path }) => path),
+          ),
+        },
+        android: { fonts: fontFamilies },
+      },
+    ],
     "expo-web-browser",
     "expo-image",
     "expo-secure-store",

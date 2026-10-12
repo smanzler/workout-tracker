@@ -3,6 +3,7 @@ import { Text } from "@/components/ui/text";
 import type { PersonalRecord, PersonalRecordMetric } from "@rep/shared";
 import { View } from "react-native";
 import { formatDate } from "@/lib/date";
+import { formatWeight } from "@/lib/format";
 import { keysOf } from "../../lib/keys-of";
 
 const recordViews: Record<
@@ -14,10 +15,7 @@ const recordViews: Record<
     label: "Est. 1RM",
     format: (value) => `${Math.round(value)} lb`,
   },
-  volume: {
-    label: "Max Volume",
-    format: (value) => `${value.toLocaleString("en-US")} lb`,
-  },
+  volume: { label: "Max Volume", format: formatWeight },
 };
 
 const metrics = keysOf(recordViews);

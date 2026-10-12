@@ -7,6 +7,9 @@ export const formatSet = ({ weight, reps }: SetPerformance) => {
   return `${weight} lb × ${reps ?? "—"}`;
 };
 
+export const formatWeight = (weight: number) =>
+  `${weight.toLocaleString("en-US")} lb`;
+
 /** The heaviest set, and the one with more reps on a tie. */
 export const findBestSet = <TSet extends SetPerformance>(sets: TSet[]) =>
   sets.reduce<TSet | undefined>((best, set) => {

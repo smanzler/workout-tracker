@@ -1,5 +1,4 @@
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { Icon } from "@/components/ui/icon";
 import { Text } from "@/components/ui/text";
 import { useMenu } from "@/hooks/use-menu";
@@ -16,19 +15,22 @@ import {
   type Draft,
   type DraftExercise,
 } from "../lib/draft";
-import { SetHeader, SetRow } from "./set-row";
+import { SetRow } from "./set-row";
 
 /**
  * Edits one exercise of a draft. With `completable`, each set has a button
- * that marks it done, as in a workout; routines leave it out.
+ * that marks it done, as in a workout; routines leave it out. The set with
+ * `currentSetId` gets a highlight.
  */
 export function ExerciseEditor({
   exercise,
   completable,
+  currentSetId,
   onUpdate,
 }: {
   exercise: DraftExercise;
   completable: boolean;
+  currentSetId: string | undefined;
   onUpdate: (update: (draft: Draft) => Draft) => void;
 }) {
   const { data: previousSets } = usePreviousSets(exercise.exercise.id);
@@ -36,15 +38,15 @@ export function ExerciseEditor({
   const exerciseId = exercise.id;
 
   return (
-    <Card className="gap-2 py-3">
-      <View className="flex-row items-center gap-2 pl-4 pr-2">
-        <Text className="flex-1 text-lg font-semibold" numberOfLines={1}>
+    <View className="border-b border-border">
+      <View className="flex-row items-center gap-2 pb-0.5 pl-5 pr-1 pt-2">
+        <Text className="flex-1 text-[15px] font-bold" numberOfLines={1}>
           {exercise.exercise.title}
         </Text>
         <Button
           variant="ghost"
           size="icon"
-          className="rounded-full"
+          className="size-11 rounded-full"
           accessibilityLabel={`${exercise.exercise.title} options`}
           onPress={() =>
             showMenu([
@@ -57,11 +59,9 @@ export function ExerciseEditor({
             ])
           }
         >
-          <Icon as={Ellipsis} />
+          <Icon as={Ellipsis} className="text-muted-foreground" />
         </Button>
       </View>
-
-      <SetHeader completable={completable} />
 
       {exercise.sets.map((set, index) => {
         const lastWorkoutSet = previousSets?.[index];
@@ -77,6 +77,7 @@ export function ExerciseEditor({
             key={set.id}
             number={index + 1}
             set={set}
+            current={set.id === currentSetId}
             previous={lastWorkoutSet}
             suggestion={suggestion}
             completable={completable}
@@ -100,14 +101,13 @@ export function ExerciseEditor({
       })}
 
       <Button
-        variant="secondary"
-        size="sm"
-        className="mx-4 mt-1"
+        variant="ghost"
+        className="h-11 justify-start gap-1.5 rounded-none border-t border-border/60 px-5"
         onPress={() => onUpdate((draft) => addSet(draft, exerciseId))}
       >
-        <Icon as={Plus} className="size-4" />
-        <Text>Add Set</Text>
+        <Icon as={Plus} className="size-3.5 text-muted-foreground" />
+        <Text className="font-mono text-[13px] font-normal">Add set</Text>
       </Button>
-    </Card>
+    </View>
   );
 }

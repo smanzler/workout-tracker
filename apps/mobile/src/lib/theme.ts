@@ -59,9 +59,20 @@ export const THEME = {
   },
 };
 
+// Keep the family name the same as --font-sans in global.css.
+const fontFamily = "IBM Plex Sans";
+
+const fonts: Theme["fonts"] = {
+  regular: { fontFamily, fontWeight: "400" },
+  medium: { fontFamily, fontWeight: "500" },
+  bold: { fontFamily, fontWeight: "600" },
+  heavy: { fontFamily, fontWeight: "700" },
+};
+
 export const NAV_THEME: Record<"light" | "dark", Theme> = {
   light: {
     ...DefaultTheme,
+    fonts,
     colors: {
       background: THEME.light.background,
       border: THEME.light.border,
@@ -73,6 +84,7 @@ export const NAV_THEME: Record<"light" | "dark", Theme> = {
   },
   dark: {
     ...DarkTheme,
+    fonts,
     colors: {
       background: THEME.dark.background,
       border: THEME.dark.border,
