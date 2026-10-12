@@ -39,3 +39,48 @@ export const groupByFirstLetter = <TExercise extends { title: string }>(
 
   return [...groups].map(([title, data]) => ({ title, data }));
 };
+
+const recentDays = 14;
+const recentLimit = 8;
+const dayInMilliseconds = 24 * 60 * 60 * 1000;
+
+/** Up to 8 exercises done in the last 14 days, the most recent first. */
+export const listRecentExercises = <
+  TExercise extends { lastPerformedAt: Date | null },
+>(
+  exercises: TExercise[],
+  now: Date,
+) =>
+  exercises
+    .filter(
+      ({ lastPerformedAt }) =>
+        lastPerformedAt !== null &&
+        now.getTime() - lastPerformedAt.getTime() <=
+          recentDays * dayInMilliseconds,
+    )
+    .sort((a, b) => b.lastPerformedAt!.getTime() - a.lastPerformedAt!.getTime())
+    .slice(0, recentLimit);
+
+const hasFilter = ({ search, muscleGroup, category }: ExerciseFilter) =>
+  search.trim() !== "" || muscleGroup !== null || category !== null;
+
+/**
+ * The sections of the exercise list: the recent exercises when nothing
+ * filters the list, then one section for each first letter.
+ */
+export const buildExerciseSections = <
+  TExercise extends FilterableExercise & { lastPerformedAt: Date | null },
+>(
+  exercises: TExercise[],
+  filter: ExerciseFilter,
+  now: Date,
+) => {
+  const letters = groupByFirstLetter(filterExercises(exercises, filter)).map(
+    (section) => ({ ...section, isRecent: false }),
+  );
+  const recent = hasFilter(filter) ? [] : listRecentExercises(exercises, now);
+
+  return recent.length > 0
+    ? [{ title: "RECENT", data: recent, isRecent: true }, ...letters]
+    : letters;
+};
