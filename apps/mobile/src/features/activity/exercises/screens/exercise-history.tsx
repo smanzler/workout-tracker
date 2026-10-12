@@ -3,6 +3,7 @@ import type { Outputs } from "@rep/api";
 import { Stack, useLocalSearchParams } from "expo-router";
 import { ScrollView, View } from "react-native";
 import { QueryView } from "@/components/query-view";
+import { EmptyRow } from "@/components/empty-row";
 import { formatCount } from "@/lib/format";
 import { exerciseCategoryLabels, muscleGroupLabels } from "../../lib/labels";
 import { RecordStrip } from "../components/record-strip";
@@ -50,13 +51,10 @@ export default function ExerciseHistory() {
               HISTORY
             </Text>
             {history.entries.length === 0 ? (
-              <View className="gap-1.5 border-b border-border px-5 py-4">
-                <Text className="text-[15px] font-medium">No sessions yet</Text>
-                <Text className="text-sm leading-5 text-muted-foreground">
-                  Add {history.exercise.title} to a workout. Your sets show
-                  here, and the first one sets your records.
-                </Text>
-              </View>
+              <EmptyRow
+                title="No sessions yet"
+                description={`Add ${history.exercise.title} to a workout. Your sets show here, and the first one sets your records.`}
+              />
             ) : (
               history.entries.map((entry) => (
                 <SessionRow key={entry.id} entry={entry} />

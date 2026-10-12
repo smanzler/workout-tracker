@@ -2,7 +2,8 @@ import { QueryView } from "@/components/query-view";
 import { Text } from "@/components/ui/text";
 import { Stack } from "expo-router";
 import { useState } from "react";
-import { FlatList, View } from "react-native";
+import { FlatList } from "react-native";
+import { EmptyRow } from "@/components/empty-row";
 import { ProfileRow } from "../components/profile-row";
 import { useDebounce } from "../hooks/use-debounce";
 import { useProfiles, useSuggestedProfiles } from "../hooks/use-profiles";
@@ -79,12 +80,10 @@ export default function AddFriends() {
               </Text>
             }
             ListEmptyComponent={
-              <View className="gap-1.5 border-b border-border px-5 py-4">
-                <Text className="text-[15px] font-medium">{state.title}</Text>
-                <Text className="text-sm leading-5 text-muted-foreground">
-                  {state.description(trimmedSearch)}
-                </Text>
-              </View>
+              <EmptyRow
+                title={state.title}
+                description={state.description(trimmedSearch)}
+              />
             }
             renderItem={({ item }) => <ProfileRow profile={item} />}
           />
