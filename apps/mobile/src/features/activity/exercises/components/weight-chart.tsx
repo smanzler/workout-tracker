@@ -36,8 +36,9 @@ const formatDay = (date: Date) => {
 };
 
 /**
- * The heaviest set of the last sessions. A press and drag on the chart
- * selects a session, and the readout above the chart opens its workout.
+ * The heaviest set of the last sessions, or nothing for fewer than 2. A press
+ * and drag on the chart selects a session, and the readout above the chart
+ * opens its workout.
  */
 export function WeightChart({ entries }: { entries: Entry[] }) {
   const [selected, setSelected] = useState<number | null>(null);
@@ -72,7 +73,8 @@ export function WeightChart({ entries }: { entries: Entry[] }) {
 
   const first = points[0];
   const latest = points.at(-1);
-  if (!point || !first || !latest) return null;
+  // One session has no trend to show.
+  if (points.length < 2 || !point || !first || !latest) return null;
 
   const readout = `${formatSet(point.bestSet)}, ${formatDay(point.entry.startedAt)}`;
 
