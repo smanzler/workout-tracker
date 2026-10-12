@@ -4,8 +4,9 @@ import { Text } from "@/components/ui/text";
 import { authClient } from "@/lib/auth-client";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
-import { KeyboardAvoidingView, View } from "react-native";
-import { AuthCard } from "../components/auth-card";
+import { View } from "react-native";
+import { KeyboardAvoidingView } from "react-native-keyboard-controller";
+import { AuthTitle } from "../components/auth-title";
 import { OtpInput, type OtpInputRef } from "../components/otp-input";
 
 const RESEND_COOLDOWN_SECONDS = 60;
@@ -97,28 +98,26 @@ export function VerifyOtp() {
 
   if (!email) {
     return (
-      <KeyboardAvoidingView className="flex-1">
-        <View className="flex-1 flex flex-col justify-center p-6">
-          <AuthCard
-            title="Something went wrong"
-            description="We couldn't find an email to verify."
-          >
-            <Button onPress={() => router.replace("/")}>
-              <Text>Back to Sign In</Text>
-            </Button>
-          </AuthCard>
-        </View>
-      </KeyboardAvoidingView>
+      <View className="flex-1 gap-8 bg-background px-6 pt-safe-offset-20">
+        <AuthTitle label="NO EMAIL" title="Something went wrong">
+          We couldn&apos;t find an email to verify.
+        </AuthTitle>
+        <Button variant="brand" size="xl" onPress={() => router.replace("/")}>
+          <Text>Back to Sign In</Text>
+        </Button>
+      </View>
     );
   }
 
   return (
-    <KeyboardAvoidingView className="flex-1">
-      <View className="flex-1 flex flex-col justify-center p-6">
-        <AuthCard
-          title="Enter code"
-          description={`We sent a 6-digit code to ${email}`}
-        >
+    <KeyboardAvoidingView behavior="padding" className="flex-1 bg-background">
+      <View className="flex-1 px-6 pb-safe-offset-6 pt-safe-offset-20">
+        <AuthTitle label="CODE SENT" title="Enter code">
+          We sent a 6-digit code to{" "}
+          <Text className="font-mono text-[15px] text-foreground">{email}</Text>
+        </AuthTitle>
+
+        <View className="pt-8">
           <OtpInput
             ref={otpRef}
             onTextChange={(text) => {
@@ -126,47 +125,44 @@ export function VerifyOtp() {
               setError(null);
             }}
           />
+        </View>
 
-          {error && (
-            <Text className="text-destructive text-center text-sm">
-              {error}
-            </Text>
-          )}
+        {error && (
+          <Text className="pt-3 text-sm text-destructive">{error}</Text>
+        )}
 
+        <View className="flex-row items-center justify-between pt-3">
+          <Text className="font-mono text-xs uppercase text-muted-foreground">
+            {resendCooldown > 0
+              ? `Resend in 0:${String(resendCooldown).padStart(2, "0")}`
+              : "Didn't get a code?"}
+          </Text>
           <Button
+            variant="ghost"
+            size="sm"
+            onPress={handleResend}
+            disabled={resending || resendCooldown > 0}
+          >
+            <Text>Resend Code</Text>
+          </Button>
+        </View>
+
+        <View className="flex-1" />
+
+        <View className="gap-1">
+          <Button
+            variant="brand"
+            size="xl"
             onPress={handleSubmit}
             disabled={submitting || otp.length !== 6}
           >
-            {submitting && <Spinner className="text-secondary" />}
+            {submitting && <Spinner className="text-brand-foreground" />}
             <Text>Continue</Text>
           </Button>
-
-          <View className="mx-auto flex-row">
-            <Text className="text-muted-foreground text-sm">
-              Didn&apos;t get a code?{" "}
-            </Text>
-            <Button
-              variant="link"
-              className="p-0 py-0 h-fit"
-              onPress={handleResend}
-              disabled={resending || resendCooldown > 0}
-            >
-              <Text className="underline">
-                {resendCooldown > 0 ? `Resend in ${resendCooldown}s` : "Resend"}
-              </Text>
-            </Button>
-          </View>
-
-          <View className="mx-auto flex-row">
-            <Button
-              variant="link"
-              className="p-0 py-0 h-fit"
-              onPress={() => router.replace("/")}
-            >
-              <Text className="underline">Use a different email</Text>
-            </Button>
-          </View>
-        </AuthCard>
+          <Button variant="ghost" onPress={() => router.replace("/")}>
+            <Text>Use a Different Email</Text>
+          </Button>
+        </View>
       </View>
     </KeyboardAvoidingView>
   );

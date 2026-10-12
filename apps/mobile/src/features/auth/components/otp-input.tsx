@@ -12,10 +12,9 @@ export const OtpInput = forwardRef<
   OtpInputRef,
   Omit<OtpEntryInputProps, "theme">
 >(function OtpInput({ numberOfDigits = 6, ...props }, ref) {
-  const [ring, input, background, foreground] = useCSSVariable([
-    "--color-ring",
+  const [brand, input, foreground] = useCSSVariable([
+    "--color-brand",
     "--color-input",
-    "--color-background",
     "--color-foreground",
   ]).map((color) => String(color));
 
@@ -23,21 +22,25 @@ export const OtpInput = forwardRef<
     <OtpEntryInput
       ref={ref}
       numberOfDigits={numberOfDigits}
-      focusColor={ring}
+      focusColor={brand}
       theme={{
         containerStyle: { gap: 8 },
         pinCodeContainerStyle: {
           flex: 1,
-          height: 56,
-          borderRadius: 8,
+          height: 58,
+          borderWidth: 0,
+          borderBottomWidth: 1.5,
+          borderRadius: 0,
           borderColor: input,
-          backgroundColor: background,
         },
+        filledPinCodeContainerStyle: { borderColor: foreground },
         focusedPinCodeContainerStyle: {
-          borderColor: ring,
+          borderBottomWidth: 2,
+          borderColor: brand,
         },
         pinCodeTextStyle: {
-          fontSize: 20,
+          fontFamily: "IBM Plex Mono",
+          fontSize: 28,
           fontWeight: "500",
           color: foreground,
         },

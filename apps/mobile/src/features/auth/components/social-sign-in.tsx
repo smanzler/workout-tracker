@@ -17,14 +17,16 @@ export function SocialSignIn() {
   if (!isAppleAvailable && !isGoogleSignInEnabled) return null;
 
   return (
-    <>
-      <View className="flex-row items-center gap-3">
+    <View className="gap-2.5">
+      <View className="flex-row items-center gap-3 pb-3 pt-2.5">
         <View className="h-px flex-1 bg-border" />
-        <Text className="text-muted-foreground">or</Text>
+        <Text className="font-mono text-[11px] tracking-wider text-muted-foreground">
+          OR
+        </Text>
         <View className="h-px flex-1 bg-border" />
       </View>
       {isAppleAvailable && <AppleSignInButton />}
       {isGoogleSignInEnabled && <GoogleSignInButton />}
-    </>
+    </View>
   );
 }
