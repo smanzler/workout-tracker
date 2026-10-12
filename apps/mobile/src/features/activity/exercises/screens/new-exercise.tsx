@@ -1,24 +1,33 @@
 import { LineField } from "@/components/line-field";
 import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
-import type { ExerciseCategory, MuscleGroup } from "@rep/shared";
 import { router, Stack } from "expo-router";
 import { useState } from "react";
-import { ScrollView, View } from "react-native";
-import { MenuSelect } from "../components/menu-select";
-import { exerciseCategoryLabels, muscleGroupLabels } from "../../lib/labels";
+import { Keyboard, ScrollView, View } from "react-native";
+import { ListRow } from "@/components/list-row";
+import { keysOf } from "../../lib/keys-of";
+import {
+  describeOption,
+  exerciseOptions,
+  type ExerciseOption,
+  type ExerciseOptions,
+} from "../lib/exercise-options";
+import { OptionSheet } from "../../components/option-sheet";
 import { useCreateExercise } from "../hooks/use-create-exercise";
 
 export default function NewExercise() {
   const [title, setTitle] = useState("");
-  const [muscleGroup, setMuscleGroup] = useState<MuscleGroup | null>(null);
-  const [category, setCategory] = useState<ExerciseCategory | null>(null);
+  const [options, setOptions] = useState<ExerciseOptions>({
+    muscleGroup: null,
+    category: null,
+  });
+  const [openOption, setOpenOption] = useState<ExerciseOption | null>(null);
   const [error, setError] = useState<string | null>(null);
   const { mutate: createExercise, isPending } = useCreateExercise();
 
   const save = () =>
     createExercise(
-      { title: title.trim(), muscleGroup, category },
+      { title: title.trim(), ...options },
       {
         onSuccess: () => router.back(),
         onError: (caught) =>
@@ -73,21 +82,30 @@ export default function NewExercise() {
         <Text className="border-b border-foreground px-5 pb-1.5 font-mono text-[11px] font-semibold tracking-wider">
           DETAILS
         </Text>
-        <MenuSelect
-          label="Muscle Group"
-          value={muscleGroup}
-          labels={muscleGroupLabels}
-          emptyLabel="None"
-          onChange={setMuscleGroup}
-        />
-        <MenuSelect
-          label="Category"
-          value={category}
-          labels={exerciseCategoryLabels}
-          emptyLabel="None"
-          onChange={setCategory}
-        />
+        {keysOf(exerciseOptions).map((option) => {
+          const { title, labels, value } = describeOption(option, options);
+          return (
+            <ListRow
+              key={option}
+              label={title}
+              value={(value === null ? "None" : labels[value]).toUpperCase()}
+              onPress={() => {
+                Keyboard.dismiss();
+                setOpenOption(option);
+              }}
+            />
+          );
+        })}
       </ScrollView>
+      {openOption && (
+        <OptionSheet
+          {...describeOption(openOption, options)}
+          onChange={(value) =>
+            setOptions((current) => ({ ...current, [openOption]: value }))
+          }
+          onClose={() => setOpenOption(null)}
+        />
+      )}
     </>
   );
 }
