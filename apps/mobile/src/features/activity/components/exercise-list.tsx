@@ -6,7 +6,6 @@ import {
 } from "@/components/ui/empty";
 import { Icon } from "@/components/ui/icon";
 import { Text } from "@/components/ui/text";
-import { useMenu } from "@/hooks/use-menu";
 import { cn } from "@/lib/utils";
 import type { MuscleGroup } from "@rep/shared";
 import type { Outputs } from "@rep/api";
@@ -14,7 +13,7 @@ import { Stack } from "expo-router";
 import { ChevronDown, SearchX } from "lucide-react-native";
 import { useState } from "react";
 import { Pressable } from "@/components/ui/pressable";
-import { ScrollView, SectionList, View } from "react-native";
+import { Keyboard, ScrollView, SectionList, View } from "react-native";
 import { useExercises } from "../hooks/use-exercises";
 import { buildExerciseSections, type ExerciseFilter } from "../lib/exercises";
 import { keysOf } from "../lib/keys-of";
@@ -22,6 +21,7 @@ import { formatDate } from "@/lib/date";
 import { formatSet } from "@/lib/format";
 import { exerciseCategoryLabels, muscleGroupLabels } from "../lib/labels";
 import { FilterChip } from "./filter-chip";
+import { OptionSheet } from "./option-sheet";
 import { QueryView } from "@/components/query-view";
 
 type Exercise = Outputs["activity"]["exercise"]["getAll"][number];
@@ -81,11 +81,12 @@ function ExerciseRow({
 function Filters({
   filter,
   onChange,
+  onCategoryPress,
 }: {
   filter: ExerciseFilter;
   onChange: (filter: Partial<ExerciseFilter>) => void;
+  onCategoryPress: () => void;
 }) {
-  const showMenu = useMenu();
   const setMuscleGroup = (muscleGroup: MuscleGroup | null) =>
     onChange({ muscleGroup });
 
@@ -113,18 +114,7 @@ function Filters({
       <FilterChip
         selected={filter.category !== null}
         icon={ChevronDown}
-        onPress={() =>
-          showMenu([
-            {
-              label: "Any Category",
-              onSelect: () => onChange({ category: null }),
-            },
-            ...keysOf(exerciseCategoryLabels).map((category) => ({
-              label: exerciseCategoryLabels[category],
-              onSelect: () => onChange({ category }),
-            })),
-          ])
-        }
+        onPress={onCategoryPress}
       >
         {(filter.category
           ? exerciseCategoryLabels[filter.category]
@@ -154,6 +144,7 @@ export function ExerciseList({
     muscleGroup: null,
     category: null,
   });
+  const [isCategoryOpen, setIsCategoryOpen] = useState(false);
   const updateFilter = (change: Partial<ExerciseFilter>) =>
     setFilter((current) => ({ ...current, ...change }));
 
@@ -183,7 +174,14 @@ export function ExerciseList({
             keyboardShouldPersistTaps="handled"
             stickySectionHeadersEnabled
             ListHeaderComponent={
-              <Filters filter={filter} onChange={updateFilter} />
+              <Filters
+                filter={filter}
+                onChange={updateFilter}
+                onCategoryPress={() => {
+                  Keyboard.dismiss();
+                  setIsCategoryOpen(true);
+                }}
+              />
             }
             ListEmptyComponent={
               <Empty>
@@ -213,6 +211,17 @@ export function ExerciseList({
           />
         )}
       </QueryView>
+
+      {isCategoryOpen && (
+        <OptionSheet
+          title="Category"
+          labels={exerciseCategoryLabels}
+          value={filter.category}
+          noneLabel="Any Category"
+          onChange={(category) => updateFilter({ category })}
+          onClose={() => setIsCategoryOpen(false)}
+        />
+      )}
     </>
   );
 }

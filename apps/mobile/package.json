@@ -26,6 +26,7 @@
     "@expo-google-fonts/ibm-plex-sans": "^0.4.1",
     "@expo/react-native-action-sheet": "^4.1.1",
     "@expo/vector-icons": "^15.0.2",
+    "@gorhom/bottom-sheet": "^5.2.14",
     "@react-native-async-storage/async-storage": "2.2.0",
     "@rep/shared": "workspace:*",
     "@rn-primitives/avatar": "^1.5.2",
