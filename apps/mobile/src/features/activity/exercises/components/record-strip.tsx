@@ -20,7 +20,7 @@ const recordViews: Record<
 
 const metrics = keysOf(recordViews);
 
-/** The best value of each record metric, and the day it was set. */
+/** The best value of each record metric, and the day it was set, or NOT SET. */
 export function RecordStrip({
   records,
 }: {
@@ -47,14 +47,18 @@ export function RecordStrip({
             >
               {label}
             </Text>
-            <Text className="font-mono text-lg font-medium" numberOfLines={1}>
+            <Text
+              className={cn(
+                "font-mono text-lg font-medium",
+                !record && "text-muted-foreground",
+              )}
+              numberOfLines={1}
+            >
               {record ? format(record.value) : "—"}
             </Text>
-            {record && (
-              <Text className="font-mono text-[11px] text-muted-foreground">
-                {day} {month}
-              </Text>
-            )}
+            <Text className="font-mono text-[11px] text-muted-foreground">
+              {record ? `${day} ${month}` : "NOT SET"}
+            </Text>
           </View>
         );
       })}

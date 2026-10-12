@@ -1,15 +1,6 @@
-import {
-  Empty,
-  EmptyDescription,
-  EmptyHeader,
-  EmptyMedia,
-  EmptyTitle,
-} from "@/components/ui/empty";
-import { Icon } from "@/components/ui/icon";
 import { Text } from "@/components/ui/text";
 import type { Outputs } from "@rep/api";
 import { Stack, useLocalSearchParams } from "expo-router";
-import { Dumbbell } from "lucide-react-native";
 import { ScrollView, View } from "react-native";
 import { QueryView } from "@/components/query-view";
 import { formatCount } from "@/lib/format";
@@ -53,29 +44,23 @@ export default function ExerciseHistory() {
               </Text>
             </View>
 
+            <RecordStrip records={history.records} />
+            <WeightChart entries={history.entries} />
+            <Text className="border-b border-foreground px-5 pb-1.5 pt-4 font-mono text-[11px] font-semibold tracking-wider">
+              HISTORY
+            </Text>
             {history.entries.length === 0 ? (
-              <Empty>
-                <EmptyHeader>
-                  <EmptyMedia variant="icon">
-                    <Icon as={Dumbbell} />
-                  </EmptyMedia>
-                  <EmptyTitle>No history yet</EmptyTitle>
-                  <EmptyDescription>
-                    Do this exercise in a workout to see your records here.
-                  </EmptyDescription>
-                </EmptyHeader>
-              </Empty>
-            ) : (
-              <>
-                <RecordStrip records={history.records} />
-                <WeightChart entries={history.entries} />
-                <Text className="border-b border-foreground px-5 pb-1.5 pt-4 font-mono text-[11px] font-semibold tracking-wider">
-                  HISTORY
+              <View className="gap-1.5 border-b border-border px-5 py-4">
+                <Text className="text-[15px] font-medium">No sessions yet</Text>
+                <Text className="text-sm leading-5 text-muted-foreground">
+                  Add {history.exercise.title} to a workout. Your sets show
+                  here, and the first one sets your records.
                 </Text>
-                {history.entries.map((entry) => (
-                  <SessionRow key={entry.id} entry={entry} />
-                ))}
-              </>
+              </View>
+            ) : (
+              history.entries.map((entry) => (
+                <SessionRow key={entry.id} entry={entry} />
+              ))
             )}
           </ScrollView>
         )}
