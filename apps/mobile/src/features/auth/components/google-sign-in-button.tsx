@@ -43,11 +43,11 @@ export function GoogleSignInButton() {
   };
 
   return (
-    <Button variant="outline" disabled={loading} onPress={signIn}>
+    <Button variant="strong" size="xl" disabled={loading} onPress={signIn}>
       {loading ? (
         <Spinner />
       ) : (
-        <StyledAntDesign name="google" className="text-primary" />
+        <StyledAntDesign name="google" className="text-foreground" />
       )}
       <Text>Sign in with Google</Text>
     </Button>

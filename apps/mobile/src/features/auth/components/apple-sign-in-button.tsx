@@ -42,11 +42,11 @@ export function AppleSignInButton() {
   };
 
   return (
-    <Button variant="outline" disabled={loading} onPress={signIn}>
+    <Button size="xl" disabled={loading} onPress={signIn}>
       {loading ? (
-        <Spinner />
+        <Spinner className="text-primary-foreground" />
       ) : (
-        <StyledAntDesign name="apple" className="text-primary" />
+        <StyledAntDesign name="apple" className="text-primary-foreground" />
       )}
       <Text>Sign in with Apple</Text>
     </Button>
