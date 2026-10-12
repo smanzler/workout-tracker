@@ -35,6 +35,10 @@ const buttonVariants = cva(
           "bg-secondary active:bg-secondary/80 shadow-sm shadow-black/5",
           Platform.select({ web: "hover:bg-secondary/80" }),
         ),
+        brand: cn(
+          "bg-brand active:bg-brand/90",
+          Platform.select({ web: "hover:bg-brand/90" }),
+        ),
         strong: cn(
           "border-foreground bg-background active:bg-accent border-[1.5px]",
           Platform.select({ web: "hover:bg-accent" }),
@@ -88,6 +92,7 @@ const buttonTextVariants = cva(
           Platform.select({ web: "group-hover:text-accent-foreground" }),
         ),
         secondary: "text-secondary-foreground",
+        brand: "text-brand-foreground",
         strong: "",
         card: cn(
           "text-card-foreground group-active:text-accent-foreground",

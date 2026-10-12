@@ -5,9 +5,10 @@ import {
   importWorkoutsSchema,
   monthTotalsInputSchema,
   updateWorkoutSchema,
+  workoutDaysInputSchema,
   type WorkoutExerciseInput,
 } from "@rep/shared";
-import { and, countDistinct, eq, inArray, sql } from "drizzle-orm";
+import { and, countDistinct, desc, eq, gte, inArray, sql } from "drizzle-orm";
 import {
   hasExerciseAccess,
   resolveExerciseTitles,
@@ -59,6 +60,11 @@ const listPage = async ({
     nextCursor: workouts.length > limit ? offset + limit : null,
   };
 };
+
+/** Formats the start of a workout in a time zone, with a to_char pattern. */
+const toLocalDate = (timeZone: string, pattern: string) =>
+  // started_at keeps UTC without a zone.
+  sql<string>`to_char(${Workouts.startedAt} at time zone 'UTC' at time zone ${timeZone}::text, ${pattern})`;
 
 const insertExercises = async (
   tx: Transaction,
@@ -122,8 +128,7 @@ export const workoutRouter = router({
       const { user } = opts.ctx;
       const { timeZone } = opts.input;
 
-      // started_at keeps UTC without a zone.
-      const month = sql<string>`to_char(${Workouts.startedAt} at time zone 'UTC' at time zone ${timeZone}::text, 'YYYY-MM')`;
+      const month = toLocalDate(timeZone, "YYYY-MM");
 
       // Group and sort by position, because each use of the time zone is a different bind parameter.
       return db
@@ -144,6 +149,26 @@ export const workoutRouter = router({
         .where(eq(Workouts.userId, user.id))
         .groupBy(sql`1`)
         .orderBy(sql`1 desc`);
+    }),
+
+  /** The local date of each workout of a user since `from`, newest first. */
+  getDays: protectedProcedure
+    .input(workoutDaysInputSchema)
+    .query(async (opts) => {
+      const { userId, timeZone, from } = opts.input;
+
+      const rows = await db
+        .select({ day: toLocalDate(timeZone, "YYYY-MM-DD") })
+        .from(Workouts)
+        .where(
+          and(
+            eq(Workouts.userId, userId),
+            gte(Workouts.startedAt, new Date(from)),
+          ),
+        )
+        .orderBy(desc(Workouts.startedAt));
+
+      return rows.map(({ day }) => day);
     }),
 
   getAllByUserId: protectedProcedure

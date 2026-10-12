@@ -23,6 +23,8 @@ import { router } from "expo-router";
 import { Dumbbell } from "lucide-react-native";
 import { Pressable } from "@/components/ui/pressable";
 import { FlatList, View } from "react-native";
+import { formatCount } from "@/lib/format";
+import { ActivityGrid } from "./activity-grid";
 import { useProfile } from "../hooks/use-profile";
 import { useProfileWorkouts } from "../hooks/use-profile-workouts";
 
@@ -40,12 +42,13 @@ function FollowButton({ profileId }: { profileId: string }) {
 
   return (
     <Button
-      variant={follow ? "outline" : "default"}
+      variant={follow ? "strong" : "brand"}
+      size="sm"
       disabled={isFollowing || isUnfollowing}
+      accessibilityHint={follow ? "Unfollows" : undefined}
       onPress={toggle}
-      className="w-full"
     >
-      <Text>{follow ? "Unfollow" : "Follow"}</Text>
+      <Text className="font-semibold">{follow ? "Following" : "Follow"}</Text>
     </Button>
   );
 }
@@ -60,23 +63,27 @@ function ProfileHeader({
   const { data: counts } = useFollowCounts(profile.id);
 
   return (
-    <View className="items-center gap-4 border-b border-border p-4">
-      <Avatar alt={profile.username} className="size-32">
-        <AvatarImage source={{ uri: profile.avatarUrl ?? undefined }} />
-        <AvatarFallback />
-      </Avatar>
-      <Text className="text-xl font-bold">{profile.username}</Text>
-      <View className="flex-row gap-4">
-        <Text className="text-muted-foreground">
-          <Text className="font-bold">{counts?.followerCount ?? 0}</Text>{" "}
-          followers
-        </Text>
-        <Text className="text-muted-foreground">
-          <Text className="font-bold">{counts?.followingCount ?? 0}</Text>{" "}
-          following
-        </Text>
+    <View>
+      <View className="flex-row items-center gap-3.5 border-b border-border px-5 pb-4 pt-2">
+        <Avatar alt={profile.username} className="size-[60px]">
+          <AvatarImage source={{ uri: profile.avatarUrl ?? undefined }} />
+          <AvatarFallback />
+        </Avatar>
+        <View className="flex-1 gap-0.5">
+          <Text className="text-[22px] font-bold" numberOfLines={1}>
+            {profile.username}
+          </Text>
+          <Text className="font-mono text-xs text-muted-foreground">
+            {formatCount(counts?.followerCount ?? 0, "FOLLOWER")} ·{" "}
+            {counts?.followingCount ?? 0} FOLLOWING
+          </Text>
+        </View>
+        {!isOwnProfile && <FollowButton profileId={profile.id} />}
       </View>
-      {!isOwnProfile && <FollowButton profileId={profile.id} />}
+      <ActivityGrid userId={profile.id} />
+      <Text className="border-b border-foreground px-5 pb-1.5 pt-4 font-mono text-[11px] font-semibold tracking-wider">
+        WORKOUTS
+      </Text>
     </View>
   );
 }

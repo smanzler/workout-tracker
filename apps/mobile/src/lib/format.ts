@@ -19,3 +19,7 @@ export const findBestSet = <TSet extends SetPerformance>(sets: TSet[]) =>
     if (weight !== bestWeight) return weight > bestWeight ? set : best;
     return (set.reps ?? 0) > (best.reps ?? 0) ? set : best;
   }, undefined);
+
+/** A count for an upper-case label: "1 WORKOUT" or "3 WORKOUTS". */
+export const formatCount = (count: number, noun: string) =>
+  `${count} ${noun}${count === 1 ? "" : "S"}`;

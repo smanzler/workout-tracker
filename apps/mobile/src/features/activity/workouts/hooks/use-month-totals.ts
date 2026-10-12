@@ -1,3 +1,4 @@
+import { getTimeZone } from "@/lib/date";
 import { useTRPC } from "@/lib/trpc";
 import { useQuery } from "@tanstack/react-query";
 
@@ -6,7 +7,7 @@ export const useMonthTotals = () => {
   const trpc = useTRPC();
   return useQuery(
     trpc.activity.workout.getMonthTotals.queryOptions({
-      timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      timeZone: getTimeZone(),
     }),
   );
 };
