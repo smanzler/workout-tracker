@@ -25,7 +25,7 @@ import { Pressable } from "@/components/ui/pressable";
 import { FlatList, View } from "react-native";
 import { formatCount } from "@/lib/format";
 import { ActivityGrid } from "./activity-grid";
-import { useProfile } from "../hooks/use-profile";
+import { useProfile } from "@/hooks/use-profile";
 import { useProfileWorkouts } from "../hooks/use-profile-workouts";
 
 type Profile = Outputs["social"]["profile"]["getById"];

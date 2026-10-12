@@ -1,6 +1,6 @@
 import { Stack, useLocalSearchParams } from "expo-router";
 import { ProfileView } from "../components/profile-view";
-import { useProfile } from "../hooks/use-profile";
+import { useProfile } from "@/hooks/use-profile";
 
 export default function Profile() {
   const { profileId } = useLocalSearchParams<{ profileId?: string }>();

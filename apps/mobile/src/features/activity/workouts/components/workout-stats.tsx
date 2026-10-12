@@ -49,7 +49,7 @@ function Stat({
 }
 
 /** The duration, volume, set count and record count of a workout. */
-export function SummaryStats({ workout }: { workout: Workout }) {
+export function WorkoutStats({ workout }: { workout: Workout }) {
   const sets = workout.exercises.flatMap(({ sets }) => sets);
   const seconds = getWorkoutLength(workout) / 1000;
 
