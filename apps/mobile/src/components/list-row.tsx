@@ -5,8 +5,8 @@ import { cn } from "@/lib/utils";
 import { ChevronRight } from "lucide-react-native";
 import type { ReactNode } from "react";
 
-/** A full-width settings row. `trailing` shows in place of the chevron. */
-export function SettingsRow({
+/** A full-width ledger row. `trailing` shows in place of the chevron. */
+export function ListRow({
   label,
   value,
   chevron = false,

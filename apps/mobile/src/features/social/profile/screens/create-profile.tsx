@@ -2,12 +2,11 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { StepTitle } from "@/components/step-title";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/ui/icon";
-import { Input } from "@/components/ui/input";
+import { LineField } from "@/components/line-field";
 import { Spinner } from "@/components/ui/spinner";
 import { Text } from "@/components/ui/text";
 import { useMenu } from "@/hooks/use-menu";
 import { pickImage, takePhoto } from "@/lib/image";
-import { cn } from "@/lib/utils";
 import { usernameSchema } from "@rep/shared";
 import { Link } from "expo-router";
 import { useState } from "react";
@@ -88,40 +87,24 @@ export default function CreateProfile() {
           </Button>
         </View>
 
-        <View className="gap-1.5 pt-7">
-          <Text
-            nativeID="username-label"
-            className="font-mono text-[11px] font-semibold tracking-wider"
-          >
-            USERNAME
-          </Text>
-          <View className="h-12 flex-row items-center gap-0.5 border-b-[1.5px] border-foreground">
-            <Text className="font-mono text-[17px] text-muted-foreground">
-              @
-            </Text>
-            <Input
-              accessibilityLabelledBy="username-label"
-              placeholder="username"
-              autoCapitalize="none"
-              autoCorrect={false}
-              returnKeyType="go"
-              onSubmitEditing={handleSubmit}
-              className="h-12 flex-1 rounded-none border-0 bg-transparent px-0 font-mono text-[17px] shadow-none dark:bg-transparent"
-              value={username}
-              onChangeText={(text) => {
-                setUsername(text);
-                setUsernameError(null);
-              }}
-            />
-          </View>
-          <Text
-            className={cn(
-              "font-mono text-[11px] uppercase text-muted-foreground",
-              usernameError && "text-destructive",
-            )}
-          >
-            {usernameError ?? "Letters, numbers and underscores"}
-          </Text>
+        <View className="pt-7">
+          <LineField
+            label="USERNAME"
+            prefix="@"
+            placeholder="username"
+            autoCapitalize="none"
+            autoCorrect={false}
+            returnKeyType="go"
+            onSubmitEditing={handleSubmit}
+            className="font-mono"
+            value={username}
+            onChangeText={(text) => {
+              setUsername(text);
+              setUsernameError(null);
+            }}
+            hint="Letters, numbers and underscores"
+            error={usernameError}
+          />
         </View>
 
         <View className="flex-1" />

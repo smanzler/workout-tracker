@@ -1,18 +1,11 @@
-import { BodyScrollView } from "@/components/ui/body-scroll-view";
+import { LineField } from "@/components/line-field";
 import { Button } from "@/components/ui/button";
-import {
-  Field,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-} from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
 import { Text } from "@/components/ui/text";
 import type { ExerciseCategory, MuscleGroup } from "@rep/shared";
 import { router, Stack } from "expo-router";
 import { useState } from "react";
-import { View } from "react-native";
-import { MenuSelect } from "../../components/menu-select";
+import { ScrollView, View } from "react-native";
+import { MenuSelect } from "../components/menu-select";
 import { exerciseCategoryLabels, muscleGroupLabels } from "../../lib/labels";
 import { useCreateExercise } from "../hooks/use-create-exercise";
 
@@ -58,46 +51,43 @@ export default function NewExercise() {
         }}
       />
 
-      <BodyScrollView keyboardShouldPersistTaps="handled">
-        <FieldGroup>
-          <Field>
-            <FieldLabel>Name</FieldLabel>
-            <Input
-              value={title}
-              onChangeText={(text) => {
-                setTitle(text);
-                setError(null);
-              }}
-              placeholder="Exercise name"
-              maxLength={100}
-              autoFocus
-            />
-            {error && <FieldError>{error}</FieldError>}
-          </Field>
-          <Field>
-            <FieldLabel>Muscle Group</FieldLabel>
-            <View className="flex-row">
-              <MenuSelect
-                value={muscleGroup}
-                labels={muscleGroupLabels}
-                emptyLabel="None"
-                onChange={setMuscleGroup}
-              />
-            </View>
-          </Field>
-          <Field>
-            <FieldLabel>Category</FieldLabel>
-            <View className="flex-row">
-              <MenuSelect
-                value={category}
-                labels={exerciseCategoryLabels}
-                emptyLabel="None"
-                onChange={setCategory}
-              />
-            </View>
-          </Field>
-        </FieldGroup>
-      </BodyScrollView>
+      <ScrollView
+        contentInsetAdjustmentBehavior="automatic"
+        keyboardShouldPersistTaps="handled"
+      >
+        <View className="px-5 pb-6 pt-4">
+          <LineField
+            label="NAME"
+            value={title}
+            onChangeText={(text) => {
+              setTitle(text);
+              setError(null);
+            }}
+            placeholder="Exercise name"
+            maxLength={100}
+            returnKeyType="done"
+            autoFocus
+            error={error}
+          />
+        </View>
+        <Text className="border-b border-foreground px-5 pb-1.5 font-mono text-[11px] font-semibold tracking-wider">
+          DETAILS
+        </Text>
+        <MenuSelect
+          label="Muscle Group"
+          value={muscleGroup}
+          labels={muscleGroupLabels}
+          emptyLabel="None"
+          onChange={setMuscleGroup}
+        />
+        <MenuSelect
+          label="Category"
+          value={category}
+          labels={exerciseCategoryLabels}
+          emptyLabel="None"
+          onChange={setCategory}
+        />
+      </ScrollView>
     </>
   );
 }

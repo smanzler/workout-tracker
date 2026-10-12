@@ -15,7 +15,7 @@ import { authClient } from "@/lib/auth-client";
 import { pickImage, takePhoto } from "@/lib/image";
 import { router } from "expo-router";
 import { Alert, ScrollView, View } from "react-native";
-import { SettingsRow } from "../components/settings-row";
+import { ListRow } from "@/components/list-row";
 import { ThemePicker } from "../components/theme-picker";
 import { useDeleteAccount } from "../hooks/use-delete-account";
 import { useMyProfile } from "../hooks/use-my-profile";
@@ -184,7 +184,7 @@ export default function Settings() {
       </View>
 
       <SectionTitle>PROFILE</SectionTitle>
-      <SettingsRow
+      <ListRow
         label="Username"
         value={profile?.username}
         chevron
@@ -195,7 +195,7 @@ export default function Settings() {
       <ThemePicker />
 
       <SectionTitle>DATA</SectionTitle>
-      <SettingsRow
+      <ListRow
         label="Import from Strong"
         chevron
         trailing={isImporting ? <Spinner /> : undefined}
@@ -203,7 +203,7 @@ export default function Settings() {
       />
 
       <SectionTitle>SUPPORT</SectionTitle>
-      <SettingsRow
+      <ListRow
         label="Terms of Use"
         chevron
         onPress={() => router.push("/terms")}
@@ -212,16 +212,13 @@ export default function Settings() {
       {__DEV__ && (
         <>
           <SectionTitle>DEVELOPER</SectionTitle>
-          <SettingsRow
-            label="Reset Onboarding"
-            onPress={handleResetOnboarding}
-          />
+          <ListRow label="Reset Onboarding" onPress={handleResetOnboarding} />
         </>
       )}
 
       <SectionTitle>ACCOUNT</SectionTitle>
-      <SettingsRow label="Sign Out" onPress={handleSignOut} />
-      <SettingsRow
+      <ListRow label="Sign Out" onPress={handleSignOut} />
+      <ListRow
         label="Delete Account"
         destructive
         trailing={isDeletingAccount ? <Spinner /> : undefined}

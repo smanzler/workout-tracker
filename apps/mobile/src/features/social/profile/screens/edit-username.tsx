@@ -1,18 +1,12 @@
-import { BodyScrollView } from "@/components/ui/body-scroll-view";
+import { LineField } from "@/components/line-field";
 import { Button } from "@/components/ui/button";
-import {
-  Field,
-  FieldDescription,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-} from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import { Text } from "@/components/ui/text";
 import { usernameSchema } from "@rep/shared";
 import { router, Stack } from "expo-router";
 import { useState } from "react";
+import { View } from "react-native";
+import { KeyboardAvoidingView } from "react-native-keyboard-controller";
 import { useMyProfile } from "../hooks/use-my-profile";
 import { useUpdateUsername } from "../hooks/use-update-username";
 
@@ -21,6 +15,7 @@ export default function EditUsername() {
   const [username, setUsername] = useState(profile?.username ?? "");
   const [error, setError] = useState<string | null>(null);
   const { mutate: updateUsername, isPending } = useUpdateUsername();
+  const canSave = !isPending && username !== profile?.username;
 
   const save = () => {
     const parsed = usernameSchema.safeParse(username);
@@ -44,43 +39,40 @@ export default function EditUsername() {
   };
 
   return (
-    <BodyScrollView keyboardShouldPersistTaps="handled">
+    <KeyboardAvoidingView behavior="padding" className="flex-1 bg-background">
       <Stack.Screen
         options={{
           title: "Username",
           headerBackButtonDisplayMode: "minimal",
         }}
       />
-      <FieldGroup className="pb-8">
-        <Field>
-          <FieldLabel>Username</FieldLabel>
-          <Input
-            placeholder="Enter your username"
-            autoCapitalize="none"
-            autoCorrect={false}
-            value={username}
-            onChangeText={(text) => {
-              setUsername(text);
-              setError(null);
-            }}
-            autoFocus
-          />
-          {error ? (
-            <FieldError>{error}</FieldError>
-          ) : (
-            <FieldDescription>
-              Letters, numbers and underscores
-            </FieldDescription>
-          )}
-        </Field>
-      </FieldGroup>
-      <Button
-        onPress={save}
-        disabled={isPending || username === profile?.username}
-      >
-        {isPending && <Spinner className="text-secondary" />}
-        <Text>Save</Text>
-      </Button>
-    </BodyScrollView>
+      <View className="flex-1 px-6 pb-safe-offset-6 pt-6">
+        <LineField
+          label="USERNAME"
+          prefix="@"
+          placeholder="username"
+          autoCapitalize="none"
+          autoCorrect={false}
+          returnKeyType="done"
+          onSubmitEditing={() => canSave && save()}
+          className="font-mono"
+          value={username}
+          onChangeText={(text) => {
+            setUsername(text);
+            setError(null);
+          }}
+          hint="Letters, numbers and underscores"
+          error={error}
+          autoFocus
+        />
+
+        <View className="flex-1" />
+
+        <Button variant="brand" size="xl" onPress={save} disabled={!canSave}>
+          {isPending && <Spinner className="text-brand-foreground" />}
+          <Text>Save</Text>
+        </Button>
+      </View>
+    </KeyboardAvoidingView>
   );
 }
