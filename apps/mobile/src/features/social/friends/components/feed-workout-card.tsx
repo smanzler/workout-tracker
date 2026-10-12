@@ -1,4 +1,4 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { ProfileAvatar } from "@/components/profile-avatar";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/ui/icon";
 import { Text } from "@/components/ui/text";
@@ -36,10 +36,7 @@ export function FeedWorkoutCard({ workout }: { workout: FeedWorkout }) {
           }
           className="flex-row items-center gap-3"
         >
-          <Avatar alt="" className="size-9">
-            <AvatarImage source={{ uri: profile.avatarUrl ?? undefined }} />
-            <AvatarFallback />
-          </Avatar>
+          <ProfileAvatar profile={profile} size="sm" />
           <Text className="font-semibold">{profile.username}</Text>
         </Pressable>
 
