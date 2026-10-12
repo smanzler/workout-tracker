@@ -1,4 +1,3 @@
-import { BodyScrollView } from "@/components/ui/body-scroll-view";
 import {
   Empty,
   EmptyDescription,
@@ -9,46 +8,52 @@ import {
 import { Icon } from "@/components/ui/icon";
 import { Text } from "@/components/ui/text";
 import type { Outputs } from "@rep/api";
-import { router, Stack, useLocalSearchParams } from "expo-router";
+import { Stack, useLocalSearchParams } from "expo-router";
 import { Dumbbell } from "lucide-react-native";
-import { Pressable } from "@/components/ui/pressable";
+import { ScrollView, View } from "react-native";
 import { QueryView } from "@/components/query-view";
-import { SetListCard } from "../../components/set-list-card";
-import { formatDate } from "@/lib/date";
+import { formatCount } from "@/lib/format";
 import { exerciseCategoryLabels, muscleGroupLabels } from "../../lib/labels";
-import { PersonalRecordCards } from "../components/personal-record-cards";
+import { RecordStrip } from "../components/record-strip";
+import { SessionRow } from "../components/session-row";
 import { WeightChart } from "../components/weight-chart";
 import { useExerciseHistory } from "../hooks/use-exercise-history";
 
-type Exercise = Outputs["activity"]["exercise"]["history"]["exercise"];
+type History = Outputs["activity"]["exercise"]["history"];
 
-const describe = ({ muscleGroup, category }: Exercise) =>
+const describe = ({ exercise: { muscleGroup, category }, entries }: History) =>
   [
-    muscleGroup && muscleGroupLabels[muscleGroup],
-    category && exerciseCategoryLabels[category],
+    muscleGroup && muscleGroupLabels[muscleGroup].toUpperCase(),
+    category && exerciseCategoryLabels[category].toUpperCase(),
+    entries.length > 0 && formatCount(entries.length, "SESSION"),
   ]
     .filter(Boolean)
     .join(" · ");
 
 export default function ExerciseHistory() {
-  const { exerciseId, title } = useLocalSearchParams<{
-    exerciseId: string;
-    title?: string;
-  }>();
+  const { exerciseId } = useLocalSearchParams<{ exerciseId: string }>();
   const historyQuery = useExerciseHistory(exerciseId);
 
   return (
     <>
-      <Stack.Screen
-        options={{ title: historyQuery.data?.exercise.title ?? title ?? "" }}
-      />
+      <Stack.Screen options={{ title: "", headerShadowVisible: false }} />
 
       <QueryView query={historyQuery} errorTitle="Couldn't load exercise">
-        {({ exercise, entries, records }) => (
-          <BodyScrollView>
-            <Text variant="muted">{describe(exercise)}</Text>
+        {(history) => (
+          <ScrollView
+            contentInsetAdjustmentBehavior="automatic"
+            contentContainerClassName="pb-safe-offset-4"
+          >
+            <View className="gap-1 border-b border-border px-5 pb-4 pt-1">
+              <Text className="text-[30px] font-semibold tracking-tight">
+                {history.exercise.title}
+              </Text>
+              <Text className="font-mono text-[13px] text-muted-foreground">
+                {describe(history)}
+              </Text>
+            </View>
 
-            {entries.length === 0 ? (
+            {history.entries.length === 0 ? (
               <Empty>
                 <EmptyHeader>
                   <EmptyMedia variant="icon">
@@ -62,29 +67,17 @@ export default function ExerciseHistory() {
               </Empty>
             ) : (
               <>
-                <PersonalRecordCards records={records} />
-                <WeightChart entries={entries} />
-                <Text variant="h4">History</Text>
-                {entries.map((entry) => (
-                  <Pressable
-                    key={entry.id}
-                    onPress={() =>
-                      router.push({
-                        pathname: "/workout-details",
-                        params: { workoutId: entry.workoutId },
-                      })
-                    }
-                  >
-                    <SetListCard
-                      title={entry.workoutName}
-                      description={formatDate(entry.startedAt)}
-                      sets={entry.sets}
-                    />
-                  </Pressable>
+                <RecordStrip records={history.records} />
+                <WeightChart entries={history.entries} />
+                <Text className="border-b border-foreground px-5 pb-1.5 pt-4 font-mono text-[11px] font-semibold tracking-wider">
+                  HISTORY
+                </Text>
+                {history.entries.map((entry) => (
+                  <SessionRow key={entry.id} entry={entry} />
                 ))}
               </>
             )}
-          </BodyScrollView>
+          </ScrollView>
         )}
       </QueryView>
     </>
