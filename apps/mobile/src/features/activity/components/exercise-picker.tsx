@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
+import { useHeaderItems } from "@/hooks/use-header-items";
 import { router, Stack } from "expo-router";
 import { useState } from "react";
 import { View } from "react-native";
@@ -19,6 +20,7 @@ export function ExercisePicker({
 }: {
   onAdd: (exercises: DraftExerciseInfo[]) => void;
 }) {
+  const headerItems = useHeaderItems();
   const [selected, setSelected] = useState<DraftExerciseInfo[]>([]);
 
   const toggle = ({ id, title, category, muscleGroup }: DraftExerciseInfo) =>
@@ -33,17 +35,16 @@ export function ExercisePicker({
       <Stack.Screen
         options={{
           headerShadowVisible: false,
-          headerRight: () => (
-            <Button
-              variant="ghost"
-              size="sm"
-              onPress={() => router.push("/new-exercise")}
-            >
-              <Text>New</Text>
-            </Button>
-          ),
         }}
       />
+      <Stack.Toolbar placement="right">
+        <Stack.Toolbar.Button
+          {...headerItems.plain}
+          onPress={() => router.push("/new-exercise")}
+        >
+          New
+        </Stack.Toolbar.Button>
+      </Stack.Toolbar>
       <ExerciseList
         onPress={toggle}
         getPosition={(exercise) => {

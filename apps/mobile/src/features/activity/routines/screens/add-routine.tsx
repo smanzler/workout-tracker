@@ -1,5 +1,4 @@
-import { Button } from "@/components/ui/button";
-import { Text } from "@/components/ui/text";
+import { useHeaderItems } from "@/hooks/use-header-items";
 import { router, Stack } from "expo-router";
 import { useEffect } from "react";
 import { Alert } from "react-native";
@@ -9,6 +8,7 @@ import { useCreateRoutine } from "../hooks/use-create-routine";
 import { useRoutineDraftStore } from "../stores/routine-draft-store";
 
 export default function AddRoutine() {
+  const headerItems = useHeaderItems();
   const name = useRoutineDraftStore((state) => state.name);
   const exercises = useRoutineDraftStore((state) => state.exercises);
   const setName = useRoutineDraftStore((state) => state.setName);
@@ -34,20 +34,23 @@ export default function AddRoutine() {
 
   return (
     <>
-      <Stack.Screen
-        options={{
-          headerLeft: () => (
-            <Button variant="ghost" size="sm" onPress={() => router.back()}>
-              <Text>Cancel</Text>
-            </Button>
-          ),
-          headerRight: () => (
-            <Button size="sm" disabled={!canSave} onPress={save}>
-              <Text>Save</Text>
-            </Button>
-          ),
-        }}
-      />
+      <Stack.Toolbar placement="left">
+        <Stack.Toolbar.Button
+          {...headerItems.plain}
+          onPress={() => router.back()}
+        >
+          Cancel
+        </Stack.Toolbar.Button>
+      </Stack.Toolbar>
+      <Stack.Toolbar placement="right">
+        <Stack.Toolbar.Button
+          {...headerItems.prominent}
+          disabled={!canSave}
+          onPress={save}
+        >
+          Save
+        </Stack.Toolbar.Button>
+      </Stack.Toolbar>
 
       <DraftForm
         name={name}
