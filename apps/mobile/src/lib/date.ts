@@ -37,3 +37,7 @@ export const toDayParts = (date: Date) => ({
   day: date.toLocaleDateString("en-US", { day: "2-digit" }),
   month: date.toLocaleDateString("en-US", { month: "short" }).toUpperCase(),
 });
+
+/** The IANA name of the time zone of the device. */
+export const getTimeZone = () =>
+  Intl.DateTimeFormat().resolvedOptions().timeZone;

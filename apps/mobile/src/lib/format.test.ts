@@ -1,4 +1,4 @@
-import { findBestSet, formatSet, formatWeight } from "./format";
+import { findBestSet, formatCount, formatSet, formatWeight } from "./format";
 
 describe("formatSet", () => {
   it("shows weight and reps", () => {
@@ -33,5 +33,12 @@ describe("findBestSet", () => {
 
   it("returns undefined for no sets", () => {
     expect(findBestSet([])).toBeUndefined();
+  });
+});
+
+describe("formatCount", () => {
+  it("adds an S to every count but one", () => {
+    expect(formatCount(1, "PR")).toBe("1 PR");
+    expect(formatCount(0, "PR")).toBe("0 PRS");
   });
 });

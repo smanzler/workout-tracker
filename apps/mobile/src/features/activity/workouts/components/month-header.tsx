@@ -1,11 +1,9 @@
 import { Text } from "@/components/ui/text";
 import type { Outputs } from "@rep/api";
 import { View } from "react-native";
+import { formatCount } from "@/lib/format";
 
 type MonthTotals = Outputs["activity"]["workout"]["getMonthTotals"][number];
-
-const formatCount = (count: number, noun: string) =>
-  `${count} ${noun}${count === 1 ? "" : "S"}`;
 
 /** The month and, when they are loaded, its totals. */
 export function MonthHeader({

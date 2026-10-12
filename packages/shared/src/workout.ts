@@ -77,9 +77,20 @@ const isTimeZone = (timeZone: string) => {
   }
 };
 
-/** `timeZone` is an IANA name, such as "America/Chicago". */
-export const monthTotalsInputSchema = z.object({
-  timeZone: z.string().refine(isTimeZone, { message: "Unknown time zone" }),
-});
+/** An IANA name, such as "America/Chicago". */
+const timeZoneSchema = z
+  .string()
+  .refine(isTimeZone, { message: "Unknown time zone" });
+
+export const monthTotalsInputSchema = z.object({ timeZone: timeZoneSchema });
 
 export type MonthTotalsInput = z.infer<typeof monthTotalsInputSchema>;
+
+/** `from` is epoch milliseconds. */
+export const workoutDaysInputSchema = z.object({
+  userId: z.uuid(),
+  timeZone: timeZoneSchema,
+  from: z.number().int(),
+});
+
+export type WorkoutDaysInput = z.infer<typeof workoutDaysInputSchema>;
