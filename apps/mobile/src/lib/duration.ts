@@ -19,3 +19,12 @@ export function formatDuration(milliseconds: number) {
   if (hours === 0) return `${minutes}m`;
   return minutes % 60 === 0 ? `${hours}h` : `${hours}h ${minutes % 60}m`;
 }
+
+/** The length of a workout in milliseconds. */
+export const getWorkoutLength = ({
+  startedAt,
+  endedAt,
+}: {
+  startedAt: Date;
+  endedAt: Date;
+}) => endedAt.getTime() - startedAt.getTime();

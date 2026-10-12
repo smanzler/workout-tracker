@@ -30,3 +30,10 @@ export function formatDate(date: Date, now = new Date()) {
 /** "6:30 PM". */
 export const formatTime = (date: Date) =>
   date.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
+
+/** "SUN", "11" and "OCT", for a column that shows a day. */
+export const toDayParts = (date: Date) => ({
+  weekday: date.toLocaleDateString("en-US", { weekday: "short" }).toUpperCase(),
+  day: date.toLocaleDateString("en-US", { day: "2-digit" }),
+  month: date.toLocaleDateString("en-US", { month: "short" }).toUpperCase(),
+});

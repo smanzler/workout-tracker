@@ -13,13 +13,16 @@ import { Text } from "@/components/ui/text";
 import { router, Stack } from "expo-router";
 import { History as HistoryIcon } from "lucide-react-native";
 import { Pressable } from "@/components/ui/pressable";
-import { FlatList } from "react-native";
+import { SectionList } from "react-native";
 import { QueryView } from "@/components/query-view";
 import { RefetchControl } from "@/components/refetch-control";
-import { WorkoutSummary } from "@/components/workout-summary";
+import { HistoryRow } from "../components/history-row";
+import { MonthHeader } from "../components/month-header";
 import { WorkoutIndicator } from "../components/workout-indicator";
 import { useWorkoutMenu } from "../hooks/use-workout-menu";
+import { useMonthTotals } from "../hooks/use-month-totals";
 import { useWorkouts } from "../hooks/use-workouts";
+import { groupByMonth } from "../lib/months";
 
 function EmptyHistory() {
   return (
@@ -46,6 +49,7 @@ export default function History() {
   const workoutsQuery = useWorkouts();
   const { hasNextPage, isFetchingNextPage, fetchNextPage, refetch } =
     workoutsQuery;
+  const { data: monthTotals, refetch: refetchMonthTotals } = useMonthTotals();
   const showWorkoutMenu = useWorkoutMenu();
 
   return (
@@ -53,17 +57,28 @@ export default function History() {
       <Stack.Screen options={{ title: "History" }} />
       <QueryView query={workoutsQuery} errorTitle="Couldn't load your history">
         {({ pages }) => (
-          <FlatList
-            data={pages.flatMap(({ items }) => items)}
+          <SectionList
+            sections={groupByMonth(pages.flatMap(({ items }) => items))}
             keyExtractor={({ id }) => id}
             contentInsetAdjustmentBehavior="automatic"
-            contentContainerClassName="grow gap-3 p-4"
-            refreshControl={<RefetchControl refetch={refetch} />}
+            contentContainerClassName="grow"
+            stickySectionHeadersEnabled
+            refreshControl={
+              <RefetchControl
+                refetch={() => Promise.all([refetch(), refetchMonthTotals()])}
+              />
+            }
             onEndReached={() => {
               if (hasNextPage && !isFetchingNextPage) fetchNextPage();
             }}
             ListEmptyComponent={EmptyHistory}
             ListFooterComponent={isFetchingNextPage ? <Spinner /> : null}
+            renderSectionHeader={({ section: { key, startedAt } }) => (
+              <MonthHeader
+                startedAt={startedAt}
+                totals={monthTotals?.find(({ month }) => month === key)}
+              />
+            )}
             renderItem={({ item }) => (
               <Pressable
                 testID="workout-card"
@@ -75,7 +90,7 @@ export default function History() {
                 }
                 onLongPress={() => showWorkoutMenu(item)}
               >
-                <WorkoutSummary workout={item} />
+                <HistoryRow workout={item} />
               </Pressable>
             )}
           />

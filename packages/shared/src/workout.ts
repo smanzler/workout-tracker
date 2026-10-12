@@ -67,3 +67,19 @@ export const importWorkoutsSchema = z.object({
 });
 
 export type ImportWorkoutsInput = z.infer<typeof importWorkoutsSchema>;
+
+const isTimeZone = (timeZone: string) => {
+  try {
+    new Intl.DateTimeFormat("en-US", { timeZone });
+    return true;
+  } catch {
+    return false;
+  }
+};
+
+/** `timeZone` is an IANA name, such as "America/Chicago". */
+export const monthTotalsInputSchema = z.object({
+  timeZone: z.string().refine(isTimeZone, { message: "Unknown time zone" }),
+});
+
+export type MonthTotalsInput = z.infer<typeof monthTotalsInputSchema>;

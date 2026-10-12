@@ -63,7 +63,7 @@ export default function Friends() {
             data={feed}
             keyExtractor={({ id }) => id}
             contentInsetAdjustmentBehavior="automatic"
-            contentContainerClassName="grow gap-6 p-4"
+            contentContainerClassName="grow"
             refreshControl={<RefetchControl refetch={feedQuery.refetch} />}
             ListEmptyComponent={EmptyFeed}
             renderItem={({ item }) => <FeedWorkoutCard workout={item} />}
