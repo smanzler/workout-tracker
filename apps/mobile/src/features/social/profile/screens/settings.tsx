@@ -96,6 +96,7 @@ export default function Settings() {
         onPress: async () => {
           await removePushToken().catch(() => undefined);
           await authClient.signOut();
+          resetOnboarding();
           await signOutOfGoogle();
         },
       },
@@ -132,7 +133,10 @@ export default function Settings() {
           style: "destructive",
           onPress: () =>
             deleteAccount(undefined, {
-              onSuccess: discardWorkout,
+              onSuccess: () => {
+                discardWorkout();
+                resetOnboarding();
+              },
               onError: () =>
                 Alert.alert(
                   "Could not delete account",
