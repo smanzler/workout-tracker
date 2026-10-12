@@ -10,14 +10,14 @@ import { SummaryExercise } from "../components/summary-exercise";
 import { SummaryStats } from "../components/summary-stats";
 import { useWorkout } from "../hooks/use-workout";
 import { formatDate, formatTime } from "@/lib/date";
-import { formatDuration } from "@/lib/duration";
+import { formatDuration, getWorkoutLength } from "@/lib/duration";
 
 const toShareMessage = (workout: Outputs["activity"]["workout"]["get"]) =>
   [
     "🏋️‍♂️ Just crushed a workout on Rep!",
     "",
     `🎯 ${workout.name}`,
-    `⏱️ ${formatDuration(workout.endedAt.getTime() - workout.startedAt.getTime())}`,
+    `⏱️ ${formatDuration(getWorkoutLength(workout))}`,
     `💪 ${workout.exercises.length} exercises completed`,
     "",
     "Feeling stronger every day! 💪",

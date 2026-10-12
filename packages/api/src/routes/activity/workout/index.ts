@@ -3,10 +3,11 @@ import { WorkoutExercises, WorkoutSets, Workouts } from "../../../db/schema";
 import {
   createWorkoutSchema,
   importWorkoutsSchema,
+  monthTotalsInputSchema,
   updateWorkoutSchema,
   type WorkoutExerciseInput,
 } from "@rep/shared";
-import { and, eq, inArray } from "drizzle-orm";
+import { and, countDistinct, eq, inArray, sql } from "drizzle-orm";
 import {
   hasExerciseAccess,
   resolveExerciseTitles,
@@ -113,6 +114,37 @@ export const workoutRouter = router({
 
     return listPage({ userId: user.id, cursor, limit });
   }),
+
+  /** The workout and record counts of each month, newest first. */
+  getMonthTotals: protectedProcedure
+    .input(monthTotalsInputSchema)
+    .query(async (opts) => {
+      const { user } = opts.ctx;
+      const { timeZone } = opts.input;
+
+      // started_at keeps UTC without a zone.
+      const month = sql<string>`to_char(${Workouts.startedAt} at time zone 'UTC' at time zone ${timeZone}::text, 'YYYY-MM')`;
+
+      // Group and sort by position, because each use of the time zone is a different bind parameter.
+      return db
+        .select({
+          month,
+          workoutCount: countDistinct(Workouts.id),
+          recordCount:
+            sql<number>`coalesce(sum(${WorkoutSets.isWeightPr}::int + ${WorkoutSets.isVolumePr}::int + ${WorkoutSets.isOneRepMaxPr}::int), 0)`.mapWith(
+              Number,
+            ),
+        })
+        .from(Workouts)
+        .leftJoin(WorkoutExercises, eq(WorkoutExercises.workoutId, Workouts.id))
+        .leftJoin(
+          WorkoutSets,
+          eq(WorkoutSets.workoutExerciseId, WorkoutExercises.id),
+        )
+        .where(eq(Workouts.userId, user.id))
+        .groupBy(sql`1`)
+        .orderBy(sql`1 desc`);
+    }),
 
   getAllByUserId: protectedProcedure
     .input(pageSchema.extend({ userId: z.uuid() }))

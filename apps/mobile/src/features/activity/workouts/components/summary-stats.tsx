@@ -2,7 +2,7 @@ import { Text } from "@/components/ui/text";
 import { cn } from "@/lib/utils";
 import type { Outputs } from "@rep/api";
 import { View } from "react-native";
-import { formatTimer } from "@/lib/duration";
+import { formatTimer, getWorkoutLength } from "@/lib/duration";
 import { formatWeight } from "@/lib/format";
 import { countPersonalRecords } from "@/lib/personal-records";
 import { sumVolume } from "@/lib/volume";
@@ -51,8 +51,7 @@ function Stat({
 /** The duration, volume, set count and record count of a workout. */
 export function SummaryStats({ workout }: { workout: Workout }) {
   const sets = workout.exercises.flatMap(({ sets }) => sets);
-  const seconds =
-    (workout.endedAt.getTime() - workout.startedAt.getTime()) / 1000;
+  const seconds = getWorkoutLength(workout) / 1000;
 
   return (
     <View className="flex-row flex-wrap border-b border-border">

@@ -2,7 +2,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/ui/icon";
 import { Text } from "@/components/ui/text";
-import { WorkoutSummary } from "@/components/workout-summary";
+import { WorkoutSummary } from "@/features/social/components/workout-summary";
 import { cn } from "@/lib/utils";
 import type { Outputs } from "@rep/api";
 import { router } from "expo-router";
@@ -25,8 +25,8 @@ export function FeedWorkoutCard({ workout }: { workout: FeedWorkout }) {
       : giveKudos({ workoutId: workout.id });
 
   return (
-    <View className="gap-2">
-      <View className="flex-row items-center justify-between">
+    <View className="border-b border-border">
+      <View className="flex-row items-center justify-between px-4 pt-3">
         <Pressable
           onPress={() =>
             router.push({

@@ -12,7 +12,7 @@ import { SetListCard } from "../../components/set-list-card";
 import { useWorkout } from "../hooks/use-workout";
 import { useWorkoutMenu } from "../hooks/use-workout-menu";
 import { formatDate, formatTime } from "@/lib/date";
-import { formatDuration } from "@/lib/duration";
+import { formatDuration, getWorkoutLength } from "@/lib/duration";
 import { formatWeight } from "@/lib/format";
 import { sumVolume } from "@/lib/volume";
 import { countPersonalRecords } from "@/lib/personal-records";
@@ -40,9 +40,7 @@ function WorkoutStats({ workout }: { workout: Workout }) {
       <View className="flex-row gap-3">
         <Stat
           label="Duration"
-          value={formatDuration(
-            workout.endedAt.getTime() - workout.startedAt.getTime(),
-          )}
+          value={formatDuration(getWorkoutLength(workout))}
         />
         <Stat label="Volume" value={formatWeight(volume)} />
         <Stat label="PRs" value={countPersonalRecords(sets).toString()} />

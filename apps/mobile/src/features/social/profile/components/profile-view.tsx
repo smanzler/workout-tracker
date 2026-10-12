@@ -12,7 +12,7 @@ import {
 import { Icon } from "@/components/ui/icon";
 import { Spinner } from "@/components/ui/spinner";
 import { Text } from "@/components/ui/text";
-import { WorkoutSummary } from "@/components/workout-summary";
+import { WorkoutSummary } from "@/features/social/components/workout-summary";
 import { useCreateFollow } from "@/features/social/follows/hooks/use-create-follow";
 import { useDeleteFollow } from "@/features/social/follows/hooks/use-delete-follow";
 import { useFollow } from "@/features/social/follows/hooks/use-follow";
@@ -60,7 +60,7 @@ function ProfileHeader({
   const { data: counts } = useFollowCounts(profile.id);
 
   return (
-    <View className="items-center gap-4 pb-4">
+    <View className="items-center gap-4 border-b border-border p-4">
       <Avatar alt={profile.username} className="size-32">
         <AvatarImage source={{ uri: profile.avatarUrl ?? undefined }} />
         <AvatarFallback />
@@ -96,7 +96,7 @@ export function ProfileView({ profileId }: { profileId?: string }) {
           data={workoutsQuery.data?.pages.flatMap(({ items }) => items) ?? []}
           keyExtractor={({ id }) => id}
           contentInsetAdjustmentBehavior="automatic"
-          contentContainerClassName="gap-3 p-4"
+          contentContainerClassName="grow"
           refreshControl={
             <RefetchControl
               refetch={() =>
@@ -132,6 +132,7 @@ export function ProfileView({ profileId }: { profileId?: string }) {
           ListFooterComponent={isFetchingNextPage ? <Spinner /> : null}
           renderItem={({ item }) => (
             <Pressable
+              className="border-b border-border"
               onPress={() =>
                 router.push({
                   pathname: "/workout-details",

@@ -1,4 +1,4 @@
-import { formatDate, formatTime } from "./date";
+import { formatDate, formatTime, toDayParts } from "./date";
 
 const now = new Date(2026, 9, 5, 18, 0);
 
@@ -22,5 +22,15 @@ describe("formatTime", () => {
   it("shows hours and minutes in 12-hour time", () => {
     expect(formatTime(new Date(2026, 9, 5, 18, 5))).toMatch(/^6:05\sPM$/);
     expect(formatTime(new Date(2026, 9, 5, 0, 30))).toMatch(/^12:30\sAM$/);
+  });
+});
+
+describe("toDayParts", () => {
+  it("gives the weekday, the padded day and the month", () => {
+    expect(toDayParts(new Date(2026, 9, 4))).toEqual({
+      weekday: "SUN",
+      day: "04",
+      month: "OCT",
+    });
   });
 });
