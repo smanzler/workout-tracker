@@ -78,10 +78,8 @@ export default function Workout() {
           onUpdate={updateExercises}
           onAddExercises={() => router.push("/add-exercise")}
         >
-          <Button variant="ghost" className="h-12" onPress={confirmDiscard}>
-            <Text className="text-[15px] font-semibold text-destructive">
-              Discard
-            </Text>
+          <Button variant="ghost" size="xl" onPress={confirmDiscard}>
+            <Text className="text-destructive">Discard</Text>
           </Button>
         </DraftForm>
       )}

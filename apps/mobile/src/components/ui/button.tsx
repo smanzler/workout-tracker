@@ -35,6 +35,10 @@ const buttonVariants = cva(
           "bg-secondary active:bg-secondary/80 shadow-sm shadow-black/5",
           Platform.select({ web: "hover:bg-secondary/80" }),
         ),
+        strong: cn(
+          "border-foreground bg-background active:bg-accent border-[1.5px]",
+          Platform.select({ web: "hover:bg-accent" }),
+        ),
         card: cn(
           "bg-card border-border active:bg-accent border shadow-sm shadow-black/5",
           Platform.select({ web: "hover:bg-accent" }),
@@ -58,6 +62,7 @@ const buttonVariants = cva(
           "h-11 rounded-md px-6 sm:h-10",
           Platform.select({ web: "has-[>svg]:px-4" }),
         ),
+        xl: "h-12 px-6",
         icon: "h-10 w-10 sm:h-9 sm:w-9",
       },
     },
@@ -83,6 +88,7 @@ const buttonTextVariants = cva(
           Platform.select({ web: "group-hover:text-accent-foreground" }),
         ),
         secondary: "text-secondary-foreground",
+        strong: "",
         card: cn(
           "text-card-foreground group-active:text-accent-foreground",
           Platform.select({ web: "group-hover:text-accent-foreground" }),
@@ -99,6 +105,7 @@ const buttonTextVariants = cva(
         default: "",
         sm: "",
         lg: "",
+        xl: "text-[15px] font-semibold",
         icon: "",
       },
     },

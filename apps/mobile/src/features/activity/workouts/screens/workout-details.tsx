@@ -4,7 +4,6 @@ import { Icon } from "@/components/ui/icon";
 import { Text } from "@/components/ui/text";
 import { authClient } from "@/lib/auth-client";
 import type { Outputs } from "@rep/api";
-import { metricValues } from "@rep/shared";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import { Ellipsis } from "lucide-react-native";
 import { View } from "react-native";
@@ -15,6 +14,7 @@ import { useWorkoutMenu } from "../hooks/use-workout-menu";
 import { formatDate, formatTime } from "@/lib/date";
 import { formatDuration } from "@/lib/duration";
 import { formatWeight } from "@/lib/format";
+import { sumVolume } from "@/lib/volume";
 import { countPersonalRecords } from "@/lib/personal-records";
 
 type Workout = Outputs["activity"]["workout"]["get"];
@@ -30,10 +30,7 @@ function Stat({ label, value }: { label: string; value: string }) {
 
 function WorkoutStats({ workout }: { workout: Workout }) {
   const sets = workout.exercises.flatMap(({ sets }) => sets);
-  const volume = sets.reduce(
-    (total, set) => total + metricValues.volume(set),
-    0,
-  );
+  const volume = sumVolume(sets);
 
   return (
     <View className="gap-3">
