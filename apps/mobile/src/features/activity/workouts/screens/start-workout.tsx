@@ -43,7 +43,9 @@ export default function StartWorkout() {
             index={routines.length + 1}
             accessibilityRole="button"
             className="items-center justify-center"
-            onPress={() => router.push("/add-routine")}
+            onPress={() =>
+              router.push("/add-routine/add-exercises", { withAnchor: true })
+            }
           >
             <Icon as={Plus} className="size-6 text-muted-foreground" />
             <Text className="font-mono text-[11px] tracking-wider text-muted-foreground">

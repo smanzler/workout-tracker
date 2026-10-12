@@ -87,9 +87,10 @@ export default function EditWorkout() {
         namePlaceholder="Workout name"
         onChangeName={setName}
         exercises={exercises}
+        emptyDescription="Add the exercises you did in this workout."
         completable={true}
         onUpdate={updateExercises}
-        onAddExercises={() => router.push("/add-edit-exercises")}
+        onAddExercises={() => router.push("/edit-workout/add-exercises")}
       />
     </>
   );

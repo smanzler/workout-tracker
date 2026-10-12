@@ -13,7 +13,7 @@ import { useOnboardingStore } from "@/features/onboarding/stores/onboarding-stor
 import { useMyProfile } from "@/features/social/profile/hooks/use-my-profile";
 import { Stack } from "expo-router";
 import { TriangleAlert } from "lucide-react-native";
-import { Platform, View } from "react-native";
+import { View } from "react-native";
 
 export default function Layout() {
   usePushNotificationRegistration();
@@ -55,16 +55,7 @@ export default function Layout() {
         />
         <Stack.Screen
           name="workout"
-          options={{
-            presentation: "modal",
-            headerTransparent: Platform.OS === "ios",
-            headerBlurEffect: "systemChromeMaterial",
-            headerShadowVisible: true,
-          }}
-        />
-        <Stack.Screen
-          name="add-exercise"
-          options={{ title: "Add Exercises", presentation: "modal" }}
+          options={{ presentation: "modal", headerShown: false }}
         />
         <Stack.Screen
           name="workout-summary"
@@ -76,19 +67,11 @@ export default function Layout() {
         />
         <Stack.Screen
           name="edit-workout"
-          options={{ title: "Edit Workout", presentation: "modal" }}
-        />
-        <Stack.Screen
-          name="add-edit-exercises"
-          options={{ title: "Add Exercises", presentation: "modal" }}
+          options={{ presentation: "modal", headerShown: false }}
         />
         <Stack.Screen
           name="add-routine"
-          options={{ title: "New Routine", presentation: "modal" }}
-        />
-        <Stack.Screen
-          name="add-routine-exercises"
-          options={{ title: "Add Exercises", presentation: "modal" }}
+          options={{ presentation: "modal", headerShown: false }}
         />
         <Stack.Screen
           name="routine"

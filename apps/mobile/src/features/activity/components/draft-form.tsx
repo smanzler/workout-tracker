@@ -1,3 +1,4 @@
+import { EmptyRow } from "@/components/empty-row";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Text } from "@/components/ui/text";
@@ -12,8 +13,9 @@ import { SetHeader } from "./set-row";
 
 /**
  * The name and exercises of a workout or routine, and a button that calls
- * `onAddExercises`. `summary` shows below the name. Put more actions beside
- * the button as `children`.
+ * `onAddExercises`. `summary` shows below the name, and `emptyDescription`
+ * shows when there are no exercises. Put more actions beside the button as
+ * `children`.
  */
 export function DraftForm({
   name,
@@ -21,6 +23,7 @@ export function DraftForm({
   onChangeName,
   summary,
   exercises,
+  emptyDescription,
   completable,
   onUpdate,
   onAddExercises,
@@ -31,6 +34,7 @@ export function DraftForm({
   onChangeName: (name: string) => void;
   summary?: React.ReactNode;
   exercises: Draft;
+  emptyDescription: string;
   completable: boolean;
   onUpdate: (update: (draft: Draft) => Draft) => void;
   onAddExercises: () => void;
@@ -58,7 +62,11 @@ export function DraftForm({
           {summary}
         </View>
 
-        {exercises.length > 0 && <SetHeader completable={completable} />}
+        {exercises.length > 0 ? (
+          <SetHeader completable={completable} />
+        ) : (
+          <EmptyRow title="No exercises yet" description={emptyDescription} />
+        )}
 
         {exercises.map((exercise) => (
           <ExerciseEditor

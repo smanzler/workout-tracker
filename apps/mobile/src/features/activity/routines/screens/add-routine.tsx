@@ -54,9 +54,10 @@ export default function AddRoutine() {
         namePlaceholder="Routine name"
         onChangeName={setName}
         exercises={exercises}
+        emptyDescription="Add the exercises this routine starts with. Save needs a name and one exercise."
         completable={false}
         onUpdate={updateExercises}
-        onAddExercises={() => router.push("/add-routine-exercises")}
+        onAddExercises={() => router.push("/add-routine/add-exercises")}
       />
     </>
   );
