@@ -6,7 +6,7 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import { View } from "react-native";
 import { KeyboardAvoidingView } from "react-native-keyboard-controller";
-import { AuthTitle } from "../components/auth-title";
+import { StepTitle } from "@/components/step-title";
 import { OtpInput, type OtpInputRef } from "../components/otp-input";
 
 const RESEND_COOLDOWN_SECONDS = 60;
@@ -99,9 +99,9 @@ export function VerifyOtp() {
   if (!email) {
     return (
       <View className="flex-1 gap-8 bg-background px-6 pt-safe-offset-20">
-        <AuthTitle label="NO EMAIL" title="Something went wrong">
+        <StepTitle label="NO EMAIL" title="Something went wrong">
           We couldn&apos;t find an email to verify.
-        </AuthTitle>
+        </StepTitle>
         <Button variant="brand" size="xl" onPress={() => router.replace("/")}>
           <Text>Back to Sign In</Text>
         </Button>
@@ -112,10 +112,10 @@ export function VerifyOtp() {
   return (
     <KeyboardAvoidingView behavior="padding" className="flex-1 bg-background">
       <View className="flex-1 px-6 pb-safe-offset-6 pt-safe-offset-20">
-        <AuthTitle label="CODE SENT" title="Enter code">
+        <StepTitle label="CODE SENT" title="Enter code">
           We sent a 6-digit code to{" "}
           <Text className="font-mono text-[15px] text-foreground">{email}</Text>
-        </AuthTitle>
+        </StepTitle>
 
         <View className="pt-8">
           <OtpInput

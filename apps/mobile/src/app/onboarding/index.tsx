@@ -1,3 +1,3 @@
-import NotificationsStep from "@/features/onboarding/screens/notifications-step";
+import Welcome from "@/features/onboarding/screens/welcome";
 
-export default NotificationsStep;
+export default Welcome;

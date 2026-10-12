@@ -9,6 +9,7 @@ import { Icon } from "@/components/ui/icon";
 import { Spinner } from "@/components/ui/spinner";
 import { useNotificationTaps } from "@/features/notifications/hooks/use-notification-taps";
 import { usePushNotificationRegistration } from "@/features/notifications/hooks/use-push-notification-registration";
+import { useOnboardingStore } from "@/features/onboarding/stores/onboarding-store";
 import { useMyProfile } from "@/features/social/profile/hooks/use-my-profile";
 import { Stack } from "expo-router";
 import { TriangleAlert } from "lucide-react-native";
@@ -18,6 +19,7 @@ export default function Layout() {
   usePushNotificationRegistration();
   useNotificationTaps();
   const { data: profile, isPending, isError } = useMyProfile();
+  const onboarded = useOnboardingStore((state) => state.completed);
 
   if (isPending) {
     return (
@@ -46,7 +48,7 @@ export default function Layout() {
 
   return (
     <Stack>
-      <Stack.Protected guard={!!profile}>
+      <Stack.Protected guard={!!profile && onboarded}>
         <Stack.Screen
           name="(tabs)"
           options={{ headerShown: false, title: "Home", animation: "none" }}
@@ -114,8 +116,14 @@ export default function Layout() {
         />
         <Stack.Screen name="notifications" />
       </Stack.Protected>
+      <Stack.Protected guard={!!profile && !onboarded}>
+        <Stack.Screen
+          name="allow-notifications"
+          options={{ headerShown: false }}
+        />
+      </Stack.Protected>
       <Stack.Protected guard={!profile}>
-        <Stack.Screen name="profile/create" />
+        <Stack.Screen name="profile/create" options={{ headerShown: false }} />
       </Stack.Protected>
       <Stack.Screen name="terms" />
     </Stack>

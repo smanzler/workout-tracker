@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import { View } from "react-native";
 
 /** A blue mono label over a large title and a muted line. */
-export function AuthTitle({
+export function StepTitle({
   label,
   title,
   children,

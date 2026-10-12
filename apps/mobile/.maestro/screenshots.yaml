@@ -16,18 +16,14 @@ name: Store screenshots
     permissions:
       all: allow
 
-# Onboarding. Every permission is granted above, so a system prompt shows
-# only where the simulator can't pre-grant one. A tap during launch can have
-# no effect, so the Continue tap is tried again until the screen changes.
+# Welcome. A tap during launch can have no effect, so the tap is tried again
+# until the screen changes.
 - extendedWaitUntil:
-    visible: "Stay in the loop"
+    visible: "Get Started"
     timeout: 30000
 - tapOn:
-    text: "Continue"
+    text: "Get Started"
     retryTapIfNoChange: true
-- tapOn:
-    text: "Allow"
-    optional: true
 
 - extendedWaitUntil:
     visible:
@@ -43,6 +39,17 @@ name: Store screenshots
 # The code field is focused when the screen opens.
 - inputText: ${MAESTRO_REVIEW_OTP}
 - tapOn: "Continue"
+
+# The review account has a profile, so the notification step comes next. Every
+# permission is granted above, so a system prompt shows only where the
+# simulator can't pre-grant one.
+- extendedWaitUntil:
+    visible: "Know when friends react"
+    timeout: 30000
+- tapOn: "Continue"
+- tapOn:
+    text: "Allow"
+    optional: true
 
 - extendedWaitUntil:
     visible:

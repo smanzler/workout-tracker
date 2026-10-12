@@ -1,23 +1,19 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { BodyScrollView } from "@/components/ui/body-scroll-view";
+import { StepTitle } from "@/components/step-title";
 import { Button } from "@/components/ui/button";
-import {
-  Field,
-  FieldDescription,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-} from "@/components/ui/field";
+import { Icon } from "@/components/ui/icon";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import { Text } from "@/components/ui/text";
 import { useMenu } from "@/hooks/use-menu";
 import { pickImage, takePhoto } from "@/lib/image";
+import { cn } from "@/lib/utils";
 import { usernameSchema } from "@rep/shared";
-import { Link, Stack } from "expo-router";
+import { Link } from "expo-router";
 import { useState } from "react";
-import { Pressable } from "@/components/ui/pressable";
+import { Camera } from "lucide-react-native";
 import { Alert, View } from "react-native";
+import { KeyboardAvoidingView } from "react-native-keyboard-controller";
 import { useCreateProfile } from "../hooks/use-create-profile";
 
 export default function CreateProfile() {
@@ -64,55 +60,73 @@ export default function CreateProfile() {
     ]);
 
   return (
-    <BodyScrollView keyboardShouldPersistTaps="handled">
-      <Stack.Screen
-        options={{
-          headerTitle: "Create Profile",
-          headerBackButtonDisplayMode: "minimal",
-        }}
-      />
+    <KeyboardAvoidingView behavior="padding" className="flex-1 bg-background">
+      <View className="flex-1 px-6 pb-safe-offset-6 pt-safe-offset-20">
+        <StepTitle label="STEP 1 OF 2" title="Pick a username">
+          Friends find you by it.
+        </StepTitle>
 
-      <View>
-        <Text variant="h1" className="text-left mt-8">
-          One more step
-        </Text>
-        <Text variant="lead" className="pb-8">
-          Pick a username so friends can find you
-        </Text>
+        <View className="flex-row items-center gap-3.5 pt-8">
+          {avatar ? (
+            <Avatar className="size-[72px]" alt="Your photo">
+              <AvatarImage source={{ uri: avatar }} />
+              <AvatarFallback />
+            </Avatar>
+          ) : (
+            <View className="size-[72px] items-center justify-center rounded-full border-[1.5px] border-dashed border-muted-foreground/60">
+              <Icon as={Camera} className="size-6 text-muted-foreground" />
+            </View>
+          )}
+          <View className="flex-1 gap-0.5">
+            <Text className="text-[15px] font-medium">Profile photo</Text>
+            <Text className="font-mono text-[11px] text-muted-foreground">
+              OPTIONAL
+            </Text>
+          </View>
+          <Button variant="strong" size="sm" onPress={handleAvatarPress}>
+            <Text>{avatar ? "Change Photo" : "Add Photo"}</Text>
+          </Button>
+        </View>
 
-        <FieldGroup className="pb-8">
-          <Field>
-            <FieldLabel>Avatar</FieldLabel>
-            <Pressable onPress={handleAvatarPress}>
-              <Avatar className="size-32" alt="Your avatar">
-                <AvatarImage source={{ uri: avatar }} />
-                <AvatarFallback />
-              </Avatar>
-            </Pressable>
-          </Field>
-          <Field>
-            <FieldLabel>Username</FieldLabel>
+        <View className="gap-1.5 pt-7">
+          <Text
+            nativeID="username-label"
+            className="font-mono text-[11px] font-semibold tracking-wider"
+          >
+            USERNAME
+          </Text>
+          <View className="h-12 flex-row items-center gap-0.5 border-b-[1.5px] border-foreground">
+            <Text className="font-mono text-[17px] text-muted-foreground">
+              @
+            </Text>
             <Input
-              placeholder="Enter your username"
+              accessibilityLabelledBy="username-label"
+              placeholder="username"
               autoCapitalize="none"
               autoCorrect={false}
+              returnKeyType="go"
+              onSubmitEditing={handleSubmit}
+              className="h-12 flex-1 rounded-none border-0 bg-transparent px-0 font-mono text-[17px] shadow-none dark:bg-transparent"
               value={username}
               onChangeText={(text) => {
                 setUsername(text);
                 setUsernameError(null);
               }}
             />
-            {usernameError ? (
-              <FieldError>{usernameError}</FieldError>
-            ) : (
-              <FieldDescription>
-                Letters, numbers and underscores
-              </FieldDescription>
+          </View>
+          <Text
+            className={cn(
+              "font-mono text-[11px] uppercase text-muted-foreground",
+              usernameError && "text-destructive",
             )}
-          </Field>
-        </FieldGroup>
+          >
+            {usernameError ?? "Letters, numbers and underscores"}
+          </Text>
+        </View>
 
-        <Text variant="muted" className="pb-4">
+        <View className="flex-1" />
+
+        <Text className="pb-3.5 text-[13px] leading-5 text-muted-foreground">
           By continuing you agree to the{" "}
           <Link href="/terms" className="text-foreground underline">
             Terms of Use
@@ -121,11 +135,16 @@ export default function CreateProfile() {
           behavior.
         </Text>
 
-        <Button onPress={handleSubmit} disabled={isPending || !username}>
-          {isPending && <Spinner className="text-secondary" />}
+        <Button
+          variant="brand"
+          size="xl"
+          onPress={handleSubmit}
+          disabled={isPending || !username}
+        >
+          {isPending && <Spinner className="text-brand-foreground" />}
           <Text>Agree and Continue</Text>
         </Button>
       </View>
-    </BodyScrollView>
+    </KeyboardAvoidingView>
   );
 }
