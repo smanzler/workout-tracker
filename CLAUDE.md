@@ -28,13 +28,14 @@ In app code, import UI components from `@/components/ui` — never `Text`, `Pres
 
 ## Local stack
 
-`pnpm dev` starts Postgres, pgAdmin and mailpit in Docker, then the API and Metro in a tmux session; `pnpm down` stops it. The ports differ from dash's so both stacks can run at once:
+`pnpm dev` starts Postgres, pgAdmin, mailpit and an S3 mock in Docker, then the API and Metro in a tmux session; `pnpm down` stops it. The ports differ from dash's so both stacks can run at once:
 
 | Service  | Port  |
 | -------- | ----- |
 | API      | 4100  |
 | Postgres | 5433  |
 | pgAdmin  | 15434 |
+| S3 mock  | 9091  |
 | mailpit  | 8026  |
 | SMTP     | 1026  |
 

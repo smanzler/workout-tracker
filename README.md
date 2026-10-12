@@ -44,11 +44,11 @@ Copy `docker/.env.example` to `docker/.env` and `packages/api/.env.example` to `
 ```bash
 pnpm install
 pnpm --filter @rep/api exec drizzle-kit migrate  # with the database up
-pnpm dev   # Postgres, pgAdmin and mailpit in Docker, then the API and Metro in tmux
+pnpm dev   # Postgres, pgAdmin, mailpit and an S3 mock in Docker, then the API and Metro in tmux
 pnpm down  # stops all of it
 ```
 
-Sign-in codes go to mailpit at http://localhost:8026.
+Sign-in codes go to mailpit at http://localhost:8026. Uploads go to the S3 mock at http://localhost:9091.
 
 ## Author
 
