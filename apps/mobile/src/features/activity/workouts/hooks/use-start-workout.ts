@@ -4,18 +4,23 @@ import type { Draft } from "../../lib/draft";
 import { useWorkoutSessionStore } from "../stores/workout-session-store";
 
 /**
- * Returns a function that starts a workout and opens it. When a workout is
- * in progress, it asks whether to resume that one or replace it.
+ * Returns a function that starts a workout and opens it. An empty workout
+ * also opens the exercise picker. When a workout is in progress, it asks
+ * whether to resume that one or replace it.
  */
 export const useStartWorkout = () => {
   const start = useWorkoutSessionStore((state) => state.start);
 
   return (session?: { name: string; exercises: Draft }) => {
     const open = () => router.push("/workout");
+    const startAndOpen = () => {
+      start(session);
+      if (session) router.push("/workout");
+      else router.push("/workout/add-exercises", { withAnchor: true });
+    };
 
     if (useWorkoutSessionStore.getState().startedAt === null) {
-      start(session);
-      open();
+      startAndOpen();
       return;
     }
 
@@ -28,10 +33,7 @@ export const useStartWorkout = () => {
         {
           text: "Start New",
           style: "destructive",
-          onPress: () => {
-            start(session);
-            open();
-          },
+          onPress: startAndOpen,
         },
       ],
     );

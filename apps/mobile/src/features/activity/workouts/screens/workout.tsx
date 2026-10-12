@@ -74,9 +74,10 @@ export default function Workout() {
           onChangeName={setName}
           summary={<WorkoutStats exercises={exercises} />}
           exercises={exercises}
+          emptyDescription="Add an exercise to start logging sets. Your last numbers show next to each set."
           completable
           onUpdate={updateExercises}
-          onAddExercises={() => router.push("/add-exercise")}
+          onAddExercises={() => router.push("/workout/add-exercises")}
         >
           <Button variant="ghost" size="xl" onPress={confirmDiscard}>
             <Text className="text-destructive">Discard</Text>
