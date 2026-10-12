@@ -2,7 +2,7 @@ import "@/global.css";
 import { ThemeProvider } from "expo-router/react-navigation";
 import { Stack } from "expo-router";
 import { useQueryClient } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { StatusBar } from "expo-status-bar";
 import "react-native-reanimated";
 
@@ -61,15 +61,29 @@ export default function RootLayout() {
 }
 
 function RootLayoutNav() {
-  const { data: session } = authClient.useSession();
+  const { data: session, isPending } = authClient.useSession();
   const welcomed = useOnboardingStore((state) => state.welcomed);
   const queryClient = useQueryClient();
   const userId = session?.user.id;
+  const [isReady, setIsReady] = useState(false);
 
   // Remove the data of the last account, so the next sign in cannot show it.
   useEffect(() => {
     if (!userId) queryClient.clear();
   }, [userId, queryClient]);
+
+  // The guards choose the first screen. Mount the stack only when the session
+  // is known, so it does not start on sign in and then change to the tabs. A
+  // cached session counts as known. Later refetches keep the stack mounted.
+  if (!isReady && (!isPending || session)) setIsReady(true);
+
+  if (!isReady) {
+    return (
+      <View className="flex-1 items-center justify-center bg-background">
+        <Spinner />
+      </View>
+    );
+  }
 
   return (
     <Stack>
@@ -87,7 +101,7 @@ function RootLayoutNav() {
 }
 
 function AuthOverlay() {
-  const { isPending, error } = authClient.useSession();
+  const { error } = authClient.useSession();
 
   if (error) {
     return (
@@ -103,14 +117,6 @@ function AuthOverlay() {
             </EmptyDescription>
           </EmptyHeader>
         </Empty>
-      </View>
-    );
-  }
-
-  if (isPending) {
-    return (
-      <View className="absolute inset-0 flex-1 justify-center items-center bg-background">
-        <Spinner />
       </View>
     );
   }
