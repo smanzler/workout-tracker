@@ -8,7 +8,6 @@ export default function AddEditExercises() {
 
   return (
     <ExercisePicker
-      actionLabel="Add"
       onAdd={(exercises) => {
         updateExercises((draft) => addExercises(draft, exercises));
         router.back();

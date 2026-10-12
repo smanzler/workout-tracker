@@ -6,7 +6,7 @@ import {
   Workouts,
 } from "../../../db/schema";
 import { createExerciseSchema, summarizePersonalRecords } from "@rep/shared";
-import { and, asc, desc, eq, sql } from "drizzle-orm";
+import { and, asc, desc, eq, max, sql } from "drizzle-orm";
 import { isVisibleTo } from "../../../lib/exercises";
 import { protectedProcedure, router } from "../../../lib/trpc";
 import { TRPCError } from "@trpc/server";
@@ -49,6 +49,23 @@ export const exerciseRouter = router({
         sql`${WorkoutSets.reps} desc nulls last`,
       );
 
+    const lastDone = await db
+      .select({
+        exerciseId: WorkoutExercises.exerciseId,
+        lastPerformedAt: max(Workouts.startedAt),
+      })
+      .from(WorkoutExercises)
+      .innerJoin(Workouts, eq(Workouts.id, WorkoutExercises.workoutId))
+      .where(eq(Workouts.userId, user.id))
+      .groupBy(WorkoutExercises.exerciseId);
+
+    const lastPerformedAtByExercise = new Map(
+      lastDone.map(({ exerciseId, lastPerformedAt }) => [
+        exerciseId,
+        lastPerformedAt,
+      ]),
+    );
+
     const bestSetByExercise = new Map(
       bestSets.map(({ exerciseId, weight, reps }) => [
         exerciseId,
@@ -59,6 +76,7 @@ export const exerciseRouter = router({
     return exercises.map((exercise) => ({
       ...exercise,
       bestSet: bestSetByExercise.get(exercise.id) ?? null,
+      lastPerformedAt: lastPerformedAtByExercise.get(exercise.id) ?? null,
     }));
   }),
 

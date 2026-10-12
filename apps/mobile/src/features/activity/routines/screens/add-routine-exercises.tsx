@@ -10,7 +10,6 @@ export default function AddRoutineExercises() {
 
   return (
     <ExercisePicker
-      actionLabel="Add"
       onAdd={(exercises) => {
         updateExercises((draft) => addExercises(draft, exercises));
         router.back();
