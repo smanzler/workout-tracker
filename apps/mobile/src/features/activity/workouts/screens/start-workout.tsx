@@ -18,6 +18,13 @@ export default function StartWorkout() {
   return (
     <>
       <Stack.Screen options={{ title: "Workout" }} />
+      <Stack.Toolbar placement="right">
+        <Stack.Toolbar.Button
+          icon="dumbbell"
+          accessibilityLabel="Exercises"
+          onPress={() => router.push("/start-workout/exercises")}
+        />
+      </Stack.Toolbar>
       <ScrollView contentInsetAdjustmentBehavior="automatic">
         <View className="flex-row flex-wrap border-t border-border">
           <Tile

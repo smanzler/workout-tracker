@@ -5,6 +5,7 @@ import { EmptyRow } from "@/components/empty-row";
 import { Text } from "@/components/ui/text";
 import { router, Stack } from "expo-router";
 import { FlatList } from "react-native";
+import { WorkoutIndicator } from "@/features/activity/workouts/components/workout-indicator";
 import { FeedWorkoutCard } from "../components/feed-workout-card";
 import { useFriendsFeed } from "../hooks/use-friends-feed";
 
@@ -30,12 +31,7 @@ export default function Friends() {
 
   return (
     <>
-      <Stack.Screen
-        options={{
-          title: "Friends",
-          headerBackButtonDisplayMode: "minimal",
-        }}
-      />
+      <Stack.Screen options={{ title: "Friends" }} />
       <Stack.Toolbar placement="right">
         <Stack.Toolbar.Button
           icon="person.badge.plus"
@@ -55,6 +51,7 @@ export default function Friends() {
           />
         )}
       </QueryView>
+      <WorkoutIndicator />
     </>
   );
 }
