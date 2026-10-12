@@ -1,4 +1,4 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { ProfileAvatar } from "@/components/profile-avatar";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { Text } from "@/components/ui/text";
@@ -153,15 +153,17 @@ export default function Settings() {
       contentContainerClassName="pb-safe-offset-6"
     >
       <View className="flex-row items-center gap-3.5 border-y border-border px-5 py-4">
-        <Avatar alt={profile?.username ?? ""} className="size-[60px]">
-          <AvatarImage source={{ uri: profile?.avatarUrl ?? undefined }} />
-          <AvatarFallback />
+        <ProfileAvatar
+          profile={profile}
+          size="lg"
+          alt={profile?.username ?? ""}
+        >
           {isUpdatingAvatar && (
             <View className="absolute inset-0 items-center justify-center bg-black/40">
               <Spinner className="text-white" />
             </View>
           )}
-        </Avatar>
+        </ProfileAvatar>
         <View className="flex-1 gap-0.5">
           <Text className="text-lg font-semibold" numberOfLines={1}>
             {profile?.username}

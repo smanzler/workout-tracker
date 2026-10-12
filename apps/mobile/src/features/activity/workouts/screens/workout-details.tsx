@@ -1,4 +1,4 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { ProfileAvatar } from "@/components/profile-avatar";
 import { Pressable } from "@/components/ui/pressable";
 import { Text } from "@/components/ui/text";
 import { useProfile } from "@/hooks/use-profile";
@@ -21,10 +21,7 @@ function Author({ userId }: { userId: string }) {
       }
       className="flex-row items-center gap-2.5 self-start pb-2"
     >
-      <Avatar alt="" className="size-8">
-        <AvatarImage source={{ uri: profile.avatarUrl ?? undefined }} />
-        <AvatarFallback />
-      </Avatar>
+      <ProfileAvatar profile={profile} size="sm" className="size-8" />
       <Text className="text-[15px] font-semibold">{profile.username}</Text>
     </Pressable>
   );

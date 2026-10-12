@@ -1,4 +1,4 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { ProfileAvatar } from "@/components/profile-avatar";
 import { Icon } from "@/components/ui/icon";
 import { Pressable } from "@/components/ui/pressable";
 import { Text } from "@/components/ui/text";
@@ -16,10 +16,7 @@ export function ProfileRow({ profile }: { profile: Profile }) {
       }
       className="min-h-[60px] flex-row items-center gap-3 border-b border-border py-2 pl-5 pr-3"
     >
-      <Avatar alt="" className="size-9">
-        <AvatarImage source={{ uri: profile.avatarUrl ?? undefined }} />
-        <AvatarFallback />
-      </Avatar>
+      <ProfileAvatar profile={profile} size="sm" />
       <Text className="flex-1 text-[15px] font-medium" numberOfLines={1}>
         {profile.username}
       </Text>

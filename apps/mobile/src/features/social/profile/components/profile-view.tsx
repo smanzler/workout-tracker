@@ -1,6 +1,6 @@
 import { QueryView } from "@/components/query-view";
 import { RefetchControl } from "@/components/refetch-control";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { ProfileAvatar } from "@/components/profile-avatar";
 import { Button } from "@/components/ui/button";
 import { EmptyRow } from "@/components/empty-row";
 import { Spinner } from "@/components/ui/spinner";
@@ -57,10 +57,7 @@ function ProfileHeader({
   return (
     <View>
       <View className="flex-row items-center gap-3.5 border-b border-border px-5 pb-4 pt-2">
-        <Avatar alt={profile.username} className="size-[60px]">
-          <AvatarImage source={{ uri: profile.avatarUrl ?? undefined }} />
-          <AvatarFallback />
-        </Avatar>
+        <ProfileAvatar profile={profile} size="lg" alt={profile.username} />
         <View className="flex-1 gap-0.5">
           <Text className="text-[22px] font-bold" numberOfLines={1}>
             {profile.username}
