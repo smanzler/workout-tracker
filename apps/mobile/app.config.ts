@@ -51,7 +51,8 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   android: {
     adaptiveIcon: {
       foregroundImage: "./assets/images/adaptive-icon.png",
-      backgroundColor: "#ffffff",
+      monochromeImage: "./assets/images/adaptive-icon.png",
+      backgroundColor: "#f8f9fa",
     },
     predictiveBackGestureEnabled: false,
     package: "com.sigh10.workouttracker",
