@@ -74,10 +74,17 @@ name: Store screenshots
 - takeScreenshot: 01-workout
 # Discard, so the review account doesn't gain a workout on every capture.
 - scrollUntilVisible:
-    element: "Discard Workout"
+    element: "Discard"
     direction: DOWN
-- tapOn: "Discard Workout"
 - tapOn: "Discard"
+# The alert's confirm button has the same label as the button that opens it,
+# and Maestro orders matches top to bottom, so index 0 is the alert's.
+- extendedWaitUntil:
+    visible: "Discard workout\\?"
+    timeout: 5000
+- tapOn:
+    text: "Discard"
+    index: 0
 
 - tapOn: "History"
 - extendedWaitUntil:
@@ -102,7 +109,17 @@ name: Store screenshots
 - stopApp
 - launchApp
 - tapOn: "Exercises"
-- tapOn: "Search exercises"
+# Android shows the search bar as a button, and the field gets focus when it opens.
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - tapOn: "Search"
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - tapOn: "Search exercises"
 - inputText: "bench press barbell"
 - tapOn: "Bench Press \\(Barbell\\), Chest.*"
 - extendedWaitUntil:
@@ -114,7 +131,6 @@ name: Store screenshots
 
 - stopApp
 - launchApp
-- tapOn: "You"
 - tapOn: "Friends"
 - extendedWaitUntil:
     visible: "(Give|Remove) kudos"
