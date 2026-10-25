@@ -2,6 +2,7 @@ import { ProfileAvatar } from "@/components/profile-avatar";
 import { Pressable } from "@/components/ui/pressable";
 import { Text } from "@/components/ui/text";
 import { useProfile } from "@/hooks/use-profile";
+import { useToolbarIcon } from "@/hooks/use-toolbar-icon";
 import { authClient } from "@/lib/auth-client";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import { ScrollView } from "react-native";
@@ -32,6 +33,7 @@ export default function WorkoutDetails() {
   const workoutQuery = useWorkout(workoutId);
   const showWorkoutMenu = useWorkoutMenu();
   const { data: session } = authClient.useSession();
+  const optionsIcon = useToolbarIcon("ellipsis", "more-vert");
 
   return (
     <QueryView query={workoutQuery} errorTitle="Couldn't load workout">
@@ -49,7 +51,7 @@ export default function WorkoutDetails() {
             {isMine && (
               <Stack.Toolbar placement="right">
                 <Stack.Toolbar.Button
-                  icon="ellipsis"
+                  icon={optionsIcon}
                   accessibilityLabel="Workout options"
                   onPress={() =>
                     showWorkoutMenu(workout, {
