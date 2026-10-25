@@ -1,7 +1,8 @@
 # Uploads the store listings: text from fastlane/metadata, screenshots from
 # fastlane/screenshots/ios and fastlane/metadata/android/*/images. The
-# screenshots lanes capture those images with Maestro. Builds and release
-# notes stay with EAS. See "Store listing" in apps/mobile/README.md.
+# screenshots lanes capture those images with Maestro. `android release`
+# builds and uploads the Android app. iOS builds and release notes stay with
+# EAS. See "Store listing" in apps/mobile/README.md.
 
 require "bundler"
 require "json"
@@ -66,6 +67,20 @@ module LogGoogleApiErrorBody
       raise
     end
   end
+end
+
+# Checks the service account key that supply reads, and logs its account.
+def sign_in_to_google_play
+  json_key = fetch_env("SUPPLY_JSON_KEY_DATA").first
+  begin
+    account = JSON.parse(json_key).fetch("client_email")
+  rescue JSON::ParserError, KeyError
+    UI.user_error!("SUPPLY_JSON_KEY_DATA is not a service account JSON key")
+  end
+  # Play Console must give this account access to the app.
+  UI.message("Signing in to Google Play as #{account}")
+  require "supply"
+  Supply::AbstractGoogleServiceClient.prepend(LogGoogleApiErrorBody)
 end
 
 def clear_screenshots(dest)
@@ -174,18 +189,55 @@ platform :android do
     end
   end
 
+  desc "Build a signed release bundle and upload it to the internal track"
+  desc "Options: version_code, to not get it from Play, and upload:false, to only build"
+  lane :release do |options|
+    store_file, *passwords = fetch_env(
+      "ANDROID_UPLOAD_STORE_FILE",
+      "ANDROID_UPLOAD_STORE_PASSWORD",
+      "ANDROID_UPLOAD_KEY_ALIAS",
+      "ANDROID_UPLOAD_KEY_PASSWORD",
+    )
+    store_file = File.expand_path(store_file, APP_DIR)
+    UI.user_error!("No upload keystore at #{store_file}") unless File.file?(store_file)
+    upload = options[:upload].to_s != "false"
+    sign_in_to_google_play if upload || !options[:version_code]
+
+    # Play rejects a version code that any track has.
+    version_code = options[:version_code]&.to_i || %w[internal alpha beta production]
+      .flat_map { |track| google_play_track_version_codes(track: track) }
+      .max.to_i + 1
+    UI.message("Building version code #{version_code}")
+
+    # Set here, not on the command, so fastlane doesn't log the passwords.
+    ENV["ANDROID_VERSION_CODE"] = version_code.to_s
+    ENV["ORG_GRADLE_PROJECT_repUploadStoreFile"] = store_file
+    ENV["ORG_GRADLE_PROJECT_repUploadStorePassword"],
+      ENV["ORG_GRADLE_PROJECT_repUploadKeyAlias"],
+      ENV["ORG_GRADLE_PROJECT_repUploadKeyPassword"] = passwords
+    Dir.chdir(APP_DIR) do
+      sh("npx", "expo", "prebuild", "--platform", "android", "--no-install")
+    end
+    Dir.chdir(File.join(APP_DIR, "android")) do
+      sh("./gradlew", "bundleRelease")
+    end
+    aab = File.join(APP_DIR, "android/app/build/outputs/bundle/release/app-release.aab")
+    UI.success("Built #{aab}")
+    next unless upload
+
+    upload_to_play_store(
+      track: "internal",
+      aab: aab,
+      skip_upload_metadata: true,
+      skip_upload_changelogs: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true,
+    )
+  end
+
   desc "Upload the Play Store listing, images and screenshots"
   lane :metadata do
-    json_key = fetch_env("SUPPLY_JSON_KEY_DATA").first
-    begin
-      account = JSON.parse(json_key).fetch("client_email")
-    rescue JSON::ParserError, KeyError
-      UI.user_error!("SUPPLY_JSON_KEY_DATA is not a service account JSON key")
-    end
-    # Play Console must give this account access to the app.
-    UI.message("Signing in to Google Play as #{account}")
-    require "supply"
-    Supply::AbstractGoogleServiceClient.prepend(LogGoogleApiErrorBody)
+    sign_in_to_google_play
     # supply attaches the listing edit to a release on this track, and stops
     # when it cannot find exactly one. EAS submits to internal.
     track = "internal"

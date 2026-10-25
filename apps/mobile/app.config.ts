@@ -56,6 +56,8 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     },
     predictiveBackGestureEnabled: false,
     package: "com.sigh10.workouttracker",
+    // Play rejects a version code that it has. `fastlane android release` sets it.
+    versionCode: Number(process.env.ANDROID_VERSION_CODE ?? 1),
   },
   plugins: [
     "expo-router",
@@ -120,6 +122,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     "expo-secure-store",
     "expo-sqlite",
     "expo-status-bar",
+    "./plugins/with-upload-signing",
   ],
   experiments: {
     typedRoutes: true,

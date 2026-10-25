@@ -4,7 +4,7 @@ The Expo app. See the root `README.md` to run it.
 
 ## Store listing
 
-The App Store and Play Store listing text and screenshots live in `fastlane`, and fastlane uploads them. Builds and release notes still go through EAS.
+The App Store and Play Store listing text and screenshots live in `fastlane`, and fastlane uploads them. iOS builds and release notes still go through EAS. Android builds are local, see [Android releases](#android-releases).
 
 - `fastlane/metadata/ios` is in [deliver](https://docs.fastlane.tools/actions/deliver/) format. The ios lane needs a version in "Prepare for Submission" on App Store Connect.
 - `fastlane/metadata/android` is in [supply](https://docs.fastlane.tools/actions/supply/) format. The title and full description are symlinks to the iOS name and description.
@@ -44,11 +44,36 @@ bundle exec fastlane android metadata
 
 The lanes read these env vars:
 
-| Variable                                                         | Lane                      | Value                                                                     |
-| ---------------------------------------------------------------- | ------------------------- | ------------------------------------------------------------------------- |
-| `APP_STORE_CONNECT_API_KEY_KEY_ID`                               | ios metadata              | Key ID of an App Store Connect API key with the App Manager role          |
-| `APP_STORE_CONNECT_API_KEY_ISSUER_ID`                            | ios metadata              | Issuer ID shown above the API keys list                                   |
-| `APP_STORE_CONNECT_API_KEY_KEY`                                  | ios metadata              | Contents of the key's `.p8` file                                          |
-| `REVIEW_EMAIL`, `REVIEW_OTP`                                     | ios metadata, screenshots | The store review account, as set on the API                               |
-| `REVIEW_CONTACT_FIRST_NAME`, `…_LAST_NAME`, `…_EMAIL`, `…_PHONE` | ios metadata              | The App Review contact. The phone starts with `+` and the country code    |
-| `SUPPLY_JSON_KEY_DATA`                                           | android metadata          | JSON key of a Google Cloud service account with access to the app in Play |
+| Variable                                                         | Lane                      | Value                                                                         |
+| ---------------------------------------------------------------- | ------------------------- | ----------------------------------------------------------------------------- |
+| `APP_STORE_CONNECT_API_KEY_KEY_ID`                               | ios metadata              | Key ID of an App Store Connect API key with the App Manager role              |
+| `APP_STORE_CONNECT_API_KEY_ISSUER_ID`                            | ios metadata              | Issuer ID shown above the API keys list                                       |
+| `APP_STORE_CONNECT_API_KEY_KEY`                                  | ios metadata              | Contents of the key's `.p8` file                                              |
+| `REVIEW_EMAIL`, `REVIEW_OTP`                                     | ios metadata, screenshots | The store review account, as set on the API                                   |
+| `REVIEW_CONTACT_FIRST_NAME`, `…_LAST_NAME`, `…_EMAIL`, `…_PHONE` | ios metadata              | The App Review contact. The phone starts with `+` and the country code        |
+| `SUPPLY_JSON_KEY_DATA`                                           | android metadata          | JSON key of a Google Cloud service account with access to the app in Play     |
+| `ANDROID_UPLOAD_STORE_FILE`, `…_STORE_PASSWORD`                  | android release           | The upload keystore and its password. A relative path starts at `apps/mobile` |
+| `ANDROID_UPLOAD_KEY_ALIAS`, `…_KEY_PASSWORD`                     | android release           | The upload key in that keystore and its password                              |
+
+## Android releases
+
+`fastlane android release` builds a signed `.aab` with Gradle and uploads it to the internal track. Put the env vars from the table above in `.env.production`. Then, from `apps/mobile`:
+
+```bash
+bundle exec fastlane android release --env production
+```
+
+The lane gets the highest version code on Play and adds 1. The release build talks to the API in `.env.production`. Promote the release to other tracks in Play Console.
+
+Make the upload keystore one time, and keep it and its password out of the repo. Play App Signing signs the app for users, so Play support can reset a lost upload key.
+
+```bash
+keytool -genkeypair -v -storetype PKCS12 -keystore ~/.android/rep-upload.jks \
+  -alias upload -keyalg RSA -keysize 2048 -validity 10000
+```
+
+Play does not let the API make the first release. For it, build without the upload, then upload `android/app/build/outputs/bundle/release/app-release.aab` in Play Console under Testing → Internal testing:
+
+```bash
+bundle exec fastlane android release --env production version_code:1 upload:false
+```
