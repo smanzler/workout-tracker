@@ -1,4 +1,5 @@
 import { Icon } from "@/components/ui/icon";
+import { useToolbarIcon } from "@/hooks/use-toolbar-icon";
 import { Text } from "@/components/ui/text";
 import { Tile } from "@/features/activity/components/tile";
 import { RoutineTile } from "@/features/activity/routines/components/routine-tile";
@@ -14,13 +15,14 @@ export default function StartWorkout() {
   const startWorkout = useStartWorkout();
   const routinesQuery = useRoutines();
   const routines = routinesQuery.data ?? [];
+  const exercisesIcon = useToolbarIcon("dumbbell", "fitness-center");
 
   return (
     <>
       <Stack.Screen options={{ title: "Workout" }} />
       <Stack.Toolbar placement="right">
         <Stack.Toolbar.Button
-          icon="dumbbell"
+          icon={exercisesIcon}
           accessibilityLabel="Exercises"
           onPress={() => router.push("/start-workout/exercises")}
         />
