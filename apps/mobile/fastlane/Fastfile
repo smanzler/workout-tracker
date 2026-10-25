@@ -174,7 +174,7 @@ platform :android do
     end
   end
 
-  desc "Upload the Play Store listing and screenshots"
+  desc "Upload the Play Store listing, images and screenshots"
   lane :metadata do
     json_key = fetch_env("SUPPLY_JSON_KEY_DATA").first
     begin
