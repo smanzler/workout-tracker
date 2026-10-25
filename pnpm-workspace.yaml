@@ -6,3 +6,6 @@ onlyBuiltDependencies:
   - "@shopify/react-native-skia"
   - esbuild
   - unrs-resolver
+
+patchedDependencies:
+  expo-modules-jsi@57.1.1: patches/expo-modules-jsi@57.1.1.patch
