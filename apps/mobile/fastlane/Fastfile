@@ -198,9 +198,8 @@ platform :android do
       skip_upload_apk: true,
       skip_upload_aab: true,
       skip_upload_changelogs: true,
-      skip_upload_images: true,
-      # Only replaces the screenshot types that have local ones, and skips
-      # files the store already has.
+      # Only replaces the image and screenshot types that have local ones, and
+      # skips files the store already has.
       sync_image_upload: true,
     )
   end
