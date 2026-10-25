@@ -21,7 +21,8 @@ end
 
 # Runs the screenshots flow on a booted simulator or emulator, and copies its
 # screenshots into `dest` with `prefix` before each file name.
-def capture_screenshots(device:, dest:, prefix: "")
+def capture_screenshots(app_id:, device:, dest:, prefix: "")
+  ENV["MAESTRO_APP_ID"] = app_id
   # Set here, not on the command, so fastlane doesn't log them.
   ENV["MAESTRO_REVIEW_EMAIL"], ENV["MAESTRO_REVIEW_OTP"] = fetch_env("REVIEW_EMAIL", "REVIEW_OTP")
 
@@ -112,7 +113,10 @@ platform :ios do
       app = Dir.glob(File.join(out, "*.app")).first
       simulators.each do |prefix, udid|
         sh("xcrun", "simctl", "install", udid, app)
-        capture_screenshots(device: udid, dest: dest, prefix: prefix)
+        capture_screenshots(
+          app_id: CredentialsManager::AppfileConfig.try_fetch_value(:app_identifier),
+          device: udid, dest: dest, prefix: prefix,
+        )
         sh("xcrun", "simctl", "status_bar", udid, "clear")
       end
     end
@@ -183,7 +187,10 @@ platform :android do
       Dir.chdir(APP_DIR) do
         sh("npx", "expo", "run:android", "--variant", "release", "--no-bundler")
       end
-      capture_screenshots(device: serial, dest: dest)
+      capture_screenshots(
+        app_id: CredentialsManager::AppfileConfig.try_fetch_value(:package_name),
+        device: serial, dest: dest,
+      )
     ensure
       demo.call("exit")
     end

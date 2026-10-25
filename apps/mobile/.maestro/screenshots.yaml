@@ -1,8 +1,8 @@
 # Captures the store screenshots. Run it through `fastlane ios screenshots`
-# or `fastlane android screenshots`, which build the app, set
+# or `fastlane android screenshots`, which build the app, set MAESTRO_APP_ID,
 # MAESTRO_REVIEW_EMAIL and MAESTRO_REVIEW_OTP, and file the images for upload.
 # Each takeScreenshot name is the image's file name, and sets its store order.
-appId: com.sigh10.workouttracker
+appId: ${MAESTRO_APP_ID}
 name: Store screenshots
 ---
 # clearState keeps the iOS Keychain, where the app stores the session.

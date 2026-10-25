@@ -55,7 +55,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       backgroundColor: "#f8f9fa",
     },
     predictiveBackGestureEnabled: false,
-    package: "com.sigh10.workouttracker",
+    package: "com.sigh10.rep",
     // Play rejects a version code that it has. `fastlane android release` sets it.
     versionCode: Number(process.env.ANDROID_VERSION_CODE ?? 1),
   },
