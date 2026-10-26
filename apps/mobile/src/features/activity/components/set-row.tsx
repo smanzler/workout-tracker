@@ -7,6 +7,7 @@ import type { WorkoutSetInput } from "@rep/shared";
 import { Check, Trash2 } from "lucide-react-native";
 import { Pressable } from "@/components/ui/pressable";
 import { View } from "react-native";
+import { KeyboardController } from "react-native-keyboard-controller";
 import ReanimatedSwipeable from "react-native-gesture-handler/ReanimatedSwipeable";
 import { formatSet } from "@/lib/format";
 import { canCompleteSet, type DraftSet } from "../lib/draft";
@@ -69,6 +70,9 @@ function SetInput({
         className,
       )}
       selectTextOnFocus
+      returnKeyType="next"
+      // Keeps the keyboard open while the focus moves to the next field.
+      submitBehavior="submit"
       {...props}
     />
   );
@@ -99,6 +103,15 @@ export function SetRow({
   onToggle: () => void;
   onRemove: () => void;
 }) {
+  const focusNext = () => KeyboardController.setFocusTo("next");
+
+  const submitReps = () => {
+    if (completable && !set.completed && canCompleteSet(set, suggestion)) {
+      onToggle();
+    }
+    focusNext();
+  };
+
   return (
     <ReanimatedSwipeable
       friction={2}
@@ -147,6 +160,7 @@ export function SetRow({
             keyboardType="decimal-pad"
             accessibilityLabel={`Set ${number} weight`}
             onChangeText={(weight) => onChange({ weight })}
+            onSubmitEditing={focusNext}
           />
           <SetInput
             completed={set.completed}
@@ -156,6 +170,7 @@ export function SetRow({
             keyboardType="number-pad"
             accessibilityLabel={`Set ${number} reps`}
             onChangeText={(reps) => onChange({ reps })}
+            onSubmitEditing={submitReps}
           />
           {completable && (
             <Button

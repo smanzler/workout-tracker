@@ -43,21 +43,17 @@ export default function NewExercise() {
   return (
     <>
       <Stack.Toolbar placement="left">
-        <Stack.Toolbar.Button
-          {...headerItems.plain}
-          onPress={() => router.back()}
-        >
-          Cancel
-        </Stack.Toolbar.Button>
+        {headerItems.plain({
+          label: "Cancel",
+          onPress: () => router.back(),
+        })}
       </Stack.Toolbar>
       <Stack.Toolbar placement="right">
-        <Stack.Toolbar.Button
-          {...headerItems.prominent}
-          disabled={title.trim() === "" || isPending}
-          onPress={save}
-        >
-          Save
-        </Stack.Toolbar.Button>
+        {headerItems.prominent({
+          label: "Save",
+          disabled: title.trim() === "" || isPending,
+          onPress: save,
+        })}
       </Stack.Toolbar>
 
       <ScrollView
