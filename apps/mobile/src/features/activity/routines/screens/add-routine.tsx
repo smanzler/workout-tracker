@@ -35,21 +35,17 @@ export default function AddRoutine() {
   return (
     <>
       <Stack.Toolbar placement="left">
-        <Stack.Toolbar.Button
-          {...headerItems.plain}
-          onPress={() => router.back()}
-        >
-          Cancel
-        </Stack.Toolbar.Button>
+        {headerItems.plain({
+          label: "Cancel",
+          onPress: () => router.back(),
+        })}
       </Stack.Toolbar>
       <Stack.Toolbar placement="right">
-        <Stack.Toolbar.Button
-          {...headerItems.prominent}
-          disabled={!canSave}
-          onPress={save}
-        >
-          Save
-        </Stack.Toolbar.Button>
+        {headerItems.prominent({
+          label: "Save",
+          disabled: !canSave,
+          onPress: save,
+        })}
       </Stack.Toolbar>
 
       <DraftForm

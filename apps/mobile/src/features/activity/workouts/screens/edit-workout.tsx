@@ -64,21 +64,17 @@ export default function EditWorkout() {
   return (
     <>
       <Stack.Toolbar placement="left">
-        <Stack.Toolbar.Button
-          {...headerItems.plain}
-          onPress={() => router.back()}
-        >
-          Cancel
-        </Stack.Toolbar.Button>
+        {headerItems.plain({
+          label: "Cancel",
+          onPress: () => router.back(),
+        })}
       </Stack.Toolbar>
       <Stack.Toolbar placement="right">
-        <Stack.Toolbar.Button
-          {...headerItems.prominent}
-          disabled={name.trim() === "" || isPending}
-          onPress={confirmSave}
-        >
-          Save
-        </Stack.Toolbar.Button>
+        {headerItems.prominent({
+          label: "Save",
+          disabled: name.trim() === "" || isPending,
+          onPress: confirmSave,
+        })}
       </Stack.Toolbar>
 
       <DraftForm

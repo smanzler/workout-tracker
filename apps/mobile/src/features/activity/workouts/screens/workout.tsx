@@ -64,13 +64,11 @@ export default function Workout() {
         }}
       />
       <Stack.Toolbar placement="right">
-        <Stack.Toolbar.Button
-          {...headerItems.prominent}
-          disabled={isPending}
-          onPress={finish}
-        >
-          Finish
-        </Stack.Toolbar.Button>
+        {headerItems.prominent({
+          label: "Finish",
+          disabled: isPending,
+          onPress: finish,
+        })}
       </Stack.Toolbar>
 
       {startedAt !== null && (

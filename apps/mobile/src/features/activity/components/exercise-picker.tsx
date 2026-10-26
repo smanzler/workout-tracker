@@ -38,12 +38,10 @@ export function ExercisePicker({
         }}
       />
       <Stack.Toolbar placement="right">
-        <Stack.Toolbar.Button
-          {...headerItems.plain}
-          onPress={() => router.push("/new-exercise")}
-        >
-          New
-        </Stack.Toolbar.Button>
+        {headerItems.plain({
+          label: "New",
+          onPress: () => router.push("/new-exercise"),
+        })}
       </Stack.Toolbar>
       <ExerciseList
         onPress={toggle}
